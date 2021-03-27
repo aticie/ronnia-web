@@ -1,4 +1,5 @@
 import os
+import json
 
 from dotenv import load_dotenv
 import aiohttp
@@ -39,7 +40,7 @@ async def identify_user(code: str):
 
     async with aiohttp.ClientSession() as session:
         async with session.post(token_endpoint, data=parameters) as resp:
-            token_result = await resp.json()
+            token_result = json.loads(await resp.read())
 
     access_token = token_result['access_token']
     headers = {'Authorization': f'Bearer {access_token}'}
