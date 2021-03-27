@@ -1,22 +1,13 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
-const createWritableStore = (key, startValue) => {
-  const { subscribe, set } = writable(startValue);
+function TokenStore() {
+  const { subscribe, set, update } = writable("0");
 
-	return {
+  return {
     subscribe,
-    set,
-    useLocalStorage: () => {
-      const json = localStorage.getItem(key);
-      if (json) {
-        set(JSON.parse(json));
-      }
-
-      subscribe(current => {
-        localStorage.setItem(key, JSON.stringify(current));
-      });
-    }
+    setToken: (value) => set(value),
+    delToken: (_) => set(0),
   };
 }
 
-export const user_local_token = createWritableStore('token', 0);
+export const tokenStore = TokenStore();

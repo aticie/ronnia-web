@@ -1,53 +1,52 @@
-
 <script>
-import { user_local_token } from './store.js';
-import Cookies from 'js-cookie'
-import axios from 'axios';
+  import { tokenStore } from "./store.js";
+  import Cookies from "js-cookie";
+  import axios from "axios";
+  import Logout from "./components/Logout.svelte";
 
-user_local_token.useLocalStorage();
-let user_token_value;
+  let cookieToken = Cookies.get("token");
+  if (cookieToken) {
+    tokenStore.setToken(cookieToken);
+    Cookies.remove("token");
+  }
 
-if (Cookies.get('token')){
-    user_local_token.set(Cookies.get('token'));
-    Cookies.remove('token');
-};
-
-user_local_token.subscribe(value => {
-   user_token_value = value;
-});
-
-if (user_token_value!=0){
+  if ($tokenStore != 0) {
     let user_name;
-    axios.get('/user_details', {params: {jwt_token: user_token_value}}).then(res => {
-        user_name = res['username'];
-    });
-}
-
+    axios
+      .get("/user_details", { params: { jwt_token: $tokenStore } })
+      .then((res) => {
+        user_name = res["username"];
+      });
+  }
 </script>
 
 <html lang="en">
-<body>
-<div>
-<center>
-{#if user_token_value!=0}
-  logged in with token: {user_token_value}.
-{/if}
+  <body>
+    <div>
+      <center>
+        {#if $tokenStore != 0}
+          logged in with token: {$tokenStore}.
+          <Logout />
+        {/if}
 
-{#if user_token_value==0}
-<h1>Login using the following links:</h1>
-<a href="https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=2408&redirect_uri=http://localhost:8000/identify&scope=identify">osu!</a>
-{/if}
-</center>
-</div>
-</body>
+        {#if $tokenStore == 0}
+          <h1>Login using the following links:</h1>
+          <a
+            href="https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=6134&redirect_uri=http://localhost:8000/identify&scope=identify"
+            >osu!</a
+          >
+        {/if}
+      </center>
+    </div>
+  </body>
 </html>
 
 <style>
-body, html{
-    background: #DB9065
-}
-div {
-    padding: 8px
-}
-
+  body,
+  html {
+    background: #db9065;
+  }
+  div {
+    padding: 8px;
+  }
 </style>
