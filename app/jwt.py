@@ -25,5 +25,5 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 def decode_jwt_token(jwt_token: str):
-    user_id_with_expiration_date = jwt.decode(jwt_token, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
-    return user_id_with_expiration_date
+    user_data_dict = jwt.decode(jwt_token, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
+    return user_data_dict

@@ -3,20 +3,30 @@
   import Cookies from "js-cookie";
   import axios from "axios";
   import Logout from "./components/Logout.svelte";
+  import OsuLogin from "./components/OsuLogin.svelte";
+  import TwitchLogin from "./components/TwitchLogin.svelte";
 
+  tokenStore.useLocalStorage();
   let cookieToken = Cookies.get("token");
+  let user_name;
+  let settings = [];
+
   if (cookieToken) {
     tokenStore.setToken(cookieToken);
     Cookies.remove("token");
   }
 
   if ($tokenStore != 0) {
-    let user_name;
     axios
       .get("/user_details", { params: { jwt_token: $tokenStore } })
       .then((res) => {
-        user_name = res["username"];
+        user_name = res.data["osu_username"];
       });
+    axios.get("/get_all_settings").then((res) => {
+      settings = res.data;
+    });
+  }
+  if ($tokenStore == 0) {
   }
 </script>
 
@@ -25,16 +35,26 @@
     <div>
       <center>
         {#if $tokenStore != 0}
-          logged in with token: {$tokenStore}.
+          logged in as: {user_name}.
           <Logout />
+          {#each settings as { id, key, default_value, description }}
+            {id}: {key} - {default_value} - {description} <br>
+          {/each}
         {/if}
 
         {#if $tokenStore == 0}
-          <h1>Login using the following links:</h1>
-          <a
-            href="https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=2408&redirect_uri=http://localhost:8000/identify&scope=identify"
-            >osu!</a
-          >
+          <div class="header">
+            <h1>Ronnia Dashboard</h1>
+            <p>Log in to Ronnia with</p>
+            <div class="login_buttons">
+              <div class="osu">
+                <OsuLogin />
+              </div>
+              <div class="twitch">
+                <TwitchLogin />
+              </div>
+            </div>
+          </div>
         {/if}
       </center>
     </div>
@@ -42,11 +62,17 @@
 </html>
 
 <style>
-  body,
-  html {
-    background: #db9065;
+  h1 {
+    font-size: 30pt;
   }
-  div {
-    padding: 8px;
+  p {
+    font-size: 16pt;
+  }
+  .header {
+    margin-top: 10%;
+  }
+  .login_buttons {
+    display: flex;
+    justify-content: center;
   }
 </style>
