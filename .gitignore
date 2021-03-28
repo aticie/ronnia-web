@@ -6,8 +6,11 @@ frontend/scripts/*
 app/.env
 app/__pycache__
 
-.DS_Store
+mount
 venv
+
+.DS_Store
 .idea
+.vscode
 __pycache__
 .env
