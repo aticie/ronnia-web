@@ -32,31 +32,29 @@
 
 <html lang="en">
   <body>
-    <div>
-      <center>
-        {#if $tokenStore != 0}
-          logged in as: {user_name}.
-          <Logout />
-          {#each settings as { id, key, default_value, description }}
-            {id}: {key} - {default_value} - {description} <br>
-          {/each}
-        {/if}
+    <div class="container">
+      {#if $tokenStore != 0}
+        logged in as: {user_name}.
+        <Logout />
+        {#each settings as { id, key, default_value, description }}
+          {id}: {key} - {default_value} - {description} <br>
+        {/each}
+      {/if}
 
-        {#if $tokenStore == 0}
-          <div class="header">
-            <h1>Ronnia Dashboard</h1>
-            <p>Log in to Ronnia with</p>
-            <div class="login_buttons">
-              <div class="osu">
-                <OsuLogin />
-              </div>
-              <div class="twitch">
-                <TwitchLogin />
-              </div>
+      {#if $tokenStore == 0}
+        <div class="header">
+          <h1>Ronnia Dashboard</h1>
+          <p>Log in to Ronnia with</p>
+          <div class="login_buttons">
+            <div>
+              <OsuLogin />
+            </div>
+            <div>
+              <TwitchLogin />
             </div>
           </div>
-        {/if}
-      </center>
+        </div>
+      {/if}
     </div>
   </body>
 </html>
@@ -69,10 +67,14 @@
     font-size: 16pt;
   }
   .header {
-    margin-top: 10%;
+    margin-top: 6%;
+  }
+  .header h1 {
+    color: #E84545;
   }
   .login_buttons {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
   }
 </style>
