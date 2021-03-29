@@ -1,48 +1,44 @@
 <script>
-  import OsuLogo from "./Logo/OsuLogo.svg";
   import anime from "animejs/lib/anime.es.js";
+
+  export let text;
+  export let logo;
+  export let onClick = () => {};
+  export let identifier;
+  let logoidentifier = `${identifier}logo`;
 
   function mouseEnterAnimate() {
     anime({
-      targets: ["#osulogo", "#osutext"],
-      translateX: "-=100",
+      targets: [`#${logoidentifier}`, `#${identifier}`],
+      translateX: -100,
       easing: "easeOutExpo",
-    });
-    anime({
-      targets: "#osuimg",
-      translateY: 0,
-      easing: "easeOutExpo",
+      duration: 500
     });
   }
 
   function mouseLeaveAnimate() {
     anime({
-      targets: ["#osulogo", "#osutext"],
+      targets: [`#${logoidentifier}`, `#${identifier}`],
       translateX: 0,
       easing: "easeOutExpo",
-    });
-    anime({
-      targets: "#osuimg",
-      translateY: 200,
-      easing: "easeOutExpo",
+      duration: 500
     });
   }
 </script>
 
 <button
-  on:click={(_) => {
-    window.location.href = "/osu_authorize";
-  }}
-  on:mouseenter={mouseEnterAnimate}
+  on:click={onClick}
+  on:mouseenter={mouseEnterAnimate} 
   on:mouseleave={mouseLeaveAnimate}
   >
-  <div class="img" id="osuimg" style="transform: translateY(200px);">
-    <img src="https://osu.ppy.sh/assets/images/button.16de7c2c.svg" alt=""/>
-  </div>
-  <div class="logo" id="osulogo">
-    <OsuLogo />
-  </div>
-  <div class="text" id="osutext">osu!</div>
+
+  {#if logo}
+    <div class="logo" id={logoidentifier}>
+      <img src={logo} alt="">
+    </div>
+  {/if}
+  
+  <div class="text" id={identifier}>{text}</div>  
 </button>
 
 <style>
@@ -65,16 +61,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-grow: 1;
-
+    outline: none;
     overflow: hidden;
+
+    background-image: url("https://osu.ppy.sh/assets/images/button.16de7c2c.svg");
+    background-size: cover;
+    background-position: 0% 10%;
+    transition-duration: 300ms;
   }
-  .img {
-    position: absolute;
-    width: 100%;
-  }
-  .img img {
-    width: 100%;
+  button:hover {
+    background-position: 0% 50%;
   }
   .logo {
     display: flex;

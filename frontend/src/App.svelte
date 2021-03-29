@@ -2,9 +2,8 @@
   import { tokenStore } from "./store.js";
   import Cookies from "js-cookie";
   import axios from "axios";
-  import Logout from "./components/Logout.svelte";
-  import OsuLogin from "./components/OsuLogin.svelte";
-  import TwitchLogin from "./components/TwitchLogin.svelte";
+  import SettingsCheckbox from "./components/SettingsCheckbox.svelte";
+  import Button from "./components/Button.svelte";
 
   tokenStore.useLocalStorage();
   let cookieToken = Cookies.get("token");
@@ -33,28 +32,65 @@
 <html lang="en">
   <body>
     <div class="container">
-      {#if $tokenStore != 0}
-        logged in as: {user_name}.
-        <Logout />
-        {#each settings as { id, key, default_value, description }}
-          {id}: {key} - {default_value} - {description} <br>
-        {/each}
-      {/if}
+      <div class="header">
+        
+        <h1>Ronnia Dashboard</h1>
+        <p>Log in to Ronnia with</p>
+      </div>
+      <div class="content">
+        {#if $tokenStore != 0}
+          logged in as: {user_name}.
+          <Button
+          text="Logout"
+          onClick={() => {
+            tokenStore.delToken();
+          }}
+          identifier="logoutButton"
+          />
 
-      {#if $tokenStore == 0}
-        <div class="header">
-          <h1>Ronnia Dashboard</h1>
-          <p>Log in to Ronnia with</p>
+          <div class="settings">
+            {#each settings as { id, key, default_value, description }}
+              <div class="setting">
+                <div class="checkbox">
+                  <SettingsCheckbox />
+                </div>
+                <div class="command">
+                  {key}
+                </div>
+                <div class="description">
+                  {description}
+                </div>
+              </div>
+            {/each}
+          </div>
+          
+        {/if}
+
+        {#if $tokenStore == 0}
           <div class="login_buttons">
             <div>
-              <OsuLogin />
+              <Button
+                text="Login"
+                onClick={() => {
+                  window.location.href = "/osu_authorize";
+                }}
+                logo="./Logo/OsuLogo.svg"
+                identifier="osuLoginButton"
+              />
             </div>
             <div>
-              <TwitchLogin />
+              <Button 
+                text="Login"
+                onClick={() => {
+                  window.location.href = "/twitch_authorize";
+                }}
+                logo="./Logo/TwitchLogo.svg"
+                identifier="twitchLoginButton"
+              />
             </div>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
     </div>
   </body>
 </html>
@@ -67,14 +103,34 @@
     font-size: 16pt;
   }
   .header {
-    margin-top: 6%;
+    margin-top: 50px;
   }
   .header h1 {
-    color: #E84545;
+    color: #e84545;
   }
   .login_buttons {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+  }
+  .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .settings {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-top: 20px;
+  }
+  .setting {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    font-size: 26px;
+    display: grid;
+    grid-template-columns: 70px 120px auto;
   }
 </style>

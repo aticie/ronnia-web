@@ -1,5 +1,5 @@
 <script>
-  import TwitchLogo from "./Logo/TwitchLogo.svelte";
+  import TwitchLogo from "../../public/Logo/TwitchLogo.svg";
   import anime from "animejs/lib/anime.es.js";
 
   function mouseEnterAnimate() {
