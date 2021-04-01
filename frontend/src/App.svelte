@@ -33,7 +33,6 @@
   <body>
     <div class="container">
       <div class="header">
-        
         <h1>Ronnia Dashboard</h1>
         <p>Log in to Ronnia with</p>
       </div>
@@ -41,18 +40,23 @@
         {#if $tokenStore != 0}
           logged in as: {user_name}.
           <Button
-          text="Logout"
-          onClick={() => {
-            tokenStore.delToken();
-          }}
-          identifier="logoutButton"
+            text="Logout"
+            identifier="logoutButton"
+            onClick={() => {
+              tokenStore.delToken();
+            }}
           />
 
           <div class="settings">
             {#each settings as { id, key, default_value, description }}
               <div class="setting">
                 <div class="checkbox">
-                  <SettingsCheckbox />
+                  <SettingsCheckbox
+                    checked={default_value == "1" ? true : false}
+                    onClick={(checked) => {
+                      console.log(checked);
+                    }}
+                  />
                 </div>
                 <div class="command">
                   {key}
@@ -63,7 +67,6 @@
               </div>
             {/each}
           </div>
-          
         {/if}
 
         {#if $tokenStore == 0}
@@ -79,7 +82,7 @@
               />
             </div>
             <div>
-              <Button 
+              <Button
                 text="Login"
                 onClick={() => {
                   window.location.href = "/twitch_authorize";
@@ -132,5 +135,11 @@
     font-size: 26px;
     display: grid;
     grid-template-columns: 70px 120px auto;
+    align-items: center;
+  }
+  .checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
