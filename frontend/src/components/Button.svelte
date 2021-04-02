@@ -1,44 +1,20 @@
 <script>
-  import anime from "animejs/lib/anime.es.js";
-
   export let text;
   export let logo;
   export let onClick = () => {};
-  export let identifier;
-  let logoidentifier = `${identifier}logo`;
-
-  function mouseEnterAnimate() {
-    anime({
-      targets: [`#${logoidentifier}`, `#${identifier}`],
-      translateX: -100,
-      easing: "easeOutExpo",
-      duration: 500
-    });
-  }
-
-  function mouseLeaveAnimate() {
-    anime({
-      targets: [`#${logoidentifier}`, `#${identifier}`],
-      translateX: 0,
-      easing: "easeOutExpo",
-      duration: 500
-    });
-  }
 </script>
 
 <button
   on:click={onClick}
-  on:mouseenter={mouseEnterAnimate} 
-  on:mouseleave={mouseLeaveAnimate}
   >
 
   {#if logo}
-    <div class="logo" id={logoidentifier}>
+    <div class="logo" >
       <img src={logo} alt="">
     </div>
   {/if}
   
-  <div class="text" id={identifier}>{text}</div>  
+  <div class="text">{text}</div>  
 </button>
 
 <style>
@@ -67,10 +43,17 @@
     background-image: url("https://osu.ppy.sh/assets/images/button.16de7c2c.svg");
     background-size: cover;
     background-position: 0% 10%;
-    transition-duration: 300ms;
+
+    transition: background-position 300ms;
+  }
+  div {
+    transition: transform 250ms;
   }
   button:hover {
     background-position: 0% 50%;
+  }
+  button:hover > div {
+    transform: translateX(-100px);
   }
   .logo {
     display: flex;
