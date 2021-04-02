@@ -34,7 +34,6 @@
     <div class="container">
       <div class="header">
         <h1>Ronnia Dashboard</h1>
-        <p>Log in to Ronnia with</p>
       </div>
       <div class="content">
         {#if $tokenStore != 0}
@@ -70,6 +69,7 @@
         {/if}
 
         {#if $tokenStore == 0}
+          <p>Log in to Ronnia with</p>
           <div class="login_buttons">
             <div>
               <Button
