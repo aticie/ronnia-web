@@ -4,11 +4,16 @@
   import axios from "axios";
   import SettingsCheckbox from "./components/SettingsCheckbox.svelte";
   import Button from "./components/Button.svelte";
+  import TinyButton from "./components/TinyButton.svelte";
+  import SettingsSaveButton from "./components/SettingsSaveButton.svelte"
 
   tokenStore.useLocalStorage();
   let cookieToken = Cookies.get("token");
   let user_name;
+  let user_avatar_url;
+  let user_id_db;
   let settings = [];
+  let user_settings = {};
 
   if (cookieToken) {
     tokenStore.setToken(cookieToken);
@@ -16,14 +21,22 @@
   }
 
   if ($tokenStore != 0) {
-    axios
-      .get("/user_details", { params: { jwt_token: $tokenStore } })
-      .then((res) => {
-        user_name = res.data["osu_username"];
-      });
+      axios
+        .get("/user_details", { params: { jwt_token: $tokenStore } })
+        .then((res) => {
+          user_name = res.data["osu_username"];
+          user_avatar_url = res.data["avatar_url"];
+          user_id_db = res.data["user_id"];
+          axios
+          .get("/get_user_settings", { params: { user_id: user_id_db } })
+          .then((res) => {
+            user_settings = res.data;
+          });
+        });
     axios.get("/get_all_settings").then((res) => {
       settings = res.data;
     });
+    
   }
   if ($tokenStore == 0) {
   }
@@ -37,25 +50,43 @@
       </div>
       <div class="content">
         {#if $tokenStore != 0}
-          logged in as: {user_name}.
-          <Button
-            text="Logout"
-            identifier="logoutButton"
-            onClick={() => {
-              tokenStore.delToken();
-            }}
-          />
-
+          <div class="userbox">
+            <img
+              src={user_avatar_url}
+              alt="Avatar"
+              class="rounded-circle"
+              crossorigin="anonymous"
+            />
+            <div class="profile-info">
+              {user_name}
+            </div>
+            <TinyButton
+              text="Logout"
+              identifier="logoutButton"
+              onClick={() => {
+                tokenStore.delToken();
+              }}
+            />
+          </div>
           <div class="settings">
             {#each settings as { id, key, default_value, description }}
               <div class="setting">
                 <div class="checkbox">
-                  <SettingsCheckbox
-                    checked={default_value == "1" ? true : false}
-                    onClick={(checked) => {
-                      console.log(checked);
-                    }}
-                  />
+                  {#if key in user_settings}
+                    <SettingsCheckbox
+                      checked={user_settings[key] == "1" ? true : false}
+                      onClick={(checked) => {
+                        console.log(checked);
+                      }}
+                    />
+                  {:else}
+                    <SettingsCheckbox
+                      checked={default_value == "1" ? true : false}
+                      onClick={(checked) => {
+                        console.log(checked);
+                      }}
+                    />
+                  {/if}
                 </div>
                 <div class="command">
                   {key}
@@ -65,6 +96,12 @@
                 </div>
               </div>
             {/each}
+          </div>
+          <div class="SaveButton">
+            <SettingsSaveButton
+              text="Save"
+              timeout_secs=1000
+            />
           </div>
         {/if}
 
@@ -140,6 +177,20 @@
   .checkbox {
     display: flex;
     justify-content: center;
+    align-items: center;
+  }
+  .rounded-circle {
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+  }
+  .profile-info {
+    font-size: x-large;
+    margin-left: 10px;
+    margin-right: 5px;
+  }
+  .userbox {
+    display: flex;
     align-items: center;
   }
 </style>

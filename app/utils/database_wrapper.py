@@ -1,6 +1,7 @@
 import sqlite3
 import os
 
+
 class BaseDatabase:
     def __init__(self, db_path: str):
         self.db_path: str = db_path
@@ -26,7 +27,6 @@ class UserDatabase(BaseDatabase):
             db_path = os.path.join(os.getenv('DB_DIR'), 'users.db')
         super().__init__(db_path)
 
-
     def initialize(self):
         super().initialize()
 
@@ -48,3 +48,8 @@ class UserDatabase(BaseDatabase):
         self.c.execute('SELECT * FROM settings')
         all_settings = [dict(setting) for setting in self.c.fetchall()]
         return all_settings
+
+    def select_all_settings_by_user_id(self, user_id: str):
+        self.c.execute('SELECT * FROM user_settings WHERE user_id=?', (user_id,))
+        user_settings = {setting['key']: setting['value'] for setting in self.c.fetchall()}
+        return user_settings

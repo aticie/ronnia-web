@@ -19,10 +19,12 @@ app = FastAPI()
 user_db = UserDatabase()
 user_db.initialize()
 
+
 @app.get("/")
 async def root(response: Response):
     index_page = RedirectResponse('/index.html')
     return index_page
+
 
 @app.get("/osu_authorize")
 async def get_link_details(response: Response):
@@ -32,6 +34,7 @@ async def get_link_details(response: Response):
     scope = 'scope=identify'
 
     return RedirectResponse('&'.join([osu_token_api, client_id, redirect_uri, scope]))
+
 
 @app.get("/twitch_authorize")
 async def get_link_details(response: Response):
@@ -56,12 +59,13 @@ async def osu_identify_user(code: str):
                   "code": code,
                   "grant_type": "authorization_code",
                   "redirect_uri": os.getenv('OSU_REDIRECT_URI')}
-    
+
     access_token = await get_token(token_endpoint, parameters)
     headers = {'Authorization': f'Bearer {access_token}'}
 
     me_endpoint = 'https://osu.ppy.sh/api/v2/me/osu'
     return await fetch_user_from_token(headers, me_endpoint)
+
 
 async def fetch_user_from_token(headers, me_endpoint):
     async with aiohttp.ClientSession(headers=headers) as session:
@@ -70,14 +74,17 @@ async def fetch_user_from_token(headers, me_endpoint):
     if me_endpoint.endswith('osu'):
         user_id = me_result['id']
         user_details = user_db.get_user_from_osu_id(user_id)
+        user_details['avatar_url'] = me_result['avatar_url']
     else:
         user_id = me_result['data'][0]['id']
         user_details = user_db.get_user_from_twitch_id(user_id)
+        user_details['avatar_url'] = me_result['data'][0]['profile_image_url']
 
     encoded_jwt = create_access_token(user_details)
     to_me_page = RedirectResponse('/index.html')
     to_me_page.set_cookie('token', encoded_jwt)
     return to_me_page
+
 
 @app.get('/twitch_identify')
 async def twitch_identify_user(code: str, scope: str):
@@ -87,14 +94,15 @@ async def twitch_identify_user(code: str, scope: str):
                   "code": code,
                   "grant_type": "authorization_code",
                   "redirect_uri": os.getenv('TWITCH_REDIRECT_URI')}
-    
+
     access_token = await get_token(token_endpoint, parameters)
     headers = {'Authorization': f'Bearer {access_token}',
                'Client-Id': os.getenv('TWITCH_CLIENT_ID')}
 
     me_endpoint = 'https://api.twitch.tv/helix/users'
-    
+
     return await fetch_user_from_token(headers, me_endpoint)
+
 
 @app.get("/user_details")
 async def get_user_details(jwt_token: str):
@@ -107,8 +115,15 @@ async def get_user_details(jwt_token: str):
 async def get_all_settings():
     return user_db.select_all_settings()
 
-def add_user_to_db():
-    return
+
+@app.get('/get_user_settings')
+async def get_user_settings(user_id: str):
+    return user_db.select_all_settings_by_user_id(user_id)
+
+
+@app.post('/get_user_settings')
+async def post_user_settings():
+    return 
 
 
 app.mount("/", StaticFiles(directory=os.path.join("frontend", "public")), name="public")
