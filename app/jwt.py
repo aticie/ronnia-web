@@ -1,8 +1,8 @@
 import os
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
-from jose import JWTError, jwt
+from jose import jwt
 from pydantic import BaseModel
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440

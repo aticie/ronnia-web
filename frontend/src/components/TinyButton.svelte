@@ -21,8 +21,8 @@
   button {
     position: relative;
 
-    width: 316px;
-    height: 62px;
+    width: 100px;
+    height: 40px;
     background-color: #e84545;
     border: none;
     border-radius: 10px;
@@ -50,10 +50,10 @@
     transition: transform 250ms;
   }
   button:hover {
-    background-position: 0% 50%;
+    background-position: 0% 70%;
   }
   button:hover > div {
-    transform: translateX(135px);
+    transform: translateY(-5px);
   }
   .logo {
     display: flex;
@@ -61,9 +61,6 @@
     align-items: center;
   }
   .text {
-    flex-grow: 1;
-    justify-content: flex-end;
-    margin-right: 77px;
-    display: flex;
+    font-size: 14pt;
   }
 </style>

@@ -1,0 +1,4 @@
+.vscode
+venv
+mount
+frontend/node_modules
