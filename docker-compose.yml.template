@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  ronnia-web:
+    build: .
+    image: ronnia-web:latest
+    restart: always
+    volumes:
+      - your_host_machine_db_folder_path:/mount
+    environment:
+      TWITCH_CLIENT_ID: your_twitch_client_id_here
+      TWITCH_CLIENT_SECRET: your_twitch_client_secret_here
+      OSU_CLIENT_ID: your_osu_client_id_here
+      OSU_CLIENT_SECRET: your_osu_client_secret_here
+      OSU_REDIRECT_URI: http://localhost:8000/identify
+      TWITCH_REDIRECT_URI: http://localhost:8000/twitch_identify
+      SECRET_KEY = "****"
+      ALGORITHM = "HS256"
+      DB_DIR: /mount

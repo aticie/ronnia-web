@@ -1,7 +1,6 @@
 import os
 
 import aiohttp
-from dotenv import load_dotenv
 from fastapi import FastAPI, Response, Request
 from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,8 +9,6 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.jwt import create_access_token, decode_jwt_token
 from app.token_handling import get_token
 from app.utils.database_wrapper import UserDatabase
-
-load_dotenv()
 
 app = FastAPI()
 user_db = UserDatabase()
