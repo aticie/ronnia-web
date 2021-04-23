@@ -46,12 +46,13 @@ class UserDatabase(BaseDatabase):
 
     def select_all_settings(self):
         self.c.execute('SELECT * FROM settings')
-        toggle_settings = [{**dict(setting), **{'type': 'toggle', 'value': setting['default_value']}}
+
+        toggle_settings = [dict(setting) | {'type': 'toggle', 'value': setting['default_value']}
                            for setting in self.c.fetchall()]
 
         self.c.execute('SELECT * FROM range_settings')
-        range_settings = [{**dict(setting), **{'type': 'range', 'range_start': setting['default_low'],
-                                           'range_end': setting['default_high']}} for setting in self.c.fetchall()]
+        range_settings = [dict(setting) | {'type': 'range', 'range_start': setting['default_low'],
+                                           'range_end': setting['default_high']} for setting in self.c.fetchall()]
 
         return toggle_settings + range_settings
 
