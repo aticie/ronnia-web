@@ -10,10 +10,10 @@
 
   tokenStore.useLocalStorage();
   let cookieToken = Cookies.get("token");
+  let error = Cookies.get("error");
   let user_name;
   let user_avatar_url;
   let user_id_db;
-  let settings = [];
   let user_settings = [];
 
   if (cookieToken) {
@@ -141,9 +141,19 @@
               />
             </div>
           </div>
+          {#if error}
+            <div class="errortext">
+              You are not registered to ronnia<br>
+              Add heyronii#9925 on discord for registration.<br>
+              <a href=https://github.com/aticie/ronnia>Check out project page for more details.</a>
+            </div>
+          {/if}
         {/if}
       </div>
     </div>
+    <footer>
+      Thanks to Sibyl#3838 and bora#5130 for website and frontend design.
+    </footer>
   </body>
 </html>
 
@@ -214,5 +224,9 @@
   }
   .errortext {
     color: #e84545;
+    margin: 30px 10px;
+  }
+  footer{
+    margin: 1% 1%;
   }
 </style>

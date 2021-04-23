@@ -66,18 +66,26 @@ async def fetch_user_from_token(headers, me_endpoint):
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(me_endpoint) as resp:
             me_result = await resp.json()
-    if me_endpoint.endswith('osu'):
-        user_id = me_result['id']
-        user_details = user_db.get_user_from_osu_id(user_id)
-        user_details['avatar_url'] = me_result['avatar_url']
-    else:
-        user_id = me_result['data'][0]['id']
-        user_details = user_db.get_user_from_twitch_id(user_id)
-        user_details['avatar_url'] = me_result['data'][0]['profile_image_url']
+
+    to_me_page = RedirectResponse('/index.html')
+
+    try:
+        if me_endpoint.endswith('osu'):
+            user_id = me_result['id']
+            user_details = user_db.get_user_from_osu_id(user_id)
+            user_details['avatar_url'] = me_result['avatar_url']
+        else:
+            user_id = me_result['data'][0]['id']
+            user_details = user_db.get_user_from_twitch_id(user_id)
+            user_details['avatar_url'] = me_result['data'][0]['profile_image_url']
+    except TypeError as e:
+        to_me_page.set_cookie('error',
+                              'login')
+        return to_me_page
 
     encoded_jwt = create_access_token(user_details)
-    to_me_page = RedirectResponse('/index.html')
     to_me_page.set_cookie('token', encoded_jwt)
+
     return to_me_page
 
 
