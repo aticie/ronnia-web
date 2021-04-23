@@ -1,10 +1,9 @@
 <script>
   export let checked;
-  export let onClick = (checked) => {};
 </script>
 
 <label class="switch">
-  <input type="checkbox" {checked} on:click={onClick(this.checked)}/>
+  <input type="checkbox" bind:checked={checked}/>
   <div class="slider" />
 </label>
 

@@ -1,17 +1,15 @@
-from app.utils.database_wrapper import UserDatabase
-from app.token_handling import get_token
 import os
-import json
 
-from dotenv import load_dotenv
 import aiohttp
-from fastapi import FastAPI, Response
-from fastapi.responses import HTMLResponse, RedirectResponse, PlainTextResponse
+from dotenv import load_dotenv
+from fastapi import FastAPI, Response, Request
+from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
-
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.jwt import create_access_token, decode_jwt_token
+from app.token_handling import get_token
+from app.utils.database_wrapper import UserDatabase
 
 load_dotenv()
 
@@ -111,19 +109,25 @@ async def get_user_details(jwt_token: str):
     return user_data_dict
 
 
-@app.get('/get_all_settings')
-async def get_all_settings():
-    return user_db.select_all_settings()
-
-
 @app.get('/get_user_settings')
 async def get_user_settings(user_id: str):
-    return user_db.select_all_settings_by_user_id(user_id)
+    user_settings = user_db.select_all_settings_by_user_id(user_id)
+    return user_settings
 
 
-@app.post('/get_user_settings')
-async def post_user_settings():
-    return 
+@app.post('/save_user_settings')
+async def save_user_settings(request: Request):
+    payload = await request.json()
+    settings = payload['settings']
+    user_id = payload['user_id']
+    for setting in settings:
+        if setting['type'] == 'toggle':
+            user_db.set_setting(user_id=user_id, setting_key=setting['key'], new_value=setting['value'])
+        elif setting['type'] == 'range':
+            user_db.set_range_setting(user_id=user_id, setting_key=setting['key'], range_low=setting['range_start'],
+                                      range_high=setting['range_end'])
+
+    return
 
 
 app.mount("/", StaticFiles(directory=os.path.join("frontend", "public")), name="public")

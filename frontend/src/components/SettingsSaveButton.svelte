@@ -1,13 +1,13 @@
 <script>
 import axios from "axios";
 
-
-  export let text;
+  export let settings;
+  export let user_id;
   export let timeout_secs;
-  let disabled = false;
+  export let disabled;
   let onClick = () => {
     disabled = true;
-    axios.post('/post_user_settings').then((res) => console.log(res));
+    axios.post('/save_user_settings', {user_id: user_id, settings: settings});
     setTimeout(() => { disabled = false }, timeout_secs);
   };
 </script>
@@ -15,7 +15,7 @@ import axios from "axios";
 <button {disabled}
   on:click={onClick}
   >
-  <div class="text">{text}</div>  
+  <div class="text">Save</div>  
 </button>
 
 <style>
