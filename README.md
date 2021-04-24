@@ -10,7 +10,7 @@ ronnia-web displays the ronnia dashboard for user settings.
 
 ## Usage
 
-You can check out ronnia dashboard at http://34.82.46.200
+You can check out ronnia dashboard at https://ronnia.me/
 
 ## Setup
 
