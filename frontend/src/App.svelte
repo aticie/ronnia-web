@@ -21,6 +21,10 @@
     Cookies.remove("token");
   }
 
+  if (error) {
+    Cookies.remove("error");
+  }
+
   if ($tokenStore != 0) {
     axios
       .get("/user_details", { params: { jwt_token: $tokenStore } })
