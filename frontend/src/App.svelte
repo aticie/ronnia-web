@@ -4,15 +4,25 @@
   import axios from "axios";
   import SettingsCheckbox from "./components/SettingsCheckbox.svelte";
   import Button from "./components/Button.svelte";
+  import TinyButton from "./components/TinyButton.svelte";
+  import SettingsSaveButton from "./components/SettingsSaveButton.svelte";
+  import InputBox from "./components/InputBox.svelte";
 
   tokenStore.useLocalStorage();
   let cookieToken = Cookies.get("token");
+  let error = Cookies.get("error");
   let user_name;
-  let settings = [];
+  let user_avatar_url;
+  let user_id_db;
+  let user_settings = [];
 
   if (cookieToken) {
     tokenStore.setToken(cookieToken);
     Cookies.remove("token");
+  }
+
+  if (error) {
+    Cookies.remove("error");
   }
 
   if ($tokenStore != 0) {
@@ -20,12 +30,31 @@
       .get("/user_details", { params: { jwt_token: $tokenStore } })
       .then((res) => {
         user_name = res.data["osu_username"];
+        user_avatar_url = res.data["avatar_url"];
+        //user_avatar_url = "https://a.ppy.sh/" + res.data["osu_id"];
+        user_id_db = res.data["user_id"];
+        axios
+          .get("/get_user_settings", { params: { user_id: user_id_db } })
+          .then((res) => {
+            user_settings = res.data;
+          });
       });
-    axios.get("/get_all_settings").then((res) => {
-      settings = res.data;
-    });
   }
   if ($tokenStore == 0) {
+  }
+
+  let buttonDisabled = false;
+  let errorText = "";
+
+  function handleInputBoxMessage(event) {
+    let message = event.detail;
+    if (message.error) {
+      buttonDisabled = true;
+      errorText = message.error;
+    } else {
+      buttonDisabled = false;
+      errorText = "";
+    }
   }
 </script>
 
@@ -37,34 +66,58 @@
       </div>
       <div class="content">
         {#if $tokenStore != 0}
-          logged in as: {user_name}.
-          <Button
-            text="Logout"
-            identifier="logoutButton"
-            onClick={() => {
-              tokenStore.delToken();
-            }}
-          />
-
+          <div class="userbox">
+            <div
+              alt="Avatar"
+              class="rounded-circle avatar"
+              crossorigin="anonymous"
+              style="background-image: url('{user_avatar_url}')"
+            ></div>
+            <div class="profile-info">
+              {user_name}
+            </div>
+            <TinyButton
+              text="Logout"
+              identifier="logoutButton"
+              onClick={() => {
+                tokenStore.delToken();
+              }}
+            />
+          </div>
           <div class="settings">
-            {#each settings as { id, key, default_value, description }}
+            {#each user_settings as setting}
               <div class="setting">
-                <div class="checkbox">
-                  <SettingsCheckbox
-                    checked={default_value == "1" ? true : false}
-                    onClick={(checked) => {
-                      console.log(checked);
-                    }}
-                  />
-                </div>
+                {#if setting.type === "toggle"}
+                  <div class="checkbox">
+                    <SettingsCheckbox bind:checked={setting.value} />
+                  </div>
+                {:else}
+                  <div class="inputbox">
+                    <InputBox
+                      key={setting.key}
+                      bind:min_value={setting.range_start}
+                      bind:max_value={setting.range_end}
+                      on:message={handleInputBoxMessage}
+                    />
+                  </div>
+                {/if}
                 <div class="command">
-                  {key}
+                  {setting.key == "sr" ? "min sr\nmax sr" : setting.key}
                 </div>
                 <div class="description">
-                  {description}
+                  {setting.description}
                 </div>
               </div>
             {/each}
+          </div>
+          <div class="errortext">{errorText}</div>
+          <div class="savebutton">
+            <SettingsSaveButton
+              bind:disabled={buttonDisabled}
+              settings={user_settings}
+              user_id={user_id_db}
+              timeout_secs="2000"
+            />
           </div>
         {/if}
 
@@ -92,9 +145,19 @@
               />
             </div>
           </div>
+          {#if error}
+            <div class="errortext">
+              You are not registered to ronnia<br>
+              Add heyronii#9925 on discord for registration.<br>
+              <a href=https://github.com/aticie/ronnia>Check out project page for more details.</a>
+            </div>
+          {/if}
         {/if}
       </div>
     </div>
+    <footer>
+      Thanks to Sibyl#3838 and bora#5130 for website and frontend design.
+    </footer>
   </body>
 </html>
 
@@ -141,5 +204,33 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .rounded-circle {
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+  }
+  .avatar {
+    background-size: cover;
+  }
+  .profile-info {
+    font-size: x-large;
+    margin-left: 10px;
+    margin-right: 5px;
+  }
+  .userbox {
+    display: flex;
+    align-items: center;
+  }
+  .inputbox {
+    display: flex;
+    flex-direction: column;
+  }
+  .errortext {
+    color: #e84545;
+    margin: 30px 10px;
+  }
+  footer{
+    margin: 1% 1%;
   }
 </style>

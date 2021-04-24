@@ -14,10 +14,10 @@ body {
 	font-family: 'Roboto', sans-serif;
 
 	display: flex;
-	justify-content: center;
+  flex-direction: column;
+	justify-content: space-between;
 }
 .container {
-	max-width: 800px;
   padding: 10px;
   text-align: center;
 }
