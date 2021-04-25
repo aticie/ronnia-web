@@ -1,6 +1,6 @@
 sut:
     build: .
-    working_dir: /
+    working_dir: /src
     environment:
       PYTHONPATH: "$PYTHONPATH:/src"
     entrypoint: python -m unittest discover -s tests
