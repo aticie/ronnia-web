@@ -20,7 +20,7 @@ RUN pip install aiohttp aiofiles python-jose[cryptography]
 
 RUN mkdir -p /src/frontend
 
-ADD ./app ./app
+ADD backend ./app
 COPY --from=frontend_public /usr/src/app ./frontend/
 
 COPY ./main.py .

@@ -1,0 +1,6 @@
+sut:
+    build: .
+    working_dir: /
+    environment:
+      PYTHONPATH: "$PYTHONPATH:/src"
+    entrypoint: python3 -m unittest discover -s ./tests

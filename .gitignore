@@ -3,8 +3,8 @@ frontend/public/build/
 frontend/public/favicon.png
 frontend/scripts/*
 
-app/.env
-app/__pycache__
+backend/.env
+backend/__pycache__
 
 mount
 venv

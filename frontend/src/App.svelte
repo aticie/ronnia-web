@@ -31,16 +31,17 @@
       .then((res) => {
         user_name = res.data["osu_username"];
         user_avatar_url = res.data["avatar_url"];
-        //user_avatar_url = "https://a.ppy.sh/" + res.data["osu_id"];
         user_id_db = res.data["user_id"];
         axios
           .get("/get_user_settings", { params: { user_id: user_id_db } })
           .then((res) => {
             user_settings = res.data;
           });
+      })
+      .catch(function (e) {
+        // JWT token expired, clearing token...
+        tokenStore.setToken(0);
       });
-  }
-  if ($tokenStore == 0) {
   }
 
   let buttonDisabled = false;
@@ -72,7 +73,7 @@
               class="rounded-circle avatar"
               crossorigin="anonymous"
               style="background-image: url('{user_avatar_url}')"
-            ></div>
+            />
             <div class="profile-info">
               {user_name}
             </div>
@@ -147,9 +148,11 @@
           </div>
           {#if error}
             <div class="errortext">
-              You are not registered to ronnia<br>
-              Add heyronii#9925 on discord for registration.<br>
-              <a href=https://github.com/aticie/ronnia>Check out project page for more details.</a>
+              You are not registered to ronnia<br />
+              Add heyronii#9925 on discord for registration.<br />
+              <a href="https://github.com/aticie/ronnia"
+                >Check out project page for more details.</a
+              >
             </div>
           {/if}
         {/if}
@@ -230,7 +233,7 @@
     color: #e84545;
     margin: 30px 10px;
   }
-  footer{
+  footer {
     margin: 1% 1%;
   }
 </style>

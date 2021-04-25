@@ -6,9 +6,9 @@ from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.jwt import create_access_token, decode_jwt_token
-from app.token_handling import get_token
-from app.utils.database_wrapper import UserDatabase
+from backend.jwt import create_access_token, decode_jwt_token
+from backend.token_handling import get_token
+from backend.utils.database_wrapper import UserDatabase
 
 app = FastAPI()
 user_db = UserDatabase()
@@ -22,7 +22,7 @@ async def root(response: Response):
 
 
 @app.get("/osu_authorize")
-async def get_link_details(response: Response):
+async def osu_authorize(response: Response):
     osu_token_api = "https://osu.ppy.sh/oauth/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('OSU_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('OSU_REDIRECT_URI')
@@ -32,7 +32,7 @@ async def get_link_details(response: Response):
 
 
 @app.get("/twitch_authorize")
-async def get_link_details(response: Response):
+async def twitch_authorize(response: Response):
     osu_token_api = "https://id.twitch.tv/oauth2/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('TWITCH_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('TWITCH_REDIRECT_URI')

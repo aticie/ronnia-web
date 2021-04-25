@@ -1,11 +1,11 @@
-version: "3.9"
+version: "3"
 
 services:
   ronnia-web:
     build: .
     ports:
       - "80:80"
-    image: ronnia-web:latest
+    image: eatici/ronnia-web:release-v1.x.x
     restart: always
     volumes:
       - your_host_machine_db_folder_path:/mount
