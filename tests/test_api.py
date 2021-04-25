@@ -10,10 +10,10 @@ from fastapi.testclient import TestClient
 class TestApi(unittest.TestCase):
 
     @classmethod
-    @patch.dict(os.environ, {'DB_DIR': 'tests/data'})
+    @patch.dict(os.environ, {'DB_DIR': os.path.join(os.getcwd(), 'tests', 'data')})
     def setUpClass(cls) -> None:
-        test_db_path = os.path.join('tests', 'data', 'users_test.db')
-        db_path = os.path.join('tests', 'data', 'users.db')
+        test_db_path = os.path.join(os.getcwd(), 'tests', 'data', 'users_test.db')
+        db_path = os.path.join(os.getcwd(), 'tests', 'data', 'users.db')
         if os.path.exists(db_path):
             os.remove(db_path)
         shutil.copyfile(test_db_path, db_path)
