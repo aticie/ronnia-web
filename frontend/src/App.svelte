@@ -32,11 +32,7 @@
         user_name = res.data["osu_username"];
         user_avatar_url = res.data["avatar_url"];
         user_id_db = res.data["user_id"];
-        axios
-          .get("/get_user_settings", { params: { user_id: user_id_db } })
-          .then((res) => {
-            user_settings = res.data;
-          });
+        user_settings = res.data["settings"]
       })
       .catch(function (e) {
         // JWT token expired, clearing token...
@@ -72,7 +68,7 @@
               alt="Avatar"
               class="rounded-circle avatar"
               crossorigin="anonymous"
-              style="background-image: url('{user_avatar_url}')"
+              style="background-image: url('{user_avatar_url ? user_avatar_url : ''}')"
             />
             <div class="profile-info">
               {user_name}
@@ -87,6 +83,7 @@
           </div>
           <div class="settings">
             {#each user_settings as setting}
+              {#if setting.key !== 'test'}
               <div class="setting">
                 {#if setting.type === "toggle"}
                   <div class="checkbox">
@@ -109,6 +106,7 @@
                   {setting.description}
                 </div>
               </div>
+              {/if}
             {/each}
           </div>
           <div class="errortext">{errorText}</div>
@@ -116,7 +114,7 @@
             <SettingsSaveButton
               bind:disabled={buttonDisabled}
               settings={user_settings}
-              user_id={user_id_db}
+              jwt_token={$tokenStore}
               timeout_secs="2000"
             />
           </div>

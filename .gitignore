@@ -15,3 +15,4 @@ venv
 __pycache__
 .env
 /docker-compose.yml
+tests/data/users.db

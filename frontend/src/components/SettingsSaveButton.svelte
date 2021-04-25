@@ -2,12 +2,12 @@
 import axios from "axios";
 
   export let settings;
-  export let user_id;
+  export let jwt_token;
   export let timeout_secs;
   export let disabled;
   let onClick = () => {
     disabled = true;
-    axios.post('/save_user_settings', {user_id: user_id, settings: settings});
+    axios.post('/save_user_settings', {jwt_token, settings});
     setTimeout(() => { disabled = false }, timeout_secs);
   };
 </script>
