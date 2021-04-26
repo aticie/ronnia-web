@@ -1,3 +1,5 @@
+![codeql-analysis](https://github.com/aticie/ronnia-web/actions/workflows/codeql-analysis.yml/badge.svg)
+![docker-build](https://img.shields.io/docker/cloud/build/eatici/ronnia-web)
 <div align="center">
 
 # ronnia-web - A Dashboard Interface for ronnia
