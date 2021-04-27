@@ -20,3 +20,16 @@ services:
       ALGORITHM: "HS256"
       PUBLISH_PORT: 80
       DB_DIR: /mount
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`ronnia.me`)"  # Change this line!
+      - "traefik.http.routers.fastapi.tls=true"
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+  traefik:
+    image: traefik:v2.2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - path_to_traefik.toml:/etc/traefik/traefik.toml  # Change this line!

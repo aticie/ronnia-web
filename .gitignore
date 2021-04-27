@@ -17,3 +17,4 @@ __pycache__
 /docker-compose.yml
 tests/data/users.db
 venv38
+/traefix.test.toml
