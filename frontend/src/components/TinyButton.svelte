@@ -23,7 +23,7 @@
 
     width: 100px;
     height: 40px;
-    background-color: #e84545;
+    background-color: #c43737;
     border: none;
     border-radius: 10px;
     margin-top: 5px;
@@ -53,7 +53,7 @@
     background-position: 0% 70%;
   }
   button:hover > div {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
   }
   .logo {
     display: flex;
