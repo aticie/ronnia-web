@@ -49,9 +49,16 @@
 	input {
 		margin: 4px 5px;
 		width: 3rem;
+		height: 1.5rem;
 		font-size: 16pt;
 		font-family: 'Roboto', sans-serif;
 		border: none;
-		border-radius: 15%;
+		border-radius: 5%;
+		color: white;
+		background-color: rgb(60, 60, 60);
+		text-align: center;
+	}
+	input[type=text]:focus {
+  		border: none;
 	}
 </style>

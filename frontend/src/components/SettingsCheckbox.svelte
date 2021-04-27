@@ -26,7 +26,7 @@
     right: 0;
     bottom: 0;
     cursor: pointer;
-    background-color: #ccc;
+    background-color: rgb(100, 100, 100);
     border-radius: 34px;
     transition: 0.4s;
   }
@@ -44,7 +44,7 @@
   }
   
   input:checked + .slider {
-    background-color: #66bb6a;
+    background-color: #e84545;
   }
 
   input:checked + .slider::before {
