@@ -53,7 +53,7 @@
     background-position: 0% 50%;
   }
   button:hover > div {
-    transform: translateX(135px);
+    transform: translateX(130px);
   }
   .logo {
     display: flex;
@@ -63,7 +63,7 @@
   .text {
     flex-grow: 1;
     justify-content: flex-end;
-    margin-right: 77px;
+    margin-right: 70px;
     display: flex;
   }
 </style>
