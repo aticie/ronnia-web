@@ -2,12 +2,12 @@
 import axios from "axios";
 
   export let settings;
-  export let user_id;
+  export let jwt_token;
   export let timeout_secs;
   export let disabled;
   let onClick = () => {
     disabled = true;
-    axios.post('/save_user_settings', {user_id: user_id, settings: settings});
+    axios.post('/save_user_settings', {jwt_token, settings});
     setTimeout(() => { disabled = false }, timeout_secs);
   };
 </script>
@@ -15,16 +15,16 @@ import axios from "axios";
 <button {disabled}
   on:click={onClick}
   >
-  <div class="text">Save</div>  
+  <div class="text">SAVE</div>  
 </button>
 
 <style>
   button {
     position: relative;
 
-    width: 250px;
-    height: 60px;
-    background-color: #00adb5;
+    width: 12rem;
+    height: 4rem;
+    background-color: #c43737;
     border: none;
     border-radius: 10px;
     margin-top: 5px;
@@ -44,7 +44,7 @@ import axios from "axios";
     transition: background-color 300ms;
   }
   button:hover:not([disabled]) {
-    background-color:#00b8a9;
+    background-color:#fd6a61;
   }
   button:disabled{
     background-color: #aaaaaa;

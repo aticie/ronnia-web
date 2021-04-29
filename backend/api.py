@@ -6,9 +6,9 @@ from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.jwt import create_access_token, decode_jwt_token
-from app.token_handling import get_token
-from app.utils.database_wrapper import UserDatabase
+from backend.jwt import create_access_token, decode_jwt_token
+from backend.token_handling import get_token
+from backend.utils.database_wrapper import UserDatabase
 
 app = FastAPI()
 user_db = UserDatabase()
@@ -22,7 +22,7 @@ async def root(response: Response):
 
 
 @app.get("/osu_authorize")
-async def get_link_details(response: Response):
+async def osu_authorize(response: Response):
     osu_token_api = "https://osu.ppy.sh/oauth/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('OSU_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('OSU_REDIRECT_URI')
@@ -32,7 +32,7 @@ async def get_link_details(response: Response):
 
 
 @app.get("/twitch_authorize")
-async def get_link_details(response: Response):
+async def twitch_authorize(response: Response):
     osu_token_api = "https://id.twitch.tv/oauth2/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('TWITCH_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('TWITCH_REDIRECT_URI')
@@ -110,21 +110,19 @@ async def twitch_identify_user(code: str, scope: str):
 @app.get("/user_details")
 async def get_user_details(jwt_token: str):
     user_data_dict = decode_jwt_token(jwt_token)
-    print(user_data_dict)
-    return user_data_dict
-
-
-@app.get('/get_user_settings')
-async def get_user_settings(user_id: str):
+    user_id = user_data_dict['user_id']
     user_settings = user_db.select_all_settings_by_user_id(user_id)
-    return user_settings
+    user_data_dict['settings'] = user_settings
+    return user_data_dict
 
 
 @app.post('/save_user_settings')
 async def save_user_settings(request: Request):
     payload = await request.json()
     settings = payload['settings']
-    user_id = payload['user_id']
+    jwt_token = payload['jwt_token']
+    user_data = decode_jwt_token(jwt_token=jwt_token)
+    user_id = user_data['user_id']
     for setting in settings:
         if setting['type'] == 'toggle':
             user_db.set_setting(user_id=user_id, setting_key=setting['key'], new_value=setting['value'])

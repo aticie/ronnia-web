@@ -1,6 +1,8 @@
+![codeql-analysis](https://github.com/aticie/ronnia-web/actions/workflows/codeql-analysis.yml/badge.svg)
+![docker-build](https://img.shields.io/docker/cloud/build/eatici/ronnia-web)
 <div align="center">
 
-# ronnia-web - An Interface for ronnia
+# ronnia-web - A Dashboard Interface for ronnia
 
 </div>
 
@@ -14,7 +16,7 @@ You can check out ronnia dashboard at https://ronnia.me/
 
 ## Setup
 
-To set-up frontend:
+To build frontend:
 
 ```shell
 > npm install
@@ -23,7 +25,7 @@ To set-up frontend:
 
 Requirements for backend can be installed with:
 
-`pip install fastapi uvicorn[standard] aiohttp`
+`pip install fastapi uvicorn[standard] aiohttp aiofiles python-jose[cryptography]`
 
 Required environment variables for running:
 
@@ -41,6 +43,21 @@ DB_DIR=mount
 
 ### Docker 🐳
 
-Just change the environment variables in the docker-compose template.
+#### Docker Hub releases
+
+Releases from 1.1.0 and onwards are published to Docker hub automatically. 
+[You can find the repository here.](https://hub.docker.com/r/eatici/ronnia-web)
+
+Use the release tag you want to use in docker-compose with the given template. 
+
+```yaml
+...
+services:
+  ronnia-web:
+    build: .
+    image: eatici/ronnia-web:release-v1.x.x <- change the tag here!
+```
+
+To host the website locally:
 
 `docker-compose up -d`
