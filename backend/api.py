@@ -1,12 +1,14 @@
 import os
+from typing import Optional
 
 import aiohttp
-from fastapi import FastAPI, Response, Request
-from fastapi.responses import RedirectResponse, PlainTextResponse
+from fastapi import FastAPI, Response
+from fastapi.responses import RedirectResponse, PlainTextResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.jwt import create_access_token, decode_jwt_token
+from backend.models.setting import UserSetting
 from backend.token_handling import get_token
 from backend.utils.database_wrapper import UserDatabase
 
@@ -14,15 +16,19 @@ app = FastAPI()
 user_db = UserDatabase()
 user_db.initialize()
 
-
 @app.get("/")
 async def root(response: Response):
-    index_page = RedirectResponse('/index.html')
+    index_page = FileResponse('frontend/public/index.html')
     return index_page
 
 
 @app.get("/osu_authorize")
 async def osu_authorize(response: Response):
+    """
+    osu! authorization endpoint
+
+    Should redirect to https://osu.ppy.sh/oauth/authorize
+    """
     osu_token_api = "https://osu.ppy.sh/oauth/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('OSU_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('OSU_REDIRECT_URI')
@@ -33,6 +39,11 @@ async def osu_authorize(response: Response):
 
 @app.get("/twitch_authorize")
 async def twitch_authorize(response: Response):
+    """
+    Twitch authorization endpoint
+
+    Should redirect to https://id.twitch.tv/oauth2/authorize
+    """
     osu_token_api = "https://id.twitch.tv/oauth2/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('TWITCH_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('TWITCH_REDIRECT_URI')
@@ -47,7 +58,15 @@ async def http_exception_handler(request, exc):
 
 
 @app.get("/identify")
-async def osu_identify_user(code: str):
+async def osu_identify_user(code: Optional[str] = None, error: Optional[str] = None):
+    """
+    Identify user over osu!:
+    - **code**: Code supplied from osu! api
+    - **error**: If an error happened or not while identifying
+    """
+    if error is not None or code is None:
+        return FileResponse('frontend/public/index.html')
+
     token_endpoint = 'https://osu.ppy.sh/oauth/token'
     parameters = {"client_id": os.getenv('OSU_CLIENT_ID'),
                   "client_secret": os.getenv('OSU_CLIENT_SECRET'),
@@ -67,7 +86,7 @@ async def fetch_user_from_token(headers, me_endpoint):
         async with session.get(me_endpoint) as resp:
             me_result = await resp.json()
 
-    to_me_page = RedirectResponse('/index.html')
+    to_me_page = FileResponse('frontend/public/index.html')
 
     try:
         if me_endpoint.endswith('osu'):
@@ -78,7 +97,7 @@ async def fetch_user_from_token(headers, me_endpoint):
             user_id = me_result['data'][0]['id']
             user_details = user_db.get_user_from_twitch_id(user_id)
             user_details['avatar_url'] = me_result['data'][0]['profile_image_url']
-    except TypeError as e:
+    except (TypeError, IndexError) as e:
         to_me_page.set_cookie('error',
                               'login')
         return to_me_page
@@ -90,7 +109,15 @@ async def fetch_user_from_token(headers, me_endpoint):
 
 
 @app.get('/twitch_identify')
-async def twitch_identify_user(code: str, scope: str):
+async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] = None):
+    """
+        Identify user over twitch:
+        - **code**: Code supplied from twitch api
+        - **error**: If an error happened or not while identifying
+    """
+    if error is not None or code is None:
+        return FileResponse('frontend/public/index.html')
+
     token_endpoint = 'https://id.twitch.tv/oauth2/token'
     parameters = {"client_id": os.getenv('TWITCH_CLIENT_ID'),
                   "client_secret": os.getenv('TWITCH_CLIENT_SECRET'),
@@ -107,8 +134,12 @@ async def twitch_identify_user(code: str, scope: str):
     return await fetch_user_from_token(headers, me_endpoint)
 
 
-@app.get("/user_details")
+@app.get("/user_details", summary='Gets registered user details from database')
 async def get_user_details(jwt_token: str):
+    """
+        Get registered user details from database:
+        - **jwt_token**: JWT token of the current user
+    """
     user_data_dict = decode_jwt_token(jwt_token)
     user_id = user_data_dict['user_id']
     user_settings = user_db.select_all_settings_by_user_id(user_id)
@@ -116,21 +147,31 @@ async def get_user_details(jwt_token: str):
     return user_data_dict
 
 
-@app.post('/save_user_settings')
-async def save_user_settings(request: Request):
-    payload = await request.json()
-    settings = payload['settings']
-    jwt_token = payload['jwt_token']
+@app.post('/save_user_settings', summary="Save user settings")
+async def save_user_settings(payload: UserSetting):
+    """
+    Saves user settings:
+
+    - **settings**: List of settings to be updated
+      - **echo**: Twitch chat feedback setting
+      - **enable**: Bot enable/disable setting
+      - **sub-only**: Subscriber only mode setting
+      - **cp-only**: Channel points only mode setting
+      - **sr**: Star rating RangeSetting
+    - **jwt_token**: JWT token of the current user
+    """
+    settings = payload.settings
+    jwt_token = payload.jwt_token
     user_data = decode_jwt_token(jwt_token=jwt_token)
     user_id = user_data['user_id']
     for setting in settings:
-        if setting['type'] == 'toggle':
-            user_db.set_setting(user_id=user_id, setting_key=setting['key'], new_value=setting['value'])
-        elif setting['type'] == 'range':
-            user_db.set_range_setting(user_id=user_id, setting_key=setting['key'], range_low=setting['range_start'],
-                                      range_high=setting['range_end'])
+        if setting.type == 'toggle':
+            user_db.set_setting(user_id=user_id, setting_key=setting.key, new_value=setting.value)
+        elif setting.type == 'range':
+            user_db.set_range_setting(user_id=user_id, setting_key=setting.key, range_low=setting.range_start,
+                                      range_high=setting.range_end)
 
     return
 
-
 app.mount("/", StaticFiles(directory=os.path.join("frontend", "public")), name="public")
+
