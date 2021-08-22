@@ -11,6 +11,7 @@ from backend.jwt import create_access_token, decode_jwt_token
 from backend.models.setting import UserSetting
 from backend.token_handling import get_token
 from backend.utils.database_wrapper import UserDatabase
+from backend.utils.signup import RegisterOsu, RegisterTwitch
 
 app = FastAPI()
 user_db = UserDatabase()
@@ -74,32 +75,34 @@ async def osu_identify_user(code: Optional[str] = None, error: Optional[str] = N
                   "grant_type": "authorization_code",
                   "redirect_uri": os.getenv('OSU_REDIRECT_URI')}
 
-    access_token = await get_token(token_endpoint, parameters)
-    headers = {'Authorization': f'Bearer {access_token}'}
+    token_details = await get_token(token_endpoint, parameters)
+    access_token: str = token_details['access_token']
+    token_type: str = token_details['token_type']
+    headers = {'Authorization': f'{token_type.capitalize()} {access_token}'}
 
     me_endpoint = 'https://osu.ppy.sh/api/v2/me/osu'
     return await fetch_user_from_token(headers, me_endpoint)
 
 
 async def fetch_user_from_token(headers, me_endpoint):
+
+    # Get user details with given token
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(me_endpoint) as resp:
             me_result = await resp.json()
 
     to_me_page = FileResponse('frontend/public/index.html')
 
+    # If a user is not found -> keep user details in cookie, send them to the sign-up page
+    if me_endpoint.endswith('osu'):
+        registerer = RegisterOsu(me_result, user_db)
+    else:
+        registerer = RegisterTwitch(me_result, user_db)
+
     try:
-        if me_endpoint.endswith('osu'):
-            user_id = me_result['id']
-            user_details = user_db.get_user_from_osu_id(user_id)
-            user_details['avatar_url'] = me_result['avatar_url']
-        else:
-            user_id = me_result['data'][0]['id']
-            user_details = user_db.get_user_from_twitch_id(user_id)
-            user_details['avatar_url'] = me_result['data'][0]['profile_image_url']
-    except (TypeError, IndexError) as e:
-        to_me_page.set_cookie('error',
-                              'login')
+        user_details = registerer.get_user()
+    except (IndexError, TypeError):
+        registerer.set_cookies(to_me_page)
         return to_me_page
 
     encoded_jwt = create_access_token(user_details)
@@ -115,9 +118,12 @@ async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] 
         - **code**: Code supplied from twitch api
         - **error**: If an error happened or not while identifying
     """
+
+    # If there was an error, return to index without logging in.
     if error is not None or code is None:
         return FileResponse('frontend/public/index.html')
 
+    # Get access token for the user
     token_endpoint = 'https://id.twitch.tv/oauth2/token'
     parameters = {"client_id": os.getenv('TWITCH_CLIENT_ID'),
                   "client_secret": os.getenv('TWITCH_CLIENT_SECRET'),
@@ -125,12 +131,15 @@ async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] 
                   "grant_type": "authorization_code",
                   "redirect_uri": os.getenv('TWITCH_REDIRECT_URI')}
 
-    access_token = await get_token(token_endpoint, parameters)
-    headers = {'Authorization': f'Bearer {access_token}',
+    token_details = await get_token(token_endpoint, parameters)
+    token_type = token_details["token_type"].capitalize()
+    access_token = token_details["access_token"]
+    headers = {'Authorization': f'{token_type} {access_token}',
                'Client-Id': os.getenv('TWITCH_CLIENT_ID')}
 
     me_endpoint = 'https://api.twitch.tv/helix/users'
 
+    # Return to settings page after fetching user details
     return await fetch_user_from_token(headers, me_endpoint)
 
 
