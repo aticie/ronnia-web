@@ -16,14 +16,15 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
 
 WORKDIR /src
 
-RUN pip install aiohttp aiofiles python-jose[cryptography] requests
-
 RUN mkdir -p /src/frontend
 
 ADD backend ./backend
+
 COPY --from=frontend_public /usr/src/app ./frontend/
 
 COPY ./main.py .
 COPY ./tests ./tests
+
+RUN pip install -r backend/requirements.txt
 
 ENTRYPOINT ["python", "main.py"]

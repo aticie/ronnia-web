@@ -1,4 +1,6 @@
 .vscode
-venv
+venv*
 mount
 frontend/node_modules
+.pytest_cache
+.github
