@@ -27,4 +27,6 @@ COPY ./tests ./tests
 
 RUN pip install -r backend/requirements.txt
 
+ENV PYTHONPATH=$PYTHONPATH:/src/backend
+
 ENTRYPOINT ["python", "main.py"]

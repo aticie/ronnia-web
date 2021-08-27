@@ -1,12 +1,15 @@
 import os
 import sqlite3
+from typing import Optional
+
+from models.user import DBUser
 
 
 class BaseDatabase:
     def __init__(self, db_path: str):
         self.db_path: str = db_path
-        self.conn: sqlite3.Connection = None
-        self.c: sqlite3.Cursor = None
+        self.conn: Optional[sqlite3.Connection] = None
+        self.c: Optional[sqlite3.Cursor] = None
 
     def initialize(self):
         self.conn = sqlite3.connect(self.db_path,
@@ -30,19 +33,15 @@ class UserDatabase(BaseDatabase):
     def initialize(self):
         super().initialize()
 
-    def get_user_from_twitch_id(self, twitch_id: str):
+    def get_user_from_twitch_id(self, twitch_id: str) -> DBUser:
         self.c.execute('SELECT * FROM users WHERE twitch_id=?', (twitch_id,))
         user_details = self.c.fetchone()
-        user_json = dict(user_details)
-        del user_json['updated_at']
-        return user_json
+        return DBUser.from_sqlite_row(user_details)
 
-    def get_user_from_osu_id(self, osu_id: str):
+    def get_user_from_osu_id(self, osu_id: str) -> DBUser:
         self.c.execute('SELECT * FROM users WHERE osu_id=?', (osu_id,))
         user_details = self.c.fetchone()
-        user_json = dict(user_details)
-        del user_json['updated_at']
-        return user_json
+        return DBUser.from_sqlite_row(user_details)
 
     def select_all_settings(self):
         self.c.execute('SELECT * FROM settings')

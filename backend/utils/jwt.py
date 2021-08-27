@@ -13,7 +13,7 @@ class Token(BaseModel):
     token_type: str
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def obtain_jwt(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -24,6 +24,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def decode_jwt_token(jwt_token: str):
+def decode_jwt(jwt_token: str):
     user_data_dict = jwt.decode(jwt_token, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
     return user_data_dict
