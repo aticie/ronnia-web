@@ -1,5 +1,4 @@
 import os
-from multiprocessing import Process
 from typing import Optional
 
 import aiohttp
@@ -7,10 +6,10 @@ from fastapi import APIRouter, Response, Cookie
 from starlette.responses import RedirectResponse, FileResponse
 
 from backend.utils.database_wrapper import UserDatabase
-from backend.utils.jwt import obtain_jwt, decode_jwt
+from backend.utils.jwt import obtain_jwt
 from backend.utils.signup import RegisterOsu, RegisterTwitch
 from backend.utils.token_handling import get_token
-from utils.tcp import signup_user_over_tcp
+from utils.tcp import signup_user_over_tcp_async
 
 router = APIRouter()
 
@@ -108,7 +107,7 @@ async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] 
     return await fetch_user_from_token(headers, me_endpoint, user_details)
 
 
-async def fetch_user_from_token(headers, me_endpoint, user_details_jwt : Optional[str] = None):
+async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional[str] = None):
     # Get user details with given token
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(me_endpoint) as resp:
@@ -123,7 +122,14 @@ async def fetch_user_from_token(headers, me_endpoint, user_details_jwt : Optiona
     try:
         user_details = registerer.get_user()
     except (IndexError, TypeError):
-        return registerer.signup_user(user_details_jwt)
+        signup_details = registerer.signup_user(user_details_jwt)
+        if isinstance(signup_details, RedirectResponse):
+            return signup_details
+        else:
+            response = await signup_user_over_tcp_async(signup_details)
+            to_me_page = RedirectResponse('/settings')
+            to_me_page.set_cookie('token', obtain_jwt(response['user_details']))
+            return to_me_page
 
     encoded_jwt = obtain_jwt(user_details)
     to_settings_page = RedirectResponse('/settings')

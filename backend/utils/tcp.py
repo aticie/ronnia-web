@@ -1,15 +1,16 @@
-from multiprocessing.connection import Client
-from queue import Queue
-from typing import Optional
+import asyncio
+import json
 
 
-def signup_user_over_tcp(signup_data: dict, message_queue: Queue, authkey: Optional[str] = None):
-    if isinstance(authkey, str):
-        authkey = authkey.encode('utf-8')
+async def signup_user_over_tcp_async(signup_data: dict):
+    reader, writer = await asyncio.open_connection(host='localhost', port=9999)
+    writer.write(json.dumps(signup_data).encode('utf-8'))
+    await writer.drain()
 
-    with Client(('localhost', 9999), authkey=authkey) as conn:
-        conn.send(signup_data)
-        result = conn.recv()
+    result = await reader.read(4096)
 
-    message_queue.put(result)
-    return result
+    writer.close()
+    await writer.wait_closed()
+
+    return json.loads(result.decode('utf-8'))
+

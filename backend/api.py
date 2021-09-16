@@ -3,8 +3,10 @@ import os
 from fastapi import FastAPI, Response, Request
 from fastapi.responses import PlainTextResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from jose import JWTError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from exceptions import JWT_exception_handler
 from routers import authorization, user
 
 
@@ -16,6 +18,8 @@ def create_api() -> FastAPI:
 
     app.include_router(authorization.router)
     app.include_router(user.router)
+
+    app.add_exception_handler(JWTError, JWT_exception_handler)
 
     @app.get("/{path:path}")
     async def capture_routes(request: Request, path: str):

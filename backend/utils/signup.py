@@ -1,16 +1,12 @@
-import os
-from queue import Queue
-from threading import Thread
 from typing import Optional
 
 from fastapi.responses import Response
-from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse
 
 from backend.utils.database_wrapper import UserDatabase
-from models.user import DBUser
+from exceptions import SignupException
 from utils.jwt import obtain_jwt, decode_jwt
-from utils.tcp import signup_user_over_tcp
+from jose.jwt import JWTError
 
 
 class RegisterBase:
@@ -28,59 +24,43 @@ class RegisterBase:
         return page_that_needs_cookies
 
     def signup_user(self, extra_details_jwt: Optional[str] = None):
+        """
+        Collects user data from twitch and osu and combines them
+        :param extra_details_jwt: User details that contains either osu or twitch details
+        :return: Either RedirectResponse to /signup or dict containing signup data of user
+        """
         # Redirect user to sign-up page if information is not complete
-        if extra_details_jwt is None:
-            to_signup_page = RedirectResponse('/signup')
-            to_signup_page_with_cookies = self.set_cookies(to_signup_page)
-            return to_signup_page_with_cookies
-        else:
+        try:
             extra_details = decode_jwt(extra_details_jwt)
-            # If user somehow signed up with twitch twice or osu twice, we need to start again.
-            if self._get_self_name() == extra_details.get('signup_data'):
-                to_main_page = RedirectResponse('/')
-                to_main_page.delete_cookie('user_details')
-                return to_main_page
-            else:
-                # If user signed up with osu, get osu details from cookie jwt token.
-                if extra_details.get('signup_data') == 'osu':
-                    osu_details = extra_details
-                    twitch_details = self.details
-                # Else if user signed up with twitch, get twitch details from cookie jwt token.
-                else:
-                    osu_details = self.details
-                    twitch_details = extra_details
+        except (AttributeError, JWTError):
+            # If extra details JWT token is expired (rare case, happens when user half signed up and waited 1 day)
+            return self.return_signup_with_cookies()
 
-                signup_data = {
-                    'command': 'signup',
-                    'osu_username': osu_details.get('username'),
-                    'osu_id': osu_details.get('id'),
-                    'twitch_username': twitch_details.get('login'),
-                    'twitch_id': twitch_details.get('id')
-                }
+        if self._get_self_name() == extra_details.get('signup_data'):
+            return self.return_signup_with_cookies()
 
-                # Send sign-up data over tcp to Ronnia-Bot!
-                message_queue = Queue()
-                p = Thread(target=signup_user_over_tcp,
-                           args=(signup_data, message_queue, os.getenv('TCP_CONN_SECRET_KEY')))
-                p.start()
+        # If user signed up with osu, get osu details from cookie jwt token.
+        if extra_details.get('signup_data') == 'osu':
+            osu_details = extra_details
+            twitch_details = self.details
+        # Else if user signed up with twitch, get twitch details from cookie jwt token.
+        else:
+            osu_details = self.details
+            twitch_details = extra_details
 
-                # Wait for response
-                p.join()
-                result: dict = message_queue.get()
-                if result['status'] == 'OK':
-                    dbuser : DBUser = result['user']
-                    user_details = {
-                        "username": osu_details.get('username'),
-                        "avatar_url": self.avatar_url,
-                        "user_id": dbuser.user_id,
-                    }
-                else:
-                    raise HTTPException(status_code=500, detail="Something went wrong while signing you up!"
-                                                                " I'm sorry, please try again!")
+        signup_data = {
+            'command': 'signup',
+            'osu_username': osu_details.get('username'),
+            'osu_id': osu_details.get('id'),
+            'twitch_username': twitch_details.get('login'),
+            'twitch_id': twitch_details.get('id')
+        }
+        return signup_data
 
-                to_me_page = RedirectResponse('/settings')
-                to_me_page.set_cookie('token', obtain_jwt(user_details))
-                return to_me_page
+    def return_signup_with_cookies(self):
+        to_signup_page = RedirectResponse('/signup')
+        to_signup_page_with_cookies = self.set_cookies(to_signup_page)
+        return to_signup_page_with_cookies
 
     def _get_self_name(self):
         return 'base'
