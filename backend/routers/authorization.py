@@ -128,7 +128,7 @@ async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional
         else:
             response = await signup_user_over_tcp_async(signup_details)
             to_me_page = RedirectResponse('/settings')
-            to_me_page.set_cookie('token', obtain_jwt(response['user_details']))
+            to_me_page.set_cookie('token', obtain_jwt(response['user']))
             return to_me_page
 
     encoded_jwt = obtain_jwt(user_details)

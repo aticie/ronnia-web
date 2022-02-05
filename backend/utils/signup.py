@@ -43,17 +43,20 @@ class RegisterBase:
         if extra_details.get('signup_data') == 'osu':
             osu_details = extra_details
             twitch_details = self.details
+            user_avatar = self.details.get('avatar_url')
         # Else if user signed up with twitch, get twitch details from cookie jwt token.
         else:
             osu_details = self.details
             twitch_details = extra_details
+            user_avatar = self.details.get('avatar_url')
 
         signup_data = {
             'command': 'signup',
             'osu_username': osu_details.get('username'),
             'osu_id': osu_details.get('id'),
             'twitch_username': twitch_details.get('login'),
-            'twitch_id': twitch_details.get('id')
+            'twitch_id': twitch_details.get('id'),
+            'avatar_url': user_avatar
         }
         return signup_data
 
