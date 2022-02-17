@@ -25,21 +25,8 @@
     Cookies.remove("error");
   }
 
-  if ($tokenStore != 0) {
-    axios
-      .get("/user_details", { params: { jwt_token: $tokenStore } })
-      .then((res) => {
-        user_name = res.data["username"];
-        user_avatar_url = res.data["avatar_url"];
-        user_id_db = res.data["user_id"];
-        user_settings = res.data["settings"];
+  if ($tokenStore !== 0) {
         navigate('/settings');
-      })
-      .catch(function (e) {
-        // JWT token expired, clearing token...
-        tokenStore.setToken(0);
-        navigate('/');
-      });
   }
 
   let buttonDisabled = false;
@@ -67,7 +54,7 @@
         <div class="navigation" />
         <div class="content">
           <Route path="/">
-            {#if $tokenStore == 0}
+            {#if $tokenStore === 0}
               {navigate("/login")}
             {:else}
               {navigate("/settings")}
@@ -100,7 +87,7 @@
 </Router>
 
 <!--
-        
+
 
         {#if $tokenStore == 0}
           {#if error}
@@ -122,6 +109,13 @@
 </html>
 -->
 <style>
+
+  :root{
+    --theme-main-color: #e84545;
+    --theme-alt-color: #c43737;
+    --theme-bg-color: #121212;
+    --theme-text-color: white;
+  }
   h1 {
     font-size: 30pt;
   }

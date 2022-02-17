@@ -14,7 +14,7 @@
     let user_id_db;
     let user_settings = [];
 
-    if ($tokenStore != 0) {
+    if ($tokenStore !== 0) {
         axios
             .get("/user_details", { params: { jwt_token: $tokenStore } })
             .then((res) => {
@@ -50,10 +50,8 @@
         alt="Avatar"
         class="rounded-circle avatar"
         crossorigin="anonymous"
-        style="background-image: url('{user_avatar_url
-            ? user_avatar_url
-            : ''}')"
-    />
+        style="background-image: url('{user_avatar_url ? user_avatar_url : ''}')">
+    </div>
     <div class="profile-info">
         {user_name}
     </div>
@@ -85,7 +83,7 @@
                     </div>
                 {/if}
                 <div class="command">
-                    {setting.key == "sr" ? "min sr\nmax sr" : setting.key}
+                    {setting.key === "sr" ? "min sr\nmax sr" : setting.key}
                 </div>
                 <div class="description">
                     {setting.description}
@@ -147,7 +145,7 @@
         flex-direction: column;
     }
     .errortext {
-        color: #e84545;
+        color: var(--theme-main-color);
         margin: 30px 10px;
     }
 </style>

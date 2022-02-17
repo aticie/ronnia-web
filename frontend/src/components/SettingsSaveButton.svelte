@@ -1,4 +1,5 @@
 <script>
+import { toast } from '@zerodevx/svelte-toast'
 import axios from "axios";
 
   export let settings;
@@ -8,6 +9,7 @@ import axios from "axios";
   let onClick = () => {
     disabled = true;
     axios.post('/save_user_settings', {jwt_token, settings});
+    toast.push('Saved!');
     setTimeout(() => { disabled = false }, timeout_secs);
   };
 </script>

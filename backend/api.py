@@ -1,6 +1,7 @@
+import logging
 import os
 
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from jose import JWTError
@@ -8,6 +9,19 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from exceptions import JWT_exception_handler
 from routers import authorization, user
+from utils.globals import USER_DB
+
+logger = logging.getLogger('ronnia-web')
+logger.setLevel(os.getenv('LOG_LEVEL', 'INFO').upper())
+loggers_formatter = logging.Formatter(
+    '%(asctime)s | %(levelname)s | %(process)d | %(name)s | %(funcName)s | %(message)s',
+    datefmt='%d/%m/%Y %I:%M:%S')
+
+ch = logging.StreamHandler()
+ch.setFormatter(loggers_formatter)
+logger.addHandler(ch)
+
+logger.propagate = False
 
 
 def create_api() -> FastAPI:
@@ -21,9 +35,18 @@ def create_api() -> FastAPI:
 
     app.add_exception_handler(JWTError, JWT_exception_handler)
 
+    @app.on_event("startup")
+    async def startup_event():
+        logger.debug("Initializing database...")
+
+        # Create database
+        await USER_DB.initialize()
+
+        logger.debug("API started.")
+
     @app.get("/{path:path}")
     async def capture_routes(request: Request, path: str):
-        print(f'Main route called with: {path}')
+        logger.debug(f'Main route called with: {path}')
         index_page = FileResponse('frontend/public/index.html')
         return index_page
 

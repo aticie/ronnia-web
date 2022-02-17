@@ -18,14 +18,15 @@ WORKDIR /src
 
 RUN mkdir -p /src/frontend
 
-ADD backend ./backend
-
 COPY --from=frontend_public /usr/src/app ./frontend/
 
-COPY ./main.py .
-COPY ./tests ./tests
+RUN mkdir -p /src/backend
 
+COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install -r backend/requirements.txt
+
+ADD backend ./backend
+COPY ./main.py .
 
 ENV PYTHONPATH=$PYTHONPATH:/src/backend
 

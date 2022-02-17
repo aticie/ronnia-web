@@ -1,20 +1,20 @@
+import logging
 import os
 from typing import Optional
 
 import aiohttp
-from fastapi import APIRouter, Response, Cookie
+from fastapi import APIRouter, Response, Cookie, HTTPException
 from starlette.responses import RedirectResponse, FileResponse
 
-from backend.utils.database_wrapper import UserDatabase
 from backend.utils.jwt import obtain_jwt
-from backend.utils.signup import RegisterOsu, RegisterTwitch
+from backend.utils.signup import RegisterFactory
 from backend.utils.token_handling import get_token
-from utils.tcp import signup_user_over_tcp_async
+from utils.globals import USER_DB
+from utils.service_bus import signup_user_over_mq
 
 router = APIRouter()
-
-user_db = UserDatabase()
-user_db.initialize()
+logger = logging.getLogger("ronnia-web")
+logger.debug("Authorization router loaded")
 
 
 @router.get("/osu_authorize")
@@ -24,6 +24,7 @@ async def osu_authorize(response: Response):
 
     Should redirect to https://osu.ppy.sh/oauth/authorize
     """
+    logger.debug("osu! authorization requested, redirecting to osu!")
     osu_token_api = "https://osu.ppy.sh/oauth/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('OSU_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('OSU_REDIRECT_URI')
@@ -39,6 +40,7 @@ async def twitch_authorize(response: Response):
 
     Should redirect to https://id.twitch.tv/oauth2/authorize
     """
+    logger.debug("twitch authorization requested, redirecting to twitch")
     osu_token_api = "https://id.twitch.tv/oauth2/authorize?response_type=code"
     client_id = 'client_id=' + os.getenv('TWITCH_CLIENT_ID')
     redirect_uri = 'redirect_uri=' + os.getenv('TWITCH_REDIRECT_URI')
@@ -58,6 +60,7 @@ async def osu_identify_user(code: Optional[str] = None, error: Optional[str] = N
     if error is not None or code is None:
         return FileResponse('frontend/public/index.html')
 
+    logger.debug("osu! callback received, getting oauth token...")
     token_endpoint = 'https://osu.ppy.sh/oauth/token'
     parameters = {"client_id": os.getenv('OSU_CLIENT_ID'),
                   "client_secret": os.getenv('OSU_CLIENT_SECRET'),
@@ -66,6 +69,7 @@ async def osu_identify_user(code: Optional[str] = None, error: Optional[str] = N
                   "redirect_uri": os.getenv('OSU_REDIRECT_URI')}
 
     token_details = await get_token(token_endpoint, parameters)
+    logger.debug(f"Got token details: {token_details}")
     access_token: str = token_details['access_token']
     token_type: str = token_details['token_type']
     headers = {'Authorization': f'{token_type.capitalize()} {access_token}'}
@@ -109,30 +113,43 @@ async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] 
 
 async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional[str] = None):
     # Get user details with given token
+
+    logger.debug(f"fetch_user_from_token called with: headers: {headers}, me_endpoint: {me_endpoint},"
+                 f" user_details_jwt: {user_details_jwt}")
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(me_endpoint) as resp:
             me_result = await resp.json()
 
-    # If a user is not found -> keep user details in cookie, send them to the sign-up page
-    if me_endpoint.endswith('osu'):
-        registerer = RegisterOsu(me_result, user_db)
-    else:
-        registerer = RegisterTwitch(me_result, user_db)
+    logger.debug(f"Got me details: {me_result}")
+    registerer = RegisterFactory(USER_DB).get_register_class(me_result)
 
+    logger.debug(f"Initialized registerer as: {type(registerer)}")
     try:
-        user_details = registerer.get_user()
+        user_details = await registerer.get_user()
+        logger.debug(f"Found user in the database: {user_details}")
+
+        encoded_jwt = obtain_jwt(user_details)
+        to_settings_page = RedirectResponse('/settings')
+        to_settings_page.set_cookie('token', encoded_jwt)
+
+        logger.debug(f"Redirecting to settings page...")
+
+        return to_settings_page
+
     except (IndexError, TypeError):
+        # If the user is not in the database, start signup process
+        logger.debug(f"User not found in the database, starting signup process...")
         signup_details = registerer.signup_user(user_details_jwt)
         if isinstance(signup_details, RedirectResponse):
             return signup_details
+
         else:
-            response = await signup_user_over_tcp_async(signup_details)
+            # We can sign-up the user by sending a message to message queue.
+            response_list = await signup_user_over_mq(signup_details)
+            if len(response_list) == 0:
+                raise HTTPException(status_code=503, detail="We received your signup request, but we couldn't "
+                                                            "process it. Please try again later.")
+            response = response_list[0]
             to_me_page = RedirectResponse('/settings')
-            to_me_page.set_cookie('token', obtain_jwt(response['user']))
+            to_me_page.set_cookie('token', obtain_jwt(response))
             return to_me_page
-
-    encoded_jwt = obtain_jwt(user_details)
-    to_settings_page = RedirectResponse('/settings')
-    to_settings_page.set_cookie('token', encoded_jwt)
-
-    return to_settings_page

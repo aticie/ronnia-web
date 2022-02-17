@@ -1,13 +1,10 @@
 from fastapi import APIRouter
 
 from backend.models import UserSetting
-from backend.utils.database_wrapper import UserDatabase
 from backend.utils.jwt import decode_jwt
+from utils.globals import USER_DB
 
 router = APIRouter()
-
-user_db = UserDatabase()
-user_db.initialize()
 
 
 @router.get("/user_details", summary='Gets registered user details from database')
@@ -18,7 +15,7 @@ async def get_user_details(jwt_token: str):
     """
     user_data_dict = decode_jwt(jwt_token)
     user_id = user_data_dict['user_id']
-    user_settings = user_db.select_all_settings_by_user_id(user_id)
+    user_settings = await USER_DB.select_all_settings_by_user_id(user_id)
     user_data_dict['settings'] = user_settings
     return user_data_dict
 
@@ -42,9 +39,9 @@ async def save_user_settings(payload: UserSetting):
     user_id = user_data['user_id']
     for setting in settings:
         if setting.type == 'toggle':
-            user_db.set_setting(user_id=user_id, setting_key=setting.key, new_value=setting.value)
+            await USER_DB.set_setting(user_id=user_id, setting_key=setting.key, new_value=setting.value)
         elif setting.type == 'range':
-            user_db.set_range_setting(user_id=user_id, setting_key=setting.key, range_low=setting.range_start,
-                                      range_high=setting.range_end)
+            await USER_DB.set_range_setting(user_id=user_id, setting_key=setting.key, range_low=setting.range_start,
+                                            range_high=setting.range_end)
 
     return

@@ -1,12 +1,14 @@
+import logging
 from typing import Optional
 
 from fastapi.responses import Response
+from jose.jwt import JWTError
 from starlette.responses import RedirectResponse
 
 from backend.utils.database_wrapper import UserDatabase
-from exceptions import SignupException
 from utils.jwt import obtain_jwt, decode_jwt
-from jose.jwt import JWTError
+
+logger = logging.getLogger('ronnia-web')
 
 
 class RegisterBase:
@@ -31,6 +33,7 @@ class RegisterBase:
         """
         # Redirect user to sign-up page if information is not complete
         try:
+            logger.debug(f'extra_details_jwt: {extra_details_jwt}')
             extra_details = decode_jwt(extra_details_jwt)
         except (AttributeError, JWTError):
             # If extra details JWT token is expired (rare case, happens when user half signed up and waited 1 day)
@@ -43,12 +46,10 @@ class RegisterBase:
         if extra_details.get('signup_data') == 'osu':
             osu_details = extra_details
             twitch_details = self.details
-            user_avatar = self.details.get('avatar_url')
         # Else if user signed up with twitch, get twitch details from cookie jwt token.
         else:
             osu_details = self.details
             twitch_details = extra_details
-            user_avatar = self.details.get('avatar_url')
 
         signup_data = {
             'command': 'signup',
@@ -56,7 +57,7 @@ class RegisterBase:
             'osu_id': osu_details.get('id'),
             'twitch_username': twitch_details.get('login'),
             'twitch_id': twitch_details.get('id'),
-            'avatar_url': user_avatar
+            'avatar_url': self.avatar_url
         }
         return signup_data
 
@@ -77,14 +78,16 @@ class RegisterOsu(RegisterBase):
         self.avatar_url = self.details['avatar_url']
         self.id = osu_details['id']
 
-    def get_user(self):
-        user = self.user_db.get_user_from_osu_id(self.id)
+    async def get_user(self):
+        user = await self.user_db.get_user_from_osu_id(self.id)
         return {'username': user.osu_username,
                 'user_id': user.user_id,
                 'avatar_url': self.avatar_url}
 
     def set_cookies(self, page_that_needs_cookies: Response):
-        self.details = {**self.details, **{'signup_data': 'osu'}}
+        necessary_details = {'username': self.details['username'],
+                             'id': self.details['id']}
+        self.details = {**necessary_details, **{'signup_data': 'osu'}}
         page_with_some_cookies = super(RegisterOsu, self).set_cookies(page_that_needs_cookies)
         page_with_some_cookies.set_cookie('signup', 'osu')
         return page_with_some_cookies
@@ -101,17 +104,34 @@ class RegisterTwitch(RegisterBase):
         self.avatar_url = self.details['profile_image_url']
         self.id = self.details['id']
 
-    def get_user(self):
-        user = self.user_db.get_user_from_twitch_id(self.id)
+    async def get_user(self):
+        user = await self.user_db.get_user_from_twitch_id(self.id)
         return {'username': user.twitch_username,
                 'user_id': user.user_id,
                 'avatar_url': self.avatar_url}
 
     def set_cookies(self, page_that_needs_cookies: Response):
-        self.details = {**self.details, **{'signup_data': 'twitch'}}
+        necessary_details = {'login': self.details['login'],
+                             'id': self.details['id']}
+        self.details = {**necessary_details, **{'signup_data': 'twitch'}}
         page_with_some_cookies = super(RegisterTwitch, self).set_cookies(page_that_needs_cookies)
         page_with_some_cookies.set_cookie('signup', 'twitch')
         return page_with_some_cookies
 
     def _get_self_name(self):
         return 'twitch'
+
+
+class RegisterFactory:
+    """
+    Factory class for RegisterBase classes.
+    """
+
+    def __init__(self, user_db: UserDatabase):
+        self.user_db = user_db
+
+    def get_register_class(self, signup_data: dict):
+        if 'kudosu' in signup_data:
+            return RegisterOsu(signup_data, self.user_db)
+        else:
+            return RegisterTwitch(signup_data, self.user_db)
