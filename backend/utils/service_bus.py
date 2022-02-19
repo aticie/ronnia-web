@@ -16,11 +16,13 @@ async def signup_user_over_mq(signup_data: dict):
     :return: The response from the MQ.
     """
     async with ServiceBusClient.from_connection_string(conn_str=CONNECTION_STR) as servicebus_client:
-        sender = servicebus_client.get_queue_sender(queue_name=QUEUE_NAME)
-        message = ServiceBusMessage(json.dumps(signup_data))
-        print("Sending signup message to service bus...")
-        print(signup_data)
-        await sender.send_messages(message)
+        async with servicebus_client.get_queue_sender(queue_name=QUEUE_NAME) as sender:
+            message = ServiceBusMessage(json.dumps(signup_data))
+            print("Sending signup message to service bus...")
+            print(signup_data)
+            await sender.send_messages(message)
 
-        receiver = servicebus_client.get_queue_receiver(queue_name=REPLY_QUEUE_NAME)
-        return await receiver.receive_messages(max_wait_time=10)
+        async with servicebus_client.get_queue_receiver(queue_name=REPLY_QUEUE_NAME, max_wait_time=10) as receiver:
+            reply_message = await receiver.receive_messages(max_message_count=1)
+
+    return reply_message

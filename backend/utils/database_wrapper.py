@@ -15,8 +15,8 @@ class BaseDatabase:
 
     async def initialize(self):
         self.conn = await aiosqlite.connect(self.db_path,
-                                      check_same_thread=False,
-                                      detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+                                            check_same_thread=False,
+                                            detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.conn.row_factory = aiosqlite.Row
         self.c = await self.conn.cursor()
 
