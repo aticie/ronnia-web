@@ -41,6 +41,8 @@ async def save_user_settings(payload: UserSetting):
         if setting.type == 'toggle':
             await USER_DB.set_setting(user_id=user_id, setting_key=setting.key, new_value=setting.value)
         elif setting.type == 'range':
+            if setting.range_end == 10:
+                setting.range_end = -1
             await USER_DB.set_range_setting(user_id=user_id, setting_key=setting.key, range_low=setting.range_start,
                                             range_high=setting.range_end)
 

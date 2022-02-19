@@ -6,10 +6,10 @@ import axios from "axios";
   export let jwt_token;
   export let timeout_secs;
   export let disabled;
-  let onClick = () => {
+  let onClick = async () => {
     disabled = true;
-    axios.post('/save_user_settings', {jwt_token, settings});
-    toast.push('Saved!');
+    await axios.post('/save_user_settings', {jwt_token, settings});
+    toast.push('Saved your settings!');
     setTimeout(() => { disabled = false }, timeout_secs);
   };
 </script>

@@ -25,6 +25,7 @@
     "js-cookie": "^2.2.1",
     "sirv-cli": "^1.0.0",
     "svelte-navigator": "^3.1.5",
-    "svelte-persistent-store": "^0.1.6"
+    "svelte-persistent-store": "^0.1.6",
+    "svelte-range-slider-pips": "^2.0.3"
   }
 }

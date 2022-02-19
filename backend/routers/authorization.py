@@ -111,7 +111,8 @@ async def twitch_identify_user(code: Optional[str] = None, error: Optional[str] 
     return await fetch_user_from_token(headers, me_endpoint, user_details)
 
 
-async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional[str] = None):
+async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional[str] = None,
+                                signup_type: Optional[str] = Cookie(None)):
     # Get user details with given token
 
     logger.debug(f"fetch_user_from_token called with: headers: {headers}, me_endpoint: {me_endpoint},"
@@ -145,11 +146,14 @@ async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional
 
         else:
             # We can sign-up the user by sending a message to message queue.
-            response_list = await signup_user_over_mq(signup_details)
-            if len(response_list) == 0:
-                raise HTTPException(status_code=503, detail="We received your signup request, but we couldn't "
-                                                            "process it. Please try again later.")
-            response = response_list[0]
+            logger.debug(f"Sending sign-up details to the bot manager...")
+            response = await signup_user_over_mq(signup_details)
+
+            if signup_type == 'osu':
+                response['username'] = response['osu_username']
+            else:
+                response['username'] = response['twitch_username']
+
             to_me_page = RedirectResponse('/settings')
             to_me_page.set_cookie('token', obtain_jwt(response))
             return to_me_page
