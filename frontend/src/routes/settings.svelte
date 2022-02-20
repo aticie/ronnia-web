@@ -73,9 +73,9 @@
                                 return '∞'
                             }
                             return v
-                        }} pips pipstep={5} all="label"
+                        }} pips pipstep={10} all="label"
                                      values={[setting.range_start === -1 ? 0: setting.range_start, setting.range_end === -1 ? 10: setting.range_end]}
-                                     step={0.2} min={0} max={10}
+                                     step={0.1} min={0} max={10}
                                      on:change={(e) => {handleSliderInteraction(e, setting)}}/>
                     </div>
                 {/if}
