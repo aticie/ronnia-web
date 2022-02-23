@@ -23,14 +23,14 @@
 
     width: 100px;
     height: 40px;
-    background-color: #c43737;
+    background-color: var(--theme-alt-color);
     border: none;
     border-radius: 10px;
     margin-top: 5px;
     margin-left: 5px;
     margin-right: 5px;
 
-    color: white;
+    color: var(--theme-text-color);
     font-family: "Roboto", sans-serif;
     font-size: 16pt;
 

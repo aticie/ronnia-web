@@ -8,4 +8,4 @@ async def get_token(token_endpoint, parameters):
         async with session.post(token_endpoint, data=parameters) as resp:
             token_result = json.loads(await resp.read())
 
-    return token_result['access_token']
+    return token_result

@@ -23,7 +23,7 @@
 
     width: 316px;
     height: 62px;
-    background-color: #e84545;
+    background-color: var(--theme-main-color);
     border: none;
     border-radius: 10px;
     margin-top: 5px;

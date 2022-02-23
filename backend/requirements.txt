@@ -1,0 +1,7 @@
+aiohttp==3.7.4.post0
+aiofiles==0.6.0
+aiosqlite==0.17.0
+python-jose[cryptography]==3.3.0
+pyzmq==22.3.0
+tornado==6.1
+azure-servicebus==7.6.0

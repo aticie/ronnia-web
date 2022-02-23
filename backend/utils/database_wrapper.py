@@ -1,22 +1,27 @@
 import os
 import sqlite3
+from typing import Optional
+
+import aiosqlite
+
+from models.user import DBUser
 
 
 class BaseDatabase:
     def __init__(self, db_path: str):
         self.db_path: str = db_path
-        self.conn: sqlite3.Connection = None
-        self.c: sqlite3.Cursor = None
+        self.conn: Optional[aiosqlite.Connection] = None
+        self.c: Optional[aiosqlite.Cursor] = None
 
-    def initialize(self):
-        self.conn = sqlite3.connect(self.db_path,
-                                    check_same_thread=False,
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-        self.conn.row_factory = sqlite3.Row
-        self.c = self.conn.cursor()
+    async def initialize(self):
+        self.conn = await aiosqlite.connect(self.db_path,
+                                            check_same_thread=False,
+                                            detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn.row_factory = aiosqlite.Row
+        self.c = await self.conn.cursor()
 
-    def dispose(self):
-        self.conn.close()
+    async def dispose(self):
+        await self.conn.close()
         os.remove(self.db_path)
         del self
 
@@ -27,40 +32,35 @@ class UserDatabase(BaseDatabase):
             db_path = os.path.join(os.getenv('DB_DIR'), 'users.db')
         super().__init__(db_path)
 
-    def initialize(self):
-        super().initialize()
+    async def get_user_from_twitch_id(self, twitch_id: str) -> DBUser:
+        await self.c.execute('SELECT * FROM users WHERE twitch_id=?', (twitch_id,))
+        user_details = await self.c.fetchone()
+        return DBUser.from_sqlite_row(user_details)
 
-    def get_user_from_twitch_id(self, twitch_id: str):
-        self.c.execute('SELECT * FROM users WHERE twitch_id=?', (twitch_id,))
-        user_details = self.c.fetchone()
-        user_json = dict(user_details)
-        del user_json['updated_at']
-        return user_json
+    async def get_user_from_osu_id(self, osu_id: str) -> DBUser:
+        await self.c.execute('SELECT * FROM users WHERE osu_id=?', (osu_id,))
+        user_details = await self.c.fetchone()
+        return DBUser.from_sqlite_row(user_details)
 
-    def get_user_from_osu_id(self, osu_id: str):
-        self.c.execute('SELECT * FROM users WHERE osu_id=?', (osu_id,))
-        user_details = self.c.fetchone()
-        user_json = dict(user_details)
-        del user_json['updated_at']
-        return user_json
-
-    def select_all_settings(self):
-        self.c.execute('SELECT * FROM settings')
-
+    async def select_all_settings(self):
+        await self.c.execute('SELECT * FROM settings')
+        all_settings = await self.c.fetchall()
         toggle_settings = [{**dict(setting), **{'type': 'toggle', 'value': setting['default_value']}}
-                           for setting in self.c.fetchall()]
+                           for setting in all_settings]
 
-        self.c.execute('SELECT * FROM range_settings')
+        await self.c.execute('SELECT * FROM range_settings')
+        all_range_settings = await self.c.fetchall()
         range_settings = [{**dict(setting), **{'type': 'range', 'range_start': setting['default_low'],
-                                               'range_end': setting['default_high']}} for setting in self.c.fetchall()]
+                                               'range_end': setting['default_high']}} for setting in all_range_settings]
 
         return toggle_settings + range_settings
 
-    def select_all_settings_by_user_id(self, user_id: str):
-        all_settings = self.select_all_settings()
-        self.c.execute('SELECT * FROM user_settings WHERE user_id=?', (user_id,))
+    async def select_all_settings_by_user_id(self, user_id: str):
+        all_settings = await self.select_all_settings()
+        await self.c.execute('SELECT * FROM user_settings WHERE user_id=?', (user_id,))
+        set_user_settings = await self.c.fetchall()
         user_settings = [{**dict(setting), **{'type': 'toggle'}} for setting in
-                         self.c.fetchall()]
+                         set_user_settings]
 
         for setting in user_settings:
             user_setting_key = setting['key']
@@ -69,9 +69,10 @@ class UserDatabase(BaseDatabase):
                     default_setting['value'] = setting['value']
                     break
 
-        self.c.execute('SELECT * FROM user_range_settings WHERE user_id=?', (user_id,))
+        await self.c.execute('SELECT * FROM user_range_settings WHERE user_id=?', (user_id,))
+        set_user_range_settings = await self.c.fetchall()
         user_range_settings = [{**dict(setting), **{'type': 'range'}} for setting in
-                               self.c.fetchall()]
+                               set_user_range_settings]
 
         for setting in user_range_settings:
             user_setting_key = setting['key']
@@ -83,7 +84,7 @@ class UserDatabase(BaseDatabase):
 
         return all_settings
 
-    def set_setting(self, user_id, setting_key, new_value):
+    async def set_setting(self, user_id, setting_key, new_value):
         """
         Set a new value for a setting of user
         :param user_id: User id in database
@@ -100,16 +101,16 @@ class UserDatabase(BaseDatabase):
 
         sql_string_update_setting = f"UPDATE user_settings SET value=?2 WHERE key=?1 AND user_id=?3"
 
-        result = self.c.execute(sql_string_get_setting, (setting_key, user_id))
-        value = result.fetchone()
+        result = await self.c.execute(sql_string_get_setting, (setting_key, user_id))
+        value = await result.fetchone()
         if value is None:
-            self.c.execute(sql_string_insert_setting, (setting_key, new_value, user_id))
+            await self.c.execute(sql_string_insert_setting, (setting_key, new_value, user_id))
         else:
-            self.c.execute(sql_string_update_setting, (setting_key, new_value, user_id))
-        self.conn.commit()
+            await self.c.execute(sql_string_update_setting, (setting_key, new_value, user_id))
+        await self.conn.commit()
         return new_value
 
-    def set_range_setting(self, user_id, setting_key: str, range_low: float, range_high: float):
+    async def set_range_setting(self, user_id, setting_key: str, range_low: float, range_high: float):
         """
         Sets a range setting with given key
         :param user_id: User id in database
@@ -131,11 +132,11 @@ class UserDatabase(BaseDatabase):
         sql_string_update_range_setting = f"UPDATE user_range_settings SET range_start=?2, range_end=?3 " \
                                           f"WHERE key=?1 AND user_id=?4"
 
-        result = self.c.execute(sql_string_get_range_setting, (setting_key, user_id))
-        value = result.fetchone()
+        result = await self.c.execute(sql_string_get_range_setting, (setting_key, user_id))
+        value = await result.fetchone()
         if value is None:
-            self.c.execute(sql_string_insert_range_setting, (setting_key, range_low, range_high, user_id))
+            await self.c.execute(sql_string_insert_range_setting, (setting_key, range_low, range_high, user_id))
         else:
-            self.c.execute(sql_string_update_range_setting, (setting_key, range_low, range_high, user_id))
-        self.conn.commit()
+            await self.c.execute(sql_string_update_range_setting, (setting_key, range_low, range_high, user_id))
+        await self.conn.commit()
         return range_low, range_high

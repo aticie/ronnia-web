@@ -10,6 +10,8 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "@rollup/plugin-json": "^4.0.0",
+    "@zerodevx/svelte-toast": "^0.6.3",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
@@ -22,6 +24,8 @@
     "axios": "^0.21.1",
     "js-cookie": "^2.2.1",
     "sirv-cli": "^1.0.0",
-    "svelte-persistent-store": "^0.1.6"
+    "svelte-navigator": "^3.1.5",
+    "svelte-persistent-store": "^0.1.6",
+    "svelte-range-slider-pips": "^2.0.3"
   }
 }

@@ -26,7 +26,7 @@
     right: 0;
     bottom: 0;
     cursor: pointer;
-    background-color: rgb(100, 100, 100);
+    background-color: var(--theme-inactive-light);
     border-radius: 34px;
     transition: 0.4s;
   }
@@ -38,13 +38,13 @@
     width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: #fff;
+    background-color: var(--theme-text-color);
     border-radius: 100%;
     transition: 0.4s;
   }
   
   input:checked + .slider {
-    background-color: #e84545;
+    background-color: var(--theme-main-color);
   }
 
   input:checked + .slider::before {
