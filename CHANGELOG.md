@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - There are no unreleased changes.
 
+## [1.2.0] - 2022-02-23
+### Added
+- Signing up from website.
+- Alternate colors for some buttons.
+- Range slider for the star rating setting.
+
+### Removed
+- Input boxes from the star rating setting.
+
+### Changed
+- Simplified setting descriptions.
+
 ## [1.1.2] - 2021-04-27
 ### Fixed
 - Input box validation not working for some inputs.
@@ -27,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Undefined case when jwt token expires.
 
-[Unreleased]: https://github.com/aticie/ronnia-web/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/aticie/ronnia-web/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/aticie/ronnia-web/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/aticie/ronnia-web/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/aticie/ronnia-web/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/aticie/ronnia-web/releases/tag/v1.1.0
