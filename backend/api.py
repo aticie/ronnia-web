@@ -27,8 +27,8 @@ logger.propagate = False
 def create_api() -> FastAPI:
     app = FastAPI()
 
-    public_directory = os.path.join(os.getcwd(), "frontend", "public")
-    app.mount("/public", StaticFiles(directory=public_directory, html=True))
+    dist_directory = os.path.join(os.getcwd(), "frontend", "dist")
+    app.mount("/public", StaticFiles(directory=dist_directory, html=True))
 
     app.include_router(authorization.router)
     app.include_router(user.router)
@@ -47,7 +47,7 @@ def create_api() -> FastAPI:
     @app.get("/{path:path}")
     async def capture_routes(request: Request, path: str):
         logger.debug(f'Main route called with: {path}')
-        index_page = FileResponse('frontend/public/index.html')
+        index_page = FileResponse('frontend/dist/index.html')
         return index_page
 
     @app.exception_handler(StarletteHTTPException)

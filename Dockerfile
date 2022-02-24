@@ -6,7 +6,7 @@ COPY ./frontend/package*.json ./
 
 RUN npm install
 
-COPY ./frontend/rollup.config.js ./
+COPY ./frontend/vite.config.js ./
 COPY ./frontend/src ./src
 COPY ./frontend/public ./public
 
