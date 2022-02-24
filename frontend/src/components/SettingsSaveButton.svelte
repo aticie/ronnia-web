@@ -4,11 +4,12 @@ import axios from "axios";
 
   export let settings;
   export let jwt_token;
+  export let excluded_users;
   export let timeout_secs;
   export let disabled;
   let onClick = async () => {
     disabled = true;
-    await axios.post('/save_user_settings', {jwt_token, settings});
+    await axios.post('/save_user_settings', {jwt_token, settings, excluded_users});
     toast.push('Saved your settings!');
     setTimeout(() => { disabled = false }, timeout_secs);
   };

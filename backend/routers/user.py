@@ -16,7 +16,10 @@ async def get_user_details(jwt_token: str):
     user_data_dict = decode_jwt(jwt_token)
     user_id = user_data_dict['user_id']
     user_settings = await USER_DB.select_all_settings_by_user_id(user_id)
+    excluded_users = await USER_DB.select_excluded_users_by_user_id(user_id)
+    user_data_dict['excluded_users'] = excluded_users
     user_data_dict['settings'] = user_settings
+
     return user_data_dict
 
 
@@ -34,6 +37,7 @@ async def save_user_settings(payload: UserSetting):
     - **jwt_token**: JWT token of the current user
     """
     settings = payload.settings
+    excluded_users = payload.excluded_users
     jwt_token = payload.jwt_token
     user_data = decode_jwt(jwt_token=jwt_token)
     user_id = user_data['user_id']
@@ -46,4 +50,5 @@ async def save_user_settings(payload: UserSetting):
             await USER_DB.set_range_setting(user_id=user_id, setting_key=setting.key, range_low=setting.range_start,
                                             range_high=setting.range_end)
 
+    await USER_DB.set_excluded_users(user_id=user_id, excluded_users=excluded_users)
     return

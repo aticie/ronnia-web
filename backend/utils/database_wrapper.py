@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import Optional
+from typing import Optional, List
 
 import aiosqlite
 
@@ -54,6 +54,19 @@ class UserDatabase(BaseDatabase):
                                                'range_end': setting['default_high']}} for setting in all_range_settings]
 
         return toggle_settings + range_settings
+
+    async def select_excluded_users_by_user_id(self, user_id: str):
+        await self.c.execute('SELECT * FROM exclude_list WHERE user_id=?', (user_id,))
+        excluded_users = await self.c.fetchone()
+        if excluded_users is None:
+            return []
+        else:
+            return excluded_users['excluded_user'].split(',')
+
+    async def set_excluded_users(self, user_id: str, excluded_users: List[str]):
+        await self.c.execute('DELETE FROM exclude_list WHERE user_id=?', (user_id,))
+        await self.c.execute('INSERT INTO exclude_list VALUES (?, ?)', (user_id, ','.join(excluded_users)))
+        await self.conn.commit()
 
     async def select_all_settings_by_user_id(self, user_id: str):
         all_settings = await self.select_all_settings()
