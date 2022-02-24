@@ -18,6 +18,9 @@
     let newItem = '';
 
     function addToList() {
+        if (newItem === ''){
+            return
+        }
         user_excludes = [...user_excludes, newItem];
         newItem = '';
     }
@@ -111,7 +114,7 @@
                 </div>
             {/each}
             <div class="excluded-user-input-box">
-                <input bind:value={newItem} type="text"
+                <input bind:value={newItem} type="text" maxlength="25"
                        on:keypress={onKeyPress} placeholder="excluded username...">
             </div>
         </div>
@@ -162,7 +165,7 @@
 
         font-size: 26px;
         display: grid;
-        grid-template-columns: 10rem auto;
+        grid-template-columns: 14rem auto;
         align-items: center;
     }
 
@@ -176,13 +179,18 @@
     .excluded-user-container {
         display: flex;
         justify-content: right;
-        align-items: center;
+        align-items: end;
         margin-right: 1rem;
         flex-direction: column;
     }
 
     .excluded-user-item{
         flex-direction: row;
+        font-size: 1.3rem;
+        width: max-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .rounded-circle {
@@ -206,21 +214,17 @@
         align-items: center;
     }
 
-    .inputbox {
-        display: flex;
-        flex-direction: column;
-    }
-
     .errortext {
         color: var(--theme-main-color);
         margin: 30px 10px;
     }
 
     input {
-        margin: 4px 5px;
-        width: 10rem;
+        margin-top: 1rem;
+        margin-right: 5px;
+        width: 12rem;
         height: 1.5rem;
-        font-size: 12pt;
+        font-size: 2vh;
         font-family: "Roboto", sans-serif;
         border: none;
         border-radius: 5%;

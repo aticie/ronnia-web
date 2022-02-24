@@ -61,7 +61,9 @@ class UserDatabase(BaseDatabase):
         if excluded_users is None:
             return []
         else:
-            return excluded_users['excluded_user'].split(',')
+            if excluded_users['excluded_user'] == '':
+                return []
+            return [user.strip() for user in excluded_users['excluded_user'].split(',')]
 
     async def set_excluded_users(self, user_id: str, excluded_users: List[str]):
         await self.c.execute('DELETE FROM exclude_list WHERE user_id=?', (user_id,))
