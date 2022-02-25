@@ -18,7 +18,7 @@ WORKDIR /src
 
 RUN mkdir -p /src/frontend
 
-COPY --from=frontend_public /usr/src/app ./frontend/
+COPY --from=frontend_public /usr/src/app/dist ./frontend/dist
 
 RUN mkdir -p /src/backend
 
