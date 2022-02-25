@@ -1,6 +1,5 @@
 frontend/node_modules/
-frontend/public/build/
-frontend/public/favicon.png
+frontend/dist/
 frontend/scripts/*
 
 backend/.env

@@ -12,10 +12,6 @@
     tokenStore.useLocalStorage();
     let cookieToken = Cookies.get("token");
     let error = Cookies.get("error");
-    let user_name;
-    let user_avatar_url;
-    let user_id_db;
-    let user_settings = [];
 
     if (cookieToken) {
         tokenStore.setToken(cookieToken);
@@ -28,20 +24,6 @@
 
     if ($tokenStore !== 0) {
         navigate('/settings');
-    }
-
-    let buttonDisabled = false;
-    let errorText = "";
-
-    function handleInputBoxMessage(event) {
-        let message = event.detail;
-        if (message.error) {
-            buttonDisabled = true;
-            errorText = message.error;
-        } else {
-            buttonDisabled = false;
-            errorText = "";
-        }
     }
 </script>
 
@@ -97,6 +79,7 @@
         --theme-bg-color: #121212;
         --theme-inactive-color: #343434;
         --theme-text-color: #FFFFFF;
+        --theme-text-color-placeholder: #aaaaaa;
         --toastColor: var(--theme-text-color);
         --toastBarBackground: var(--theme-main-color);
     }

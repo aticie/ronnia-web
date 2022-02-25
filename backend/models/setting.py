@@ -28,4 +28,5 @@ class RangeSetting(BaseModel):
 class UserSetting(BaseModel):
     jwt_token: str
     settings: List[Union[Setting, RangeSetting]]
+    excluded_users: List[str]
     pass

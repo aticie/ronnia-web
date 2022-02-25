@@ -12,8 +12,27 @@
     let user_name;
     let user_avatar_url;
     let user_id_db;
-    let sr_setting;
     let user_settings = [];
+    let user_excludes = []
+
+    let newItem = '';
+
+    function addToList() {
+        if (newItem === ''){
+            return
+        }
+        user_excludes = [...user_excludes, newItem];
+        newItem = '';
+    }
+
+    function removeFromList(index) {
+        user_excludes.splice(index, 1)
+        user_excludes = user_excludes;
+    }
+
+    const onKeyPress = e => {
+        if (e.charCode === 13) addToList();
+    };
 
     if ($tokenStore !== 0) {
         axios
@@ -23,6 +42,7 @@
                 user_avatar_url = res.data["avatar_url"];
                 user_id_db = res.data["user_id"];
                 user_settings = res.data["settings"];
+                user_excludes = res.data["excluded_users"];
             })
             .catch(function (e) {
                 // JWT token expired, clearing token...
@@ -63,10 +83,10 @@
         {#if setting.key !== "test"}
             <div class="setting">
                 {#if setting.type === "toggle"}
-                    <div class="checkbox">
+                    <div class="checkbox-container">
                         <SettingsCheckbox bind:checked={setting.value}/>
                     </div>
-                {:else}
+                {:else if setting.type === "range"}
                     <div class="rangeslider-container">
                         <RangeSlider id="rangeslider-id" float pushy range formatter={(v, i, p) => {
                             if (v === 10){
@@ -85,6 +105,23 @@
             </div>
         {/if}
     {/each}
+    <div class="setting">
+        <div class="excluded-user-container">
+            {#each user_excludes as item, index}
+                <div class="excluded-user-item">
+                    <span class="user-excluded-item">{item}</span>
+                    <span on:click={() => removeFromList(index)}>❌</span>
+                </div>
+            {/each}
+            <div class="excluded-user-input-box">
+                <input bind:value={newItem} type="text" maxlength="25"
+                       on:keypress={onKeyPress} placeholder="excluded username...">
+            </div>
+        </div>
+        <div class="description">
+            Excluded users
+        </div>
+    </div>
 </div>
 <div class="errortext">{errorText}</div>
 <div class="savebutton">
@@ -92,6 +129,7 @@
             bind:disabled={buttonDisabled}
             settings={user_settings}
             jwt_token={$tokenStore}
+            excluded_users={user_excludes}
             timeout_secs="4000"
     />
 </div>
@@ -127,15 +165,32 @@
 
         font-size: 26px;
         display: grid;
-        grid-template-columns: 10rem auto;
+        grid-template-columns: 14rem auto;
         align-items: center;
     }
 
-    .checkbox {
+    .checkbox-container {
         display: flex;
         justify-content: right;
         align-items: center;
         margin-right: 1rem;
+    }
+
+    .excluded-user-container {
+        display: flex;
+        justify-content: right;
+        align-items: end;
+        margin-right: 1rem;
+        flex-direction: column;
+    }
+
+    .excluded-user-item{
+        flex-direction: row;
+        font-size: 1.3rem;
+        width: max-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .rounded-circle {
@@ -159,13 +214,30 @@
         align-items: center;
     }
 
-    .inputbox {
-        display: flex;
-        flex-direction: column;
-    }
-
     .errortext {
         color: var(--theme-main-color);
         margin: 30px 10px;
+    }
+
+    input {
+        margin-top: 1rem;
+        margin-right: 5px;
+        width: 12rem;
+        height: 1.5rem;
+        font-size: 2vh;
+        font-family: "Roboto", sans-serif;
+        border: none;
+        border-radius: 5%;
+        color: var(--theme-text-color);
+        background-color: var(--theme-inactive-light);
+        text-align: center;
+    }
+
+    input::placeholder {
+        color: var(--theme-text-color-placeholder);
+    }
+
+    input[type="text"]:focus {
+        border: none;
     }
 </style>
