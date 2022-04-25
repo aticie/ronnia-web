@@ -22,6 +22,7 @@ COPY --from=frontend_public /usr/src/app/dist ./frontend/dist
 
 RUN mkdir -p /src/backend
 
+RUN apt-get update && apt-get install -y build-essential libssl-dev uuid-dev cmake libcurl4-openssl-dev pkg-config -y
 COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install -r backend/requirements.txt
 
