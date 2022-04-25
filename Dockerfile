@@ -1,4 +1,4 @@
-FROM node:14 AS frontend_public
+FROM node:18 AS frontend_public
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ COPY ./frontend/public ./public
 
 RUN npm run build
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
+FROM python:3.10-slim
 
 WORKDIR /src
 
