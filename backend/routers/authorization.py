@@ -3,7 +3,7 @@ import os
 from typing import Optional
 
 import aiohttp
-from fastapi import APIRouter, Response, Cookie, HTTPException
+from fastapi import APIRouter, Response, Cookie
 from starlette.responses import RedirectResponse, FileResponse
 
 from backend.utils.jwt import obtain_jwt
@@ -17,36 +17,45 @@ logger = logging.getLogger("ronnia-web")
 logger.debug("Authorization router loaded")
 
 
-@router.get("/osu_authorize")
-async def osu_authorize(response: Response):
-    """
-    osu! authorization endpoint
+class Authorization:
+    def __init__(self):
+        self.base_url = None
+        self.client_id = None
+        self.redirect_uri = None
+        self.scope = None
+        self.response_type = 'code'
 
-    Should redirect to https://osu.ppy.sh/oauth/authorize
-    """
-    logger.debug("osu! authorization requested, redirecting to osu!")
-    osu_token_api = "https://osu.ppy.sh/oauth/authorize?response_type=code"
-    client_id = 'client_id=' + os.getenv('OSU_CLIENT_ID')
-    redirect_uri = 'redirect_uri=' + os.getenv('OSU_REDIRECT_URI')
-    scope = 'scope=identify'
-
-    return RedirectResponse('&'.join([osu_token_api, client_id, redirect_uri, scope]))
+    async def authorize(self):
+        authorization_url = f'{self.base_url}?client_id={self.client_id}&redirect_uri={self.redirect_uri}&scope={self.scope}&response_type={self.response_type}'
+        return RedirectResponse(authorization_url)
 
 
-@router.get("/twitch_authorize")
-async def twitch_authorize(response: Response):
-    """
-    Twitch authorization endpoint
+class OsuAuthorization(Authorization):
 
-    Should redirect to https://id.twitch.tv/oauth2/authorize
-    """
-    logger.debug("twitch authorization requested, redirecting to twitch")
-    osu_token_api = "https://id.twitch.tv/oauth2/authorize?response_type=code"
-    client_id = 'client_id=' + os.getenv('TWITCH_CLIENT_ID')
-    redirect_uri = 'redirect_uri=' + os.getenv('TWITCH_REDIRECT_URI')
-    scope = 'scope=user:read:email'
+    def __init__(self):
+        super(OsuAuthorization, self).__init__()
+        self.base_url = "https://osu.ppy.sh/oauth/authorize"
+        self.client_id = os.environ.get("OSU_CLIENT_ID")
+        self.redirect_uri = os.environ.get("OSU_REDIRECT_URI")
+        self.scope = "identify"
 
-    return RedirectResponse('&'.join([osu_token_api, client_id, redirect_uri, scope]))
+    @router.get('/osu/authorize')
+    async def osu_authorize(self, response: Response, **kwargs):
+        return await super(OsuAuthorization, self).authorize()
+
+
+class TwitchAuthorization(Authorization):
+
+    def __init__(self):
+        super(TwitchAuthorization, self).__init__()
+        self.base_url = "https://id.twitch.tv/oauth2/authorize"
+        self.client_id = os.environ.get("TWITCH_CLIENT_ID")
+        self.redirect_uri = os.environ.get("TWITCH_REDIRECT_URI")
+        self.scope = "user:read:email"
+
+    @router.get('/twitch/authorize')
+    async def twitch_authorize(self, response: Response, **kwargs):
+        return await super(TwitchAuthorization, self).authorize()
 
 
 @router.get("/identify")

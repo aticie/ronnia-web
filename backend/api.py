@@ -3,7 +3,6 @@ import os
 
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 from jose import JWTError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -27,9 +26,6 @@ logger.propagate = False
 def create_api() -> FastAPI:
     app = FastAPI()
 
-    dist_directory = os.path.join(os.getcwd(), "frontend", "dist")
-    app.mount("/public", StaticFiles(directory=dist_directory, html=True))
-
     app.include_router(authorization.router)
     app.include_router(user.router)
 
@@ -43,12 +39,6 @@ def create_api() -> FastAPI:
         await USER_DB.initialize()
 
         logger.debug("API started.")
-
-    @app.get("/{path:path}")
-    async def capture_routes(request: Request, path: str):
-        logger.debug(f'Main route called with: {path}')
-        index_page = FileResponse('frontend/dist/index.html')
-        return index_page
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request, exc):
