@@ -82,7 +82,6 @@ class Identifier:
             signup_details = await registerer.signup_user(user_details)
 
 
-
 class OsuIdentifier(Identifier):
     def __init__(self):
         super().__init__()
