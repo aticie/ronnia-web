@@ -8,7 +8,9 @@
 </label>
 
 <style scoped>
+
   .switch {
+    -webkit-tap-highlight-color: transparent;
     position: relative;
     display: inline-block;
     width: 60px;
