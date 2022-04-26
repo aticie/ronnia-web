@@ -1,4 +1,4 @@
-FROM node:14 AS frontend_public
+FROM node:18 AS frontend_public
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ COPY ./frontend/public ./public
 
 RUN npm run build
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
+FROM python:3.10-slim
 
 WORKDIR /src
 
@@ -22,6 +22,7 @@ COPY --from=frontend_public /usr/src/app/dist ./frontend/dist
 
 RUN mkdir -p /src/backend
 
+RUN apt-get update && apt-get install -y build-essential libssl-dev uuid-dev cmake libcurl4-openssl-dev pkg-config -y
 COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install -r backend/requirements.txt
 
