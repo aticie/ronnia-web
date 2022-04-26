@@ -14,6 +14,9 @@
 ---
 steps:
     - name: 'gcr.io/cloud-builders/docker:20.10.3'
+      args: ['run', '--privileged', 'linuxkit/binfmt:v0.8', '--install', 'all']
+      id: 'initialize-qemu'
+    - name: 'gcr.io/cloud-builders/docker:20.10.3'
       args: ['buildx', 'create', '--name', 'mybuilder']
       id: 'create-builder'
     - name: 'gcr.io/cloud-builders/docker:20.10.3'
