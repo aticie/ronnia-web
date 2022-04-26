@@ -224,7 +224,7 @@
         margin-right: 5px;
         width: 12rem;
         height: 1.5rem;
-        font-size: 2vh;
+        font-size: 0.75em;
         font-family: "Roboto", sans-serif;
         border: none;
         border-radius: 5%;
