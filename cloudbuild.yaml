@@ -14,7 +14,7 @@
 ---
 steps:
     - name: 'gcr.io/cloud-builders/docker:20.10.3'
-      args: ['run', '--privileged', 'linuxkit/binfmt:v0.8', '--install', 'all']
+      args: ['run', '--privileged', 'linuxkit/binfmt:v0.8']
       id: 'initialize-qemu'
     - name: 'gcr.io/cloud-builders/docker:20.10.3'
       args: ['buildx', 'create', '--name', 'mybuilder']
@@ -32,5 +32,5 @@ options:
     env:
         - 'DOCKER_CLI_EXPERIMENTAL=enabled'
 substitutions:
-    _DOCKER_BUILDX_PLATFORMS: 'linux/arm64/v8'  # We need to build for arm64
+    _DOCKER_BUILDX_PLATFORMS: 'linux/amd64,linux/arm64/v8'  # We need to build for arm64
 ...
