@@ -33,5 +33,6 @@ options:
         - 'DOCKER_CLI_EXPERIMENTAL=enabled'
 substitutions:
     _DOCKER_BUILDX_PLATFORMS: 'linux/arm64/v8'  # We need to build for arm64
+timeout: 6000s
 
 ...
