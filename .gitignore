@@ -12,7 +12,7 @@ venv
 .idea
 .vscode
 __pycache__
-.env
+*.env
 /docker-compose.yml
 tests/data/users.db
 venv38

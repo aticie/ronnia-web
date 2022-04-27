@@ -1,5 +1,7 @@
 <script>
     import Button from "../components/Button.svelte";
+    import PopularBeatmaps from "../components/PopularBeatmaps.svelte";
+
 </script>
 
 <p>Log in to Ronnia with</p>
@@ -24,6 +26,11 @@
             identifier="twitchLoginButton"
         />
     </div>
+</div>
+
+<div>
+    <p> Top Beatmaps This Week </p>
+    <PopularBeatmaps/>
 </div>
 
 <style>

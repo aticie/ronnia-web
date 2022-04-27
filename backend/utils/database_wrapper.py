@@ -1,6 +1,7 @@
+import datetime
 import os
 import sqlite3
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 
 import aiosqlite
 
@@ -27,7 +28,7 @@ class BaseDatabase:
 
 
 class UserDatabase(BaseDatabase):
-    def __init__(self, db_path=None):
+    def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             db_path = os.path.join(os.getenv('DB_DIR'), 'users.db')
         super().__init__(db_path)
@@ -42,7 +43,7 @@ class UserDatabase(BaseDatabase):
         user_details = await self.c.fetchone()
         return DBUser.from_sqlite_row(user_details)
 
-    async def select_all_settings(self):
+    async def select_all_settings(self) -> List[Dict[str, Any]]:
         await self.c.execute('SELECT * FROM settings')
         all_settings = await self.c.fetchall()
         toggle_settings = [{**dict(setting), **{'type': 'toggle', 'value': setting['default_value']}}
@@ -55,7 +56,7 @@ class UserDatabase(BaseDatabase):
 
         return toggle_settings + range_settings
 
-    async def select_excluded_users_by_user_id(self, user_id: str):
+    async def select_excluded_users_by_user_id(self, user_id: str) -> List[str]:
         await self.c.execute('SELECT * FROM exclude_list WHERE user_id=?', (user_id,))
         excluded_users = await self.c.fetchone()
         if excluded_users is None:
@@ -99,7 +100,7 @@ class UserDatabase(BaseDatabase):
 
         return all_settings
 
-    async def set_setting(self, user_id, setting_key, new_value):
+    async def set_setting(self, user_id: str, setting_key: str, new_value: int):
         """
         Set a new value for a setting of user
         :param user_id: User id in database
@@ -155,3 +156,42 @@ class UserDatabase(BaseDatabase):
             await self.c.execute(sql_string_update_range_setting, (setting_key, range_low, range_high, user_id))
         await self.conn.commit()
         return range_low, range_high
+
+
+class StatisticsDatabase(BaseDatabase):
+    def __init__(self, db_path: Optional[str] = None):
+        if db_path is None:
+            db_path = os.path.join(os.getenv('DB_DIR'), 'statistics.db')
+        super().__init__(db_path)
+
+    async def get_top_n_beatmaps_this_week(self, top_n: int = 5):
+        last_week = datetime.datetime.now() - datetime.timedelta(weeks=1)
+        last_week_date = last_week.strftime("%Y-%m-%d")
+        cur = await self.c.execute(
+            f"SELECT COUNT(beatmap_id), beatmap_id FROM beatmaps WHERE request_date>'{last_week_date}' GROUP BY beatmap_id ORDER BY COUNT(beatmap_id) DESC LIMIT {top_n};")
+        return await cur.fetchall()
+
+    async def get_latest_beatmaps_of_user(self, twitch_username: str, top_n: int = 5):
+        cur = await self.c.execute(
+            f"SELECT beatmap_id FROM beatmaps WHERE requested_channel_id=? LIMIT {top_n}", (twitch_username,))
+        return await cur.fetchall()
+
+    async def get_top_n_beatmaps_by_channel(self, twitch_username: str, top_n: int = 5):
+        cur = await self.c.execute(
+            f"SELECT COUNT(beatmap_id), beatmap_id FROM beatmaps WHERE requested_channel_id=? GROUP BY beatmap_id ORDER BY COUNT(beatmap_id) DESC LIMIT {top_n}",
+            (twitch_username,)
+        )
+        return await cur.fetchall()
+
+    async def get_count_requested_by_user(self, top_n: int = 5):
+        cur = await self.c.execute(
+            f"SELECT COUNT(beatmap_id), requester_channel_name FROM beatmaps GROUP BY requester_channel_name ORDER BY COUNT(beatmap_id) DESC LIMIT {top_n}"
+        )
+        return await cur.fetchall()
+
+    async def get_most_requesters_on_channel(self, twitch_username: str, top_n: int = 5):
+        cur = await self.c.execute(
+            f"SELECT COUNT(beatmap_id), requester_channel_name FROM beatmaps WHERE requested_channel_id=? GROUP BY beatmap_id ORDER BY COUNT(beatmap_id) DESC LIMIT {top_n}",
+            (twitch_username,)
+        )
+        return await cur.fetchall()

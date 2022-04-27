@@ -9,7 +9,7 @@ from starlette.staticfiles import StaticFiles
 
 from exceptions import JWT_exception_handler
 from routers import authorization, user
-from utils.globals import USER_DB
+from utils.globals import USER_DB, STATISTICS_DB
 
 logger = logging.getLogger('ronnia-web')
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO').upper())
@@ -40,6 +40,7 @@ def create_api() -> FastAPI:
 
         # Create database
         await USER_DB.initialize()
+        await STATISTICS_DB.initialize()
 
         logger.debug("API started.")
 
