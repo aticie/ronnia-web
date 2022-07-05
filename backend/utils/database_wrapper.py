@@ -32,6 +32,8 @@ class UserDatabase(BaseDatabase):
             db_path = os.path.join(os.getenv('DB_DIR'), 'users.db')
         super().__init__(db_path)
 
+        self.value_setting_keys = ["cooldown"]
+
     async def get_user_from_twitch_id(self, twitch_id: str) -> DBUser:
         await self.c.execute('SELECT * FROM users WHERE twitch_id=?', (twitch_id,))
         user_details = await self.c.fetchone()
@@ -46,14 +48,17 @@ class UserDatabase(BaseDatabase):
         await self.c.execute('SELECT * FROM settings')
         all_settings = await self.c.fetchall()
         toggle_settings = [{**dict(setting), **{'type': 'toggle', 'value': setting['default_value']}}
-                           for setting in all_settings]
+                           for setting in all_settings if setting['key'] not in self.value_setting_keys]
+
+        value_settings = [{**dict(setting), **{'type': 'value', 'value': setting['default_value']}}
+                           for setting in all_settings if setting['key'] in self.value_setting_keys]
 
         await self.c.execute('SELECT * FROM range_settings')
         all_range_settings = await self.c.fetchall()
         range_settings = [{**dict(setting), **{'type': 'range', 'range_start': setting['default_low'],
                                                'range_end': setting['default_high']}} for setting in all_range_settings]
 
-        return toggle_settings + range_settings
+        return toggle_settings + range_settings + value_settings
 
     async def select_excluded_users_by_user_id(self, user_id: str):
         await self.c.execute('SELECT * FROM exclude_list WHERE user_id=?', (user_id,))

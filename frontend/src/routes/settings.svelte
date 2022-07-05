@@ -18,7 +18,7 @@
     let newItem = '';
 
     function addToList() {
-        if (newItem === ''){
+        if (newItem === '') {
             return
         }
         user_excludes = [...user_excludes, newItem];
@@ -85,6 +85,23 @@
                 {#if setting.type === "toggle"}
                     <div class="checkbox-container">
                         <SettingsCheckbox bind:checked={setting.value}/>
+                    </div>
+                {:else if setting.type === "value"}
+                    <div class="rangeslider-container">
+                        <RangeSlider id="rangeslider-id"
+                                     range="min"
+                                     formatter={ v => {if (v < 60){
+                                            return v + "s"
+                                         }
+                                         if (v % 60 === 0){
+                                             return Math.round(v/60) + "m"
+                                         }
+                                         return Math.floor(v/60) + "m" + v % 60 + "s"
+                                     }}
+                                     values={[setting.value]}
+                                     step={1} min={0} max={5*60}
+                                     pips pipstep={15*10*2/5} all="label" float
+                                     on:change={(e) => {handleSliderInteraction(e, setting)}}/>
                     </div>
                 {:else if setting.type === "range"}
                     <div class="rangeslider-container">
@@ -184,7 +201,7 @@
         flex-direction: column;
     }
 
-    .excluded-user-item{
+    .excluded-user-item {
         flex-direction: row;
         font-size: 1.3rem;
         width: max-content;
