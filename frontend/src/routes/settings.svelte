@@ -7,8 +7,9 @@
     import RangeSlider from "svelte-range-slider-pips";
     import axios from "axios";
 
-    let buttonDisabled = false;
-    let errorText = "";
+    let cooldown_max = 15
+    let button_disabled = false;
+    let error_text = "";
     let user_name;
     let user_avatar_url;
     let user_id_db;
@@ -99,8 +100,8 @@
                                          return Math.floor(v/60) + "m" + v % 60 + "s"
                                      }}
                                      values={[setting.value]}
-                                     step={1} min={0} max={5*60}
-                                     pips pipstep={15*10*2/5} all="label" float
+                                     step={1} min={0} max={cooldown_max*60}
+                                     pips pipstep={12 * cooldown_max} all="label" float
                                      on:change={(e) => {handleSliderInteraction(e, setting)}}/>
                     </div>
                 {:else if setting.type === "range"}
@@ -140,10 +141,10 @@
         </div>
     </div>
 </div>
-<div class="errortext">{errorText}</div>
+<div class="errortext">{error_text}</div>
 <div class="savebutton">
     <SettingsSaveButton
-            bind:disabled={buttonDisabled}
+            bind:disabled={button_disabled}
             settings={user_settings}
             jwt_token={$tokenStore}
             excluded_users={user_excludes}

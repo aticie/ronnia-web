@@ -1,10 +1,13 @@
 import json
 import logging
 import os
+from typing import Optional
 
 from azure.servicebus import ServiceBusMessage
 from azure.servicebus.aio import ServiceBusClient
 from fastapi import HTTPException
+
+from utils.discord import DiscordPoster
 
 logger = logging.getLogger('ronnia-web')
 
@@ -30,6 +33,10 @@ async def signup_user_over_mq(signup_data: dict):
             logger.info(f"Waiting for reply from service bus queue {REPLY_QUEUE_NAME}...")
             reply_messages = await receiver.receive_messages(max_message_count=1)
             if len(reply_messages) == 0:
+                await send_alert_to_discord(title="Error with sign-up",
+                                            description=f"Failed to sign-up user\n"
+                                                        f"Twitch: {signup_data['twitch_username']}\n"
+                                                        f"osu!: {signup_data['osu_username']}")
                 raise HTTPException(status_code=503, detail="We received your signup request, but we couldn't "
                                                             "process it. Please try again later.")
             reply_message = reply_messages[0]
@@ -37,3 +44,8 @@ async def signup_user_over_mq(signup_data: dict):
             await receiver.complete_message(reply_message)
 
     return json.loads(str(reply_message))
+
+
+async def send_alert_to_discord(title: Optional[str], description: Optional[str]):
+    dp = DiscordPoster(os.getenv("DISCORD_BOT_TOKEN"), os.getenv("DISCORD_LOG_CHANNEL_ID"))
+    await dp.post(title, description)
