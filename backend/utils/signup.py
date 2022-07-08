@@ -6,7 +6,7 @@ from jose.jwt import JWTError
 from starlette.responses import RedirectResponse
 
 from backend.utils.database_wrapper import UserDatabase
-from utils.jwt import obtain_jwt, decode_jwt
+from backend.utils.jwt import obtain_jwt, decode_jwt
 
 logger = logging.getLogger('ronnia-web')
 

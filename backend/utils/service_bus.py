@@ -7,7 +7,7 @@ from azure.servicebus import ServiceBusMessage
 from azure.servicebus.aio import ServiceBusClient
 from fastapi import HTTPException
 
-from utils.discord import DiscordPoster
+from backend.utils.discord import DiscordPoster
 
 logger = logging.getLogger('ronnia-web')
 
