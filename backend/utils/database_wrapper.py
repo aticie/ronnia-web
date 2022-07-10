@@ -1,11 +1,13 @@
 import os
 import sqlite3
+import logging
 from typing import Optional, List
 
 import aiosqlite
 
 from models.user import DBUser
 
+logger = logging.getLogger('ronnia-web')
 
 class BaseDatabase:
     def __init__(self, db_path: str):
@@ -112,6 +114,7 @@ class UserDatabase(BaseDatabase):
         :param new_value: New value of the desired setting
         :return:
         """
+        logger.debug(f"set_setting called with: {user_id=}, {setting_key=}, {new_value=}")
         sql_string_get_setting = f"SELECT value FROM user_settings " \
                                  f"INNER JOIN settings ON user_settings.key=settings.key " \
                                  f"WHERE settings.key=? AND user_id=?"
@@ -124,8 +127,10 @@ class UserDatabase(BaseDatabase):
         result = await self.c.execute(sql_string_get_setting, (setting_key, user_id))
         value = await result.fetchone()
         if value is None:
+            logger.debug(f"{setting_key=} doesn't exist, inserting to database.")
             await self.c.execute(sql_string_insert_setting, (setting_key, new_value, user_id))
         else:
+            logger.debug(f"{setting_key=} exists, updating with {new_value}.")
             await self.c.execute(sql_string_update_setting, (setting_key, new_value, user_id))
         await self.conn.commit()
         return new_value

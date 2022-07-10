@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter
 
 from backend.models import UserSetting
@@ -5,6 +7,7 @@ from backend.utils.jwt import decode_jwt
 from utils.globals import USER_DB
 
 router = APIRouter()
+logger = logging.getLogger("ronnia-web")
 
 
 @router.get("/user_details", summary='Gets registered user details from database')
@@ -42,7 +45,7 @@ async def save_user_settings(payload: UserSetting):
     user_data = decode_jwt(jwt_token=jwt_token)
     user_id = user_data['user_id']
     for setting in settings:
-        if setting.type == 'toggle':
+        if setting.type == 'toggle' or setting.type == 'value':
             await USER_DB.set_setting(user_id=user_id, setting_key=setting.key, new_value=setting.value)
         elif setting.type == 'range':
             if setting.range_end == 10:

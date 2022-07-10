@@ -54,9 +54,13 @@
         navigate('/');
     }
 
-    function handleSliderInteraction(event, setting) {
+    function handleRangeSliderInteraction(event, setting) {
         setting.range_start = event.detail.values[0]
         setting.range_end = event.detail.values[1]
+    }
+
+    function handleSliderInteraction(event, setting) {
+        setting.value = event.detail.values[0]
     }
 </script>
 
@@ -114,7 +118,7 @@
                         }} pips pipstep={10} all="label"
                                      values={[setting.range_start === -1 ? 0: setting.range_start, setting.range_end === -1 ? 10: setting.range_end]}
                                      step={0.1} min={0} max={10}
-                                     on:change={(e) => {handleSliderInteraction(e, setting)}}/>
+                                     on:change={(e) => {handleRangeSliderInteraction(e, setting)}}/>
                     </div>
                 {/if}
                 <div class="description">
