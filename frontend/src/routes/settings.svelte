@@ -1,5 +1,6 @@
 <script>
   import axios from "axios";
+  import Settings from "../components/Settings.svelte";
   import { navigate } from "svelte-navigator";
   import { tokenStore } from "../store";
   
@@ -92,13 +93,16 @@
   getUser();
 </script>
 
-<div>
-  {#each userSettings as setting}
-  {/each}
+<div class="flex flex-col gap-4">
+  <Settings settings={userSettings} />
 
-  <div class="flex items-center gap-2">
-    <img src={userAvatarUrl} class="rounded-md w-12 h-12" alt="user avatar" />
-    <p>{username}</p>
+  <div class="flex flex-col items-center gap-4">
+    <div class="flex items-center gap-2">
+        <img src={userAvatarUrl} class="rounded-md w-12 h-12" alt="user avatar" />
+        <p>{username}</p>
+    </div>
+
+    <button class="button b-with-icon"><img src="/logout.svg" alt="logout icon" /> Logout</button>
   </div>
 </div>
 

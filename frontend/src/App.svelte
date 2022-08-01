@@ -22,7 +22,7 @@
   }
 </script>
 
-<main class="w-full max-w-xl">
+<main class="w-full max-w-xl flex flex-col gap-4">
   <p class="font-semibold text-4xl text-center mt-10">Ronnia Dashboard</p>
 
   <SvelteToast />
@@ -40,5 +40,5 @@
     <Route path="/settings" component={Settings} />
   </Router>
 
-  <p class="absolute left-2 bottom-2 text-neutral-500 font-semibold">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+  <p class="absolute left-2 bottom-2 text-neutral-500 font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
 </main>

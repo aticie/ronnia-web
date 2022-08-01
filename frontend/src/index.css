@@ -7,6 +7,12 @@
     font-family: "Inter", sans-serif;
     @apply bg-dark text-white;
     @apply w-full h-full;
+
+    --range-slider: rgb(38, 38, 38);
+    --range-handle-inactive: #da0037;
+    --range-handle-focus:#ff5361;
+    --range-range: #da0037;
+    --range-handle:#da0037;
   }
 
   #app {
@@ -16,6 +22,13 @@
 }
 
 @layer utilities {
+  .checkbox {
+    @apply appearance-none;
+    @apply w-5 h-5 rounded-md;
+    @apply bg-neutral-800;
+    @apply checked:bg-[url('/tick.svg')] checked:bg-red-primary;
+  }
+
   .button {
     @apply bg-red-primary hover:bg-neutral-800 transition-colors;
     @apply p-2 rounded-md;
@@ -23,7 +36,7 @@
   }
 
   .b-with-icon {
-    @apply flex items-center gap-4;
+    @apply flex items-center gap-3;
   }
 
   .b-with-icon img {
@@ -35,5 +48,10 @@
   .page-content {
     @apply flex flex-col gap-2;
     @apply mt-10;
+  }
+
+  .setting-background {
+    /* @apply flex items-center justify-between; */
+    @apply bg-neutral-900 rounded-md p-2;
   }
 }
