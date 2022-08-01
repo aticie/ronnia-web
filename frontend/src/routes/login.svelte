@@ -25,11 +25,3 @@
         />
     </div>
 </div>
-
-<style>
-   .login_buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-</style>
