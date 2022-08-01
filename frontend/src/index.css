@@ -13,6 +13,10 @@
     --range-handle-focus:#ff5361;
     --range-range: #da0037;
     --range-handle:#da0037;
+
+    --toastBorderRadius: 0.375rem;
+    --toastBarBackground: rgb(218, 0, 55);
+    --toastBackground: rgb(23, 23, 23);
   }
 
   #app {
@@ -51,7 +55,6 @@
   }
 
   .setting-background {
-    /* @apply flex items-center justify-between; */
     @apply bg-neutral-900 rounded-md p-2;
   }
 }

@@ -3,73 +3,14 @@
   import Settings from "../components/Settings.svelte";
   import { navigate } from "svelte-navigator";
   import { tokenStore } from "../store";
+  import { toast } from "@zerodevx/svelte-toast";
 
   let userId;
-  let username = "Sibyl";
-  let userAvatarUrl =
-    "https://static-cdn.jtvnw.net/jtv_user_pictures/0dd8274f-e21a-42cf-b020-40463e5519f6-profile_image-300x300.png";
+  let username;
+  let userAvatarUrl;
 
-  let userSettings = [
-    {
-      id: 1,
-      key: "echo",
-      default_value: 1,
-      description: "Enables Twitch chat acknowledge message.",
-      type: "toggle",
-      value: 1,
-    },
-    {
-      id: 2,
-      key: "enable",
-      default_value: 1,
-      description: "Enables the bot.",
-      type: "toggle",
-      value: 1,
-    },
-    {
-      id: 3,
-      key: "sub-only",
-      default_value: 0,
-      description: "Subscribers only request mode.",
-      type: "toggle",
-      value: 0,
-    },
-    {
-      id: 4,
-      key: "cp-only",
-      default_value: 0,
-      description: "Channel Points only request mode.",
-      type: "toggle",
-      value: 0,
-    },
-    {
-      id: 5,
-      key: "test",
-      default_value: 0,
-      description: "Enables test mode.",
-      type: "toggle",
-      value: 0,
-    },
-    {
-      id: 1,
-      key: "sr",
-      default_low: -1.0,
-      default_high: -1.0,
-      description: "Set star rating limit for requests.",
-      type: "range",
-      range_start: -1.0,
-      range_end: -1.0,
-    },
-    {
-      id: 6,
-      key: "cooldown",
-      default_value: 30,
-      description: "Cooldown for requests.",
-      type: "value",
-      value: 30,
-    },
-  ];
-  let userExcludes = [123];
+  let userSettings = [];
+  let userExcludes = [];
 
   const getUser = async () => {
     try {
@@ -84,13 +25,25 @@
       userExcludes = response.data["excluded_users"];
     } catch {
       tokenStore.setToken(0);
-      if (!import.meta.env.DEV) {
-        navigate("/");
-      }
+      navigate("/");
     }
   };
 
   getUser();
+
+  let disabled = false;
+  const saveSettings = async () => {
+    disabled = true;
+
+    await axios.post("/save_user_settings", {
+      jwt_token: $tokenStore,
+      settings: userSettings,
+      excluded_users: userExcludes,
+    });
+
+    setTimeout(() => disabled = false, 4000)
+    toast.push("Saved your settings!");
+  };
 </script>
 
 <div class="flex flex-col gap-4">
@@ -102,6 +55,8 @@
 
     <button class="button b-with-icon"><img src="/logout.svg" alt="logout icon" />Logout</button>
   </div>
-  
-  <Settings settings={userSettings} userExcludes={userExcludes} />
+
+  <Settings settings={userSettings} {userExcludes} />
+
+  <button class="button disabled:bg-neutral-800" {disabled} on:click={saveSettings}>Save</button>
 </div>

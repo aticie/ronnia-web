@@ -40,5 +40,5 @@
     <Route path="/settings" component={Settings} />
   </Router>
 
-  <p class="absolute left-2 bottom-2 text-neutral-500 font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+  <p class="absolute left-2 bottom-2 text-neutral-500 text-sm font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
 </main>
