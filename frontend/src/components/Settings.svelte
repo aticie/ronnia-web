@@ -1,7 +1,11 @@
 <script>
   import RangeSlider from "svelte-range-slider-pips";
 
+  export let settings;
+  export let userExcludes;
+  
   let cooldown_max = 16;
+  let newItem = "";
 
   const onRangeChange = (e, setting) => {
     [setting.range_start, setting.range_end] = e.detail.values;
@@ -11,7 +15,13 @@
     setting.value = e.detail.values[0];
   }
 
-  export let settings;
+  const onSubmit = e => {
+    if (e.charCode !== 13) return;
+    if (!newItem) return;
+    
+    userExcludes = [...userExcludes, newItem];
+  }
+
 </script>
 
 <div class="flex flex-col gap-4 select-none">
@@ -53,4 +63,18 @@
       </div>
     {/if}
   {/each}
+
+  <div class="setting-background flex flex-col gap-2">
+    <p class="text-center">Excluded Users</p>
+    <input class="bg-neutral-800 rounded p-1" placeholder="Excluded Users" on:keypress={onSubmit} bind:value={newItem} />
+
+    <div class="flex-col">
+      {#each userExcludes as user}
+        <div class="flex flex-1 items-center justify-between px-2 p-1">
+          <p>{user}</p>
+          <img src="/close.svg" alt="close svg" class="h-5 w-5 hover:bg-red-primary rounded transition-colors" />
+        </div>
+      {/each}
+    </div>
+  </div>
 </div>
