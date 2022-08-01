@@ -11,6 +11,29 @@
 
   #app {
     @apply flex justify-center items-center;
-    
+    @apply p-1 md:p-4;
+  }
+}
+
+@layer utilities {
+  .button {
+    @apply bg-red-primary hover:bg-neutral-800 transition-colors;
+    @apply p-2 rounded-md;
+    @apply font-semibold;
+  }
+
+  .b-with-icon {
+    @apply flex items-center gap-4;
+  }
+
+  .b-with-icon img {
+    @apply h-10 w-10;
+  }
+}
+
+@layer components {
+  .page-content {
+    @apply flex flex-col gap-2;
+    @apply mt-10;
   }
 }

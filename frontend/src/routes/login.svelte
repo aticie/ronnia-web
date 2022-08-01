@@ -1,27 +1,17 @@
 <script>
-    import Button from "../components/Button.svelte";
+  import { toOsuAuth, toTwitchAuth } from "../utils";
 </script>
 
-<p>Log in to Ronnia with</p>
-<div class="login_buttons">
-    <div>
-        <Button
-            text="Login"
-            onClick={() => {
-                window.location.href = "/osu_authorize";
-            }}
-            logo="./public/Logo/OsuLogo.svg"
-            identifier="osuLoginButton"
-        />
-    </div>
-    <div>
-        <Button
-            text="Login"
-            onClick={() => {
-                window.location.href = "/twitch_authorize";
-            }}
-            logo="./public/Logo/TwitchLogo.svg"
-            identifier="twitchLoginButton"
-        />
-    </div>
+<div class="page-content">
+  <p class="text-neutral-500 font-semibold">Log in to Ronnia with</p>
+  <div class="flex flex-1 flex-col md:flex-row gap-2">
+    <button class="button b-with-icon flex-1" on:click={toTwitchAuth}>
+      <img src="/TwitchGlitchWhite.svg" alt="twitch icon" />
+      Twitch
+    </button>
+    <button class="button b-with-icon flex-1" on:click={toOsuAuth}>
+      <img src="/osu!LogoWhite.svg" alt="twitch icon" />
+      osu!
+    </button>
+  </div>
 </div>

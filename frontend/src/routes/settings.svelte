@@ -1,4 +1,6 @@
-<script>
+<div>Settings</div>
+
+<!-- <script>
     import {navigate} from "svelte-navigator";
     import SettingsCheckbox from "../components/SettingsCheckbox.svelte";
     import TinyButton from "../components/TinyButton.svelte";
@@ -7,7 +9,7 @@
     import RangeSlider from "svelte-range-slider-pips";
     import axios from "axios";
 
-    let cooldown_max = 15
+    let cooldown_max = 16
     let button_disabled = false;
     let error_text = "";
     let user_name;
@@ -154,4 +156,4 @@
             excluded_users={user_excludes}
             timeout_secs="4000"
     />
-</div>
+</div> -->
