@@ -21,7 +21,7 @@
       userId = response.data["user_id"];
       username = response.data["username"];
       userAvatarUrl = response.data["avatar_url"];
-      userSettings = response.data["settings"].filter(x => x.key != "test");
+      userSettings = response.data["settings"];
       userExcludes = response.data["excluded_users"];
     } catch {
       tokenStore.setToken(0);

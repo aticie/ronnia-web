@@ -25,7 +25,7 @@
 </script>
 
 <div class="flex flex-col gap-4 select-none">
-  {#each settings as setting}
+  {#each settings.filter(x => x.key !== "test") as setting}
     {#if setting.type === "toggle"}
       <label for={setting.id} class="setting-background flex items-center justify-between">
         <p>{setting.description}</p>
