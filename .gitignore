@@ -1,5 +1,6 @@
 frontend/node_modules/
 frontend/dist/
+dist
 frontend/scripts/*
 
 backend/.env
