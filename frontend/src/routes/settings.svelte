@@ -44,6 +44,11 @@
     setTimeout(() => disabled = false, 4000)
     toast.push("Saved your settings!");
   };
+
+  const logout = () => {
+    tokenStore.delToken();
+    navigate("/");
+  }
 </script>
 
 <div class="flex flex-col gap-4">
@@ -53,7 +58,7 @@
       <p>{username}</p>
     </div>
 
-    <button class="button b-with-icon"><img src="/public/logout.svg" alt="logout icon" style="width: 1.75rem; height: 1.75rem;" />Logout</button>
+    <button on:click={logout} class="button b-with-icon"><img src="/public/logout.svg" alt="logout icon" style="width: 1.75rem; height: 1.75rem;" />Logout</button>
   </div>
 
   <Settings settings={userSettings} {userExcludes} />
