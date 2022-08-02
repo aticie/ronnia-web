@@ -14,7 +14,7 @@
     </button>
   {:else}
     <button class="button b-with-icon w-1/2">
-      <img src="/public/TwitchGlitchWhite.svg" alt="twitch icon" />
+      <img src="/public/twitchGlitchWhite.svg" alt="twitch icon" />
       Twitch
     </button>
   {/if}
