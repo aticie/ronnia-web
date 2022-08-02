@@ -1,42 +1,22 @@
 <script>
-    import Button from "../components/Button.svelte";
-    import Cookies from "js-cookie";
+  import Cookies from "js-cookie";
 
-    let signupCookie = Cookies.get("signup");
+  let signupCookie = Cookies.get("signup");
 </script>
 
-<p>Complete your sign-up to Ronnia with</p>
-<div class="signup_button">
-    <div>
-        {#if signupCookie == 'twitch'}
-        <Button
-            text="Login"
-            onClick={() => {
-                window.location.href = "/osu_authorize";
-            }}
-            logo="./public/Logo/OsuLogo.svg"
-            identifier="osuSignupButton"
-        />
-        {:else if signupCookie == 'osu'}
-        <Button
-            text="Login"
-            onClick={() => {
-                window.location.href = "/twitch_authorize";
-            }}
-            logo="./public/Logo/TwitchLogo.svg"
-            identifier="twitchSignupButton"
-        />
-        {/if}
-    </div>
-</div>
+<div class="page-content items-center">
+  <p class="text-center font-semibold">Complete your sign-up to Ronnia with</p>
 
-<style>
-    p {
-        font-size: 16pt;
-    }
-    .signup_button {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-</style>
+  {#if signupCookie == "twitch"}
+    <button class="button b-with-icon w-1/2">
+      <img src="/public/osu!LogoWhite.svg" alt="osu icon" />
+      osu! 
+    </button>
+  {:else}
+    <button class="button b-with-icon w-1/2">
+      <img src="/public/TwitchGlitchWhite.svg" alt="twitch icon" />
+      Twitch
+    </button>
+  {/if}
+
+</div>

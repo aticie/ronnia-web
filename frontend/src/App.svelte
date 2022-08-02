@@ -1,113 +1,44 @@
 <script>
-    import {Router, Route, Link, navigate} from "svelte-navigator";
-    import {tokenStore} from "./store.js";
-    import Cookies from "js-cookie";
-    import axios from "axios";
+  import { Router, Route, navigate } from "svelte-navigator";
+  import { tokenStore } from "./store";
+  import Cookies from "js-cookie";
 
-    import Settings from "./routes/settings.svelte";
-    import Signup from "./routes/signup.svelte";
-    import Login from "./routes/login.svelte";
-    import {SvelteToast} from '@zerodevx/svelte-toast'
+  import { SvelteToast } from "@zerodevx/svelte-toast";
+  import Login from "./routes/login.svelte";
+  import Settings from "./routes/settings.svelte";
+  import Signup from "./routes/signup.svelte";
+  
+  tokenStore.useLocalStorage();
 
-    tokenStore.useLocalStorage();
-    let cookieToken = Cookies.get("token");
-    let error = Cookies.get("error");
+  let cookieToken = Cookies.get("token");
+  let error = Cookies.get("error");
+  
+  if (cookieToken) {
+    tokenStore.setToken(cookieToken);
+  }
 
-    if (cookieToken) {
-        tokenStore.setToken(cookieToken);
-        Cookies.remove("token");
-    }
-
-    if (error) {
-        Cookies.remove("error");
-    }
-
-    if ($tokenStore !== 0) {
-        navigate('/settings');
-    }
+  if (error) {
+    Cookies.remove("error");
+  }
 </script>
 
-<Router>
-    <html lang="en">
-    <body>
-    <SvelteToast/>
-    <div class="container">
-        <div class="header">
-            <h1>Ronnia Dashboard</h1>
-        </div>
-        <div class="navigation"/>
-        <div class="content">
-            <Route path="/">
-                {#if $tokenStore === 0}
-                    {navigate("/login")}
-                {:else}
-                    {navigate("/settings")}
-                {/if}
-            </Route>
-            <Route path="login">
-                <Login/>
-            </Route>
+<main class="w-full max-w-xl flex flex-col gap-4">
+  <p class="font-semibold text-4xl text-center mt-10">Ronnia Dashboard</p>
 
-            <Route path="signup">
-                <Signup/>
-            </Route>
-            <Route path="about">
-                <h3>About</h3>
-                <p>That's what it's all about!</p>
-            </Route>
-            <Route path="settings">
-                <Settings/>
-            </Route>
-        </div>
-    </div>
+  <SvelteToast />
 
-    <footer>
-        Thanks to Sibyl#3838 and bora#5130 for website and frontend design.
-    </footer>
-    </body>
-    </html>
+  <Router>
+    <Route path="/">
+      {#if $tokenStore === 0}
+        { navigate("/login") }
+      {:else}
+        { navigate("/settings") }
+      {/if}
+    </Route>
+    <Route path="/login" component={Login} />
+    <Route path="/signup" component={Signup} />
+    <Route path="/settings" component={Settings} />
+  </Router>
 
-    <main/>
-</Router>
-<style>
-
-    :root {
-        --theme-main-color: #e84545;
-        --theme-main-light: #ff5361;
-        --theme-alt-color: #a71818;
-        --theme-inactive-light: #646464;
-        --theme-bg-color: #121212;
-        --theme-inactive-color: #343434;
-        --theme-text-color: #FFFFFF;
-        --theme-text-color-placeholder: #aaaaaa;
-        --toastColor: var(--theme-text-color);
-        --toastBarBackground: var(--theme-main-color);
-    }
-
-    h1 {
-        font-size: 30pt;
-    }
-
-    p {
-        font-size: 16pt;
-    }
-
-    .header {
-        margin-top: 50px;
-    }
-
-    .header h1 {
-        color: #e84545;
-    }
-
-    .content {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    footer {
-        margin: 1% 1%;
-    }
-</style>
+  <p class="absolute left-2 bottom-2 text-neutral-500 text-sm font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+</main>

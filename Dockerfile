@@ -1,15 +1,12 @@
 FROM node:18 AS frontend_public
 
+WORKDIR /usr/src
+
+ADD ./frontend ./app
+
 WORKDIR /usr/src/app
 
-COPY ./frontend/package*.json ./
-
 RUN npm install
-
-COPY ./frontend/vite.config.js ./
-COPY ./frontend/src ./src
-COPY ./frontend/public ./public
-
 RUN npm run build
 
 FROM python:3.10-slim
