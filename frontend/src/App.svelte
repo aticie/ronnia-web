@@ -7,6 +7,8 @@
   import Login from "./routes/login.svelte";
   import Settings from "./routes/settings.svelte";
   import Signup from "./routes/signup.svelte";
+
+  import urls from "./urls.json";
   
   tokenStore.useLocalStorage();
 
@@ -41,4 +43,14 @@
   </Router>
 
   <p class="absolute left-2 bottom-2 text-neutral-500 text-sm font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+
+  <p>{urls.discordUrl}</p>
+  <div class="flex gap-2 items-center absolute right-4 bottom-4">
+    <a href={urls.discordUrl}>
+      <img src="/public/discordLogo.svg" class="w-10 h-10" alt="discord icon" />
+    </a>
+    <a href={urls.githubUrl}>
+      <img src="/public/githubMark.svg" class="w-10 h-10" alt="github icon" />
+    </a>
+  </div>
 </main>
