@@ -72,7 +72,7 @@
       {#each userExcludes as user}
         <div class="flex flex-1 items-center justify-between px-2 p-1">
           <p>{user}</p>
-          <img src="/close.svg" alt="close svg" class="h-5 w-5 hover:bg-red-primary rounded transition-colors" />
+          <img src="/public/close.svg" alt="close svg" class="h-5 w-5 hover:bg-red-primary rounded transition-colors" />
         </div>
       {/each}
     </div>

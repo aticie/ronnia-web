@@ -53,7 +53,7 @@
       <p>{username}</p>
     </div>
 
-    <button class="button b-with-icon"><img src="/logout.svg" alt="logout icon" style="width: 1.75rem; height: 1.75rem;" />Logout</button>
+    <button class="button b-with-icon"><img src="/public/logout.svg" alt="logout icon" style="width: 1.75rem; height: 1.75rem;" />Logout</button>
   </div>
 
   <Settings settings={userSettings} {userExcludes} />

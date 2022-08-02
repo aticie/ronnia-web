@@ -9,12 +9,12 @@
 
   {#if signupCookie == "twitch"}
     <button class="button b-with-icon w-1/2">
-      <img src="/osu!LogoWhite.svg" alt="osu icon" />
+      <img src="/public/osu!LogoWhite.svg" alt="osu icon" />
       osu! 
     </button>
   {:else}
     <button class="button b-with-icon w-1/2">
-      <img src="/TwitchGlitchWhite.svg" alt="twitch icon" />
+      <img src="/public/TwitchGlitchWhite.svg" alt="twitch icon" />
       Twitch
     </button>
   {/if}

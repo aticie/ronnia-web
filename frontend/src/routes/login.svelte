@@ -6,11 +6,11 @@
   <p class="text-neutral-500 font-semibold">Log in to Ronnia with</p>
   <div class="flex flex-1 flex-col md:flex-row gap-2">
     <button class="button b-with-icon flex-1" on:click={toTwitchAuth}>
-      <img src="/TwitchGlitchWhite.svg" alt="twitch icon" />
+      <img src="/public/TwitchGlitchWhite.svg" alt="twitch icon" />
       Twitch
     </button>
     <button class="button b-with-icon flex-1" on:click={toOsuAuth}>
-      <img src="/osu!LogoWhite.svg" alt="twitch icon" />
+      <img src="/public/osu!LogoWhite.svg" alt="twitch icon" />
       osu!
     </button>
   </div>
