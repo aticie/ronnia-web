@@ -16,7 +16,6 @@
     "vite": "3.0.4"
   },
   "dependencies": {
-    "animejs": "^3.2.1",
     "axios": "^0.27.2",
     "js-cookie": "^2.2.1",
     "sirv-cli": "^1.0.0",
