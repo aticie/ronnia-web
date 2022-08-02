@@ -20,6 +20,12 @@
     if (!newItem) return;
     
     userExcludes = [...userExcludes, newItem];
+    newItem = "";
+  }
+
+  const removeExcludedUser = (index) => {
+    userExcludes.splice(index, 1);
+    userExcludes = userExcludes;
   }
 
 </script>
@@ -69,8 +75,8 @@
     <input class="bg-neutral-800 rounded p-1" placeholder="Excluded Users" on:keypress={onSubmit} bind:value={newItem} />
 
     <div class="flex-col">
-      {#each userExcludes as user}
-        <div class="flex flex-1 items-center justify-between px-2 p-1">
+      {#each userExcludes as user, index}
+        <div class="flex flex-1 items-center justify-between px-2 p-1" on:click={_ => removeExcludedUser(index)}>
           <p>{user}</p>
           <img src="/public/close.svg" alt="close svg" class="h-5 w-5 hover:bg-red-primary rounded transition-colors" />
         </div>
