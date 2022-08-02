@@ -20,8 +20,9 @@
   }
 
   #app {
-    @apply flex justify-center items-center;
-    @apply p-1 md:p-4;
+    @apply flex justify-center relative;
+    @apply p-2 pb-16 relative;
+    @apply min-h-full;  
   }
 }
 
