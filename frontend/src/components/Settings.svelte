@@ -4,7 +4,7 @@
   export let settings;
   export let userExcludes;
   
-  let cooldown_max = 16;
+  let cooldown_max = 15;
   let newItem = "";
 
   const onRangeChange = (e, setting) => {
