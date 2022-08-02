@@ -10,8 +10,8 @@ export default defineConfig({
   server: {
     port: 5000
   },
-  build: {
-    outDir: '../dist',
-    emptyOutDir: true
-  }
+  // build: {
+  //   outDir: '../dist',
+  //   emptyOutDir: true
+  // }
 })
