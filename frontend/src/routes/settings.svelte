@@ -6,8 +6,8 @@
   import { toast } from "@zerodevx/svelte-toast";
 
   let userId;
-  let username = "Sibyl";
-  let userAvatarUrl = "https://static-cdn.jtvnw.net/jtv_user_pictures/0dd8274f-e21a-42cf-b020-40463e5519f6-profile_image-300x300.png";
+  let username;
+  let userAvatarUrl;
 
   let userSettings = [];
   let userExcludes = [];
@@ -25,7 +25,7 @@
       userExcludes = response.data["excluded_users"];
     } catch {
       tokenStore.setToken(0);
-      // navigate("/");
+      navigate("/");
     }
   };
 
