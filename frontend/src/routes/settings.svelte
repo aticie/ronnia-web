@@ -6,8 +6,8 @@
   import { toast } from "@zerodevx/svelte-toast";
 
   let userId;
-  let username;
-  let userAvatarUrl;
+  let username = "Sibyl";
+  let userAvatarUrl = "https://static-cdn.jtvnw.net/jtv_user_pictures/0dd8274f-e21a-42cf-b020-40463e5519f6-profile_image-300x300.png";
 
   let userSettings = [];
   let userExcludes = [];
@@ -25,7 +25,7 @@
       userExcludes = response.data["excluded_users"];
     } catch {
       tokenStore.setToken(0);
-      navigate("/");
+      // navigate("/");
     }
   };
 
@@ -53,7 +53,7 @@
       <p>{username}</p>
     </div>
 
-    <button class="button b-with-icon"><img src="/logout.svg" alt="logout icon" />Logout</button>
+    <button class="button b-with-icon"><img src="/logout.svg" alt="logout icon" style="width: 1.75rem; height: 1.75rem;" />Logout</button>
   </div>
 
   <Settings settings={userSettings} {userExcludes} />
