@@ -20,8 +20,9 @@
   }
 
   #app {
-    @apply flex justify-center items-center;
-    @apply p-1 md:p-4;
+    @apply flex justify-center relative;
+    @apply p-2 pb-20 relative;
+    @apply min-h-full z-10;
   }
 }
 
@@ -45,6 +46,20 @@
 
   .b-with-icon img {
     @apply h-9 w-9;
+  }
+
+  .footer {
+    @apply fixed p-2;
+    @apply bottom-0 right-0 left-0;
+    @apply rounded-md;
+    @apply bg-neutral-900 text-neutral-500;
+    @apply font-semibold text-sm;
+  }
+
+  .icon {
+    @apply p-1;
+    @apply hover:bg-red-primary transition-colors;
+    @apply rounded-md;
   }
 }
 
