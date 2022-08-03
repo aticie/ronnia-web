@@ -25,7 +25,7 @@
       userExcludes = response.data["excluded_users"];
     } catch {
       tokenStore.setToken(0);
-      // navigate("/");
+      navigate("/");
     }
   };
 
