@@ -21,8 +21,8 @@
 
   #app {
     @apply flex justify-center relative;
-    @apply p-2 pb-16 relative;
-    @apply min-h-full;  
+    @apply p-2 pb-20 relative;
+    @apply min-h-full z-10;
   }
 }
 
@@ -46,6 +46,14 @@
 
   .b-with-icon img {
     @apply h-9 w-9;
+  }
+
+  .footer-item {
+    @apply fixed p-2;
+    @apply bottom-2;
+    @apply border-2 border-neutral-700 rounded-md;
+    @apply bg-neutral-900 text-neutral-500;
+    @apply font-semibold text-sm;
   }
 }
 

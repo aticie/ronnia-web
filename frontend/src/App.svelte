@@ -42,14 +42,14 @@
     <Route path="/settings" component={Settings} />
   </Router>
 
-  <p class="absolute left-2 bottom-2 text-neutral-500 text-sm font-semibold hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+  <p class="footer-item left-2 hidden lg:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
 
-  <div class="flex gap-2 items-center absolute right-4 bottom-4">
+  <div class="footer-item right-2 flex gap-4">
     <a href={urls.discordUrl}>
-      <img src="/public/discordLogo.svg" class="w-10 h-10" alt="discord icon" />
+      <img src="/public/discordLogo.svg" class="w-8 h-8" alt="discord icon" />
     </a>
     <a href={urls.githubUrl}>
-      <img src="/public/githubMark.svg" class="w-10 h-10" alt="github icon" />
+      <img src="/public/githubMark.svg" class="w-8 h-8" alt="github icon" />
     </a>
   </div>
 </main>
