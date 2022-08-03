@@ -41,15 +41,17 @@
     <Route path="/signup" component={Signup} />
     <Route path="/settings" component={Settings} />
   </Router>
-
-  <p class="footer-item left-2 hidden lg:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
-
-  <div class="footer-item right-2 flex gap-4">
-    <a href={urls.discordUrl}>
-      <img src="/public/discordLogo.svg" class="w-8 h-8" alt="discord icon" />
-    </a>
-    <a href={urls.githubUrl}>
-      <img src="/public/githubMark.svg" class="w-8 h-8" alt="github icon" />
-    </a>
+  
+  <div class="flex justify-end items-center footer">
+    <p class="hidden md:block md:mr-auto">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+  
+    <div class="flex gap-2">
+      <a href={urls.discordUrl}>
+        <img src="/public/discordLogo.svg" class="icon h-10 w-10" alt="discord icon" />
+      </a>
+      <a href={urls.githubUrl}>
+        <img src="/public/githubMark.svg" class="icon h-10 w-10" alt="github icon" />
+      </a>
+    </div>
   </div>
 </main>

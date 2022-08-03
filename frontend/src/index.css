@@ -48,12 +48,18 @@
     @apply h-9 w-9;
   }
 
-  .footer-item {
+  .footer {
     @apply fixed p-2;
-    @apply bottom-2;
-    @apply border-2 border-neutral-700 rounded-md;
+    @apply bottom-0 right-0 left-0;
     @apply bg-neutral-900 text-neutral-500;
+    @apply border-t-2 border-neutral-700;
     @apply font-semibold text-sm;
+  }
+
+  .icon {
+    @apply p-1;
+    @apply hover:bg-red-primary transition-colors;
+    @apply rounded-md;
   }
 }
 
