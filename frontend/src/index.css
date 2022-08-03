@@ -51,7 +51,7 @@
   .footer {
     @apply fixed p-2;
     @apply bottom-0 right-0 left-0;
-    @apply border-neutral-700 rounded-md;
+    @apply rounded-md;
     @apply bg-neutral-900 text-neutral-500;
     @apply font-semibold text-sm;
   }
