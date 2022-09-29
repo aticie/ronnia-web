@@ -42,7 +42,7 @@
     <Route path="/settings" component={Settings}/>
   </Router>
 
-  <div class="flex justify-end justify-between items-center flex-row-reverse gap-4 footer">
+  <div class="flex justify-between items-center gap-4 footer">
     <div class="flex gap-2">
       <a href={urls.discordUrl}>
         <img src="/public/discordLogo.svg" class="icon h-10 w-10" alt="discord icon"/>
@@ -52,6 +52,6 @@
       </a>
     </div>
 
-    <p class="hidden md:block md:mr-auto">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+    <p class="hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
   </div>
 </main>
