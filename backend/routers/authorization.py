@@ -1,16 +1,17 @@
+import json
 import logging
 import os
 from typing import Optional
 
 import aiohttp
-from fastapi import APIRouter, Response, Cookie, HTTPException
+from fastapi import APIRouter, Response, Cookie
 from starlette.responses import RedirectResponse, FileResponse
 
 from backend.utils.jwt import obtain_jwt
 from backend.utils.signup import RegisterFactory
 from backend.utils.token_handling import get_token
 from utils.globals import USER_DB
-from utils.service_bus import signup_user_over_mq
+from utils.service_bus import send_alert_to_discord
 
 router = APIRouter()
 logger = logging.getLogger("ronnia-web")
@@ -146,14 +147,19 @@ async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional
 
         else:
             # We can sign-up the user by sending a message to message queue.
-            logger.debug(f"Sending sign-up details to the bot manager...")
-            response = await signup_user_over_mq(signup_details)
+            user_id = await USER_DB.add_user(twitch_username=signup_details["osu_username"],
+                                             osu_username=signup_details["twitch_username"],
+                                             twitch_id=signup_details["twitch_id"],
+                                             osu_user_id=signup_details["osu_id"],
+                                             enabled_status=1)
 
-            if signup_type == 'osu':
-                response['username'] = response['osu_username']
-            else:
-                response['username'] = response['twitch_username']
-
+            signup_details["user_id"] = user_id
+            signup_details["username"] = signup_details[f"{registerer._get_self_name()}_username"]
+            logger.info(f"Added user to database with details: {signup_details}")
+            await send_alert_to_discord(title="New user signed-up!",
+                                        description=f"User ID: {user_id}\n"
+                                                    f"Twitch Username: {signup_details['twitch_username']}\n"
+                                                    f"osu! Username: {signup_details['osu_username']}")
             to_me_page = RedirectResponse('/settings')
-            to_me_page.set_cookie('token', obtain_jwt(response))
+            to_me_page.set_cookie('token', obtain_jwt(signup_details))
             return to_me_page

@@ -1,6 +1,7 @@
+import logging
 import os
 import sqlite3
-import logging
+from datetime import datetime
 from typing import Optional, List
 
 import aiosqlite
@@ -8,6 +9,7 @@ import aiosqlite
 from models.user import DBUser
 
 logger = logging.getLogger('ronnia-web')
+
 
 class BaseDatabase:
     def __init__(self, db_path: str):
@@ -36,6 +38,32 @@ class UserDatabase(BaseDatabase):
 
         self.value_setting_keys = ["cooldown"]
 
+    async def add_user(self,
+                       twitch_username: str,
+                       osu_username: str,
+                       osu_user_id: str,
+                       twitch_id: str,
+                       enabled_status: bool = True) -> int:
+        """
+        Adds a user to database.
+        """
+        twitch_username = twitch_username.lower()
+        osu_username = osu_username.lower().replace(' ', '_')
+
+        result = await self.c.execute(f"SELECT * FROM users WHERE twitch_username=?",
+                                      (twitch_username,))
+        user = await result.fetchone()
+        if user is None:
+            await self.c.execute(
+                f"INSERT INTO users (twitch_username, twitch_id, osu_username, osu_id, enabled, updated_at)"
+                f" VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                (twitch_username, twitch_id, osu_username, osu_user_id, enabled_status, datetime.now()))
+        else:
+            await self.c.execute(f"UPDATE users SET osu_username=?1, osu_id=?2, updated_at=?3 WHERE twitch_username=?4",
+                                 (osu_username, osu_user_id, datetime.now(), twitch_username))
+        await self.conn.commit()
+        return self.c.lastrowid
+
     async def get_user_from_twitch_id(self, twitch_id: str) -> DBUser:
         await self.c.execute('SELECT * FROM users WHERE twitch_id=?', (twitch_id,))
         user_details = await self.c.fetchone()
@@ -53,7 +81,7 @@ class UserDatabase(BaseDatabase):
                            for setting in all_settings if setting['key'] not in self.value_setting_keys]
 
         value_settings = [{**dict(setting), **{'type': 'value', 'value': setting['default_value']}}
-                           for setting in all_settings if setting['key'] in self.value_setting_keys]
+                          for setting in all_settings if setting['key'] in self.value_setting_keys]
 
         await self.c.execute('SELECT * FROM range_settings')
         all_range_settings = await self.c.fetchall()
