@@ -13,14 +13,9 @@
   tokenStore.useLocalStorage();
 
   let cookieToken = Cookies.get("token");
-  let error = Cookies.get("error");
 
   if (cookieToken) {
       tokenStore.setToken(cookieToken);
-  }
-
-  if (error) {
-      Cookies.remove("error");
   }
 </script>
 
