@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import APIRouter
+from starlette.responses import Response
 
 from backend.models import UserSetting
 from backend.utils.jwt import decode_jwt
@@ -55,3 +56,10 @@ async def save_user_settings(payload: UserSetting):
 
     await USER_DB.set_excluded_users(user_id=user_id, excluded_users=excluded_users)
     return
+
+
+@router.get('/logout', summary="Logout user")
+async def logout(response: Response):
+    response.delete_cookie(key="token")
+    response.delete_cookie(key="user_details")
+    return {"status": "Successful"}
