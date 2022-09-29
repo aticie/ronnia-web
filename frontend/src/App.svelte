@@ -1,6 +1,5 @@
 <script>
   import {navigate, Route, Router} from "svelte-navigator";
-  import {tokenStore} from "./store";
   import Cookies from "js-cookie";
 
   import {SvelteToast} from "@zerodevx/svelte-toast";
@@ -9,14 +8,9 @@
   import Signup from "./routes/signup.svelte";
 
   import urls from "./urls.json";
+  import axios from "axios";
 
-  tokenStore.useLocalStorage();
-
-  let cookieToken = Cookies.get("token");
-
-  if (cookieToken) {
-      tokenStore.setToken(cookieToken);
-  }
+  axios.defaults.withCredentials = true;
 </script>
 
 <main class="w-full max-w-xl flex flex-col gap-4">
@@ -26,7 +20,7 @@
 
   <Router>
     <Route path="/">
-      {#if $tokenStore === 0}
+      {#if !Cookies.get("token")}
         { navigate("/login") }
       {:else}
         { navigate("/settings") }
