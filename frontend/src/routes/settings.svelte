@@ -47,8 +47,9 @@
         toast.push("Saved your settings!");
     };
 
-    const logout = () => {
-        Cookies.remove("token");
+    const logout = async () => {
+        await axios.get("/logout");
+
         navigate("/");
     }
 </script>
