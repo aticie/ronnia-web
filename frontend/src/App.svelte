@@ -1,6 +1,5 @@
 <script>
   import {navigate, Route, Router} from "svelte-navigator";
-  import {tokenStore} from "./store";
   import Cookies from "js-cookie";
 
   import {SvelteToast} from "@zerodevx/svelte-toast";
@@ -9,19 +8,9 @@
   import Signup from "./routes/signup.svelte";
 
   import urls from "./urls.json";
+  import axios from "axios";
 
-  tokenStore.useLocalStorage();
-
-  let cookieToken = Cookies.get("token");
-  let error = Cookies.get("error");
-
-  if (cookieToken) {
-      tokenStore.setToken(cookieToken);
-  }
-
-  if (error) {
-      Cookies.remove("error");
-  }
+  axios.defaults.withCredentials = true;
 </script>
 
 <main class="w-full max-w-xl flex flex-col gap-4">
@@ -31,7 +20,7 @@
 
   <Router>
     <Route path="/">
-      {#if $tokenStore === 0}
+      {#if !Cookies.get("token")}
         { navigate("/login") }
       {:else}
         { navigate("/settings") }
@@ -42,7 +31,7 @@
     <Route path="/settings" component={Settings}/>
   </Router>
 
-  <div class="flex justify-end justify-between items-center flex-row-reverse gap-4 footer">
+  <div class="flex justify-between items-center gap-4 footer">
     <div class="flex gap-2">
       <a href={urls.discordUrl}>
         <img src="/public/discordLogo.svg" class="icon h-10 w-10" alt="discord icon"/>
@@ -52,6 +41,6 @@
       </a>
     </div>
 
-    <p class="hidden md:block md:mr-auto">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
+    <p class="hidden md:block">Thanks to Sibyl#3838 and bora#5130 for website and frontend design.</p>
   </div>
 </main>

@@ -2,8 +2,8 @@
     import axios from "axios";
     import Settings from "../components/Settings.svelte";
     import {navigate} from "svelte-navigator";
-    import {tokenStore} from "../store";
     import {toast} from "@zerodevx/svelte-toast";
+    import Cookies from "js-cookie";
 
     let username;
     let userAvatarUrl;
@@ -11,29 +11,34 @@
     let userSettings = [];
     let userExcludes = [];
 
+    let token = Cookies.get("token");
+    if (!token) {
+        navigate("/");
+    } else {
+        getUser();
+    }
+
     const getUser = async () => {
         try {
             const response = await axios.get("/user_details", {
-                params: {jwt_token: $tokenStore},
+                params: {jwt_token: token},
             });
             username = response.data["username"];
             userAvatarUrl = response.data["avatar_url"];
             userSettings = response.data["settings"];
             userExcludes = response.data["excluded_users"];
         } catch {
-            tokenStore.setToken(0);
+            Cookies.remove("token");
             navigate("/");
         }
     };
-
-    getUser();
 
     let disabled = false;
     const saveSettings = async () => {
         disabled = true;
 
         await axios.post("/save_user_settings", {
-            jwt_token: $tokenStore,
+            jwt_token: token,
             settings: userSettings,
             excluded_users: userExcludes,
         });
@@ -42,8 +47,9 @@
         toast.push("Saved your settings!");
     };
 
-    const logout = () => {
-        tokenStore.delToken();
+    const logout = async () => {
+        await axios.get("/logout");
+
         navigate("/");
     }
 </script>
