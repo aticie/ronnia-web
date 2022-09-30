@@ -147,8 +147,8 @@ async def fetch_user_from_token(headers, me_endpoint, user_details_jwt: Optional
 
         else:
             # We can sign-up the user by sending a message to message queue.
-            user_id = await USER_DB.add_user(twitch_username=signup_details["osu_username"],
-                                             osu_username=signup_details["twitch_username"],
+            user_id = await USER_DB.add_user(twitch_username=signup_details["twitch_username"],
+                                             osu_username=signup_details["osu_username"],
                                              twitch_id=signup_details["twitch_id"],
                                              osu_user_id=signup_details["osu_id"],
                                              enabled_status=1)
