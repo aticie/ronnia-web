@@ -6,6 +6,7 @@ interface ImportMetaEnv {
 
   readonly VITE_TWITCH_AUTH: string
   readonly VITE_OSU_AUTH: string
+  readonly VITE_API_BASE: string
 }
 
 interface ImportMeta {
