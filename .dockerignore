@@ -1,7 +1,0 @@
-.vscode
-venv*
-mount
-frontend/node_modules
-frontend/dist
-.pytest_cache
-.github

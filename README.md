@@ -1,63 +1,18 @@
-![codeql-analysis](https://github.com/aticie/ronnia-web/actions/workflows/codeql-analysis.yml/badge.svg)
-![docker-build](https://img.shields.io/docker/cloud/build/eatici/ronnia-web)
-<div align="center">
+# Vue 3 + TypeScript + Vite
 
-# ronnia-web - A Dashboard Interface for ronnia
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-</div>
+## Recommended IDE Setup
 
-**[ronnia](https://github.com/aticie/ronnia)** is a Twitch/osu! bot that sends beatmap requests from Twitch chat to the streamer's in-game messages.
+- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-ronnia-web displays the ronnia dashboard for user settings.
+## Type Support For `.vue` Imports in TS
 
-## Usage
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
 
-You can check out ronnia dashboard at https://ronnia.me/
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
-## Setup
-
-To build frontend:
-
-```shell
-> npm install
-> npm run build
-```
-
-Requirements for backend can be installed with:
-
-`pip install fastapi uvicorn[standard] aiohttp aiofiles python-jose[cryptography]`
-
-Required environment variables for running:
-
-```
-OSU_CLIENT_SECRET=****
-OSU_CLIENT_ID=2408
-TWITCH_CLIENT_ID=****
-TWITCH_CLIENT_SECRET=****
-OSU_REDIRECT_URI=http://localhost:8000/identify
-TWITCH_REDIRECT_URI=http://localhost:8000/twitch_identify
-SECRET_KEY = "****"  # Secret key required for encoding JWT token
-ALGORITHM = "HS256"  # Algorithm for encoding JWT token
-DB_DIR=mount
-```
-
-### Docker 🐳
-
-#### Docker Hub releases
-
-Releases from 1.1.0 and onwards are published to Docker hub automatically. 
-[You can find the repository here.](https://hub.docker.com/r/eatici/ronnia-web)
-
-Use the release tag you want to use in docker-compose with the given template. 
-
-```yaml
-...
-services:
-  ronnia-web:
-    build: .
-    image: eatici/ronnia-web:release-v1.x.x <- change the tag here!
-```
-
-To host the website locally:
-
-`docker-compose up -d`
+1. Disable the built-in TypeScript Extension
+   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
