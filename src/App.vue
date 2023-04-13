@@ -6,7 +6,7 @@ import Footer from './components/Footer.vue';
 const router = useRouter();
 const cookies = useCookies();
 
-if (!cookies.get("token")) {
+if (!cookies.get("token") && !import.meta.env.DEV) {
   router.replace("/login");
 } else {
   router.replace("/settings");
@@ -15,7 +15,7 @@ if (!cookies.get("token")) {
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <main class="grow flex flex-col max-w-2xl w-full mx-auto lg:p-8 gap-4">
+    <main class="grow flex flex-col max-w-2xl h-full w-full mx-auto lg:p-8 gap-4">
       <h1 class="text-center text-4xl font-bold">Ronnia Dashboard</h1>
       
       <RouterView v-slot="{ Component }">
@@ -23,7 +23,9 @@ if (!cookies.get("token")) {
           <component :is="Component" />
 
           <template #fallback>
-            <p>loading</p>
+            <div class="grow grid place-content-center">
+              <p>loading..</p>
+            </div>
           </template>
         </Suspense>
       </RouterView>

@@ -18,8 +18,10 @@ try {
 
 
 } catch {
-  cookies.remove("token");
-  router.replace("/login");
+  if (!import.meta.env.DEV) {
+    cookies.remove("token");
+    router.replace("/login");
+  }
 }
 </script>
 
