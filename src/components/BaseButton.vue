@@ -1,11 +1,14 @@
 <template>
   <button
     class="
-      flex-1 flex items-center gap-2
+      flex items-center gap-2
       bg-red hover:bg-neutral-800 transition-colors
-      p-2 py-1.5 rounded
-      font-bold select-none
+      p-4 py-2 rounded
+      text-sm select-none
     ">
+    <div v-if="$slots.icon" class="h-7 aspect-square">
+      <slot name="icon"></slot>
+    </div>
     <slot></slot>
   </button>
 </template>
