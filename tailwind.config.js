@@ -9,9 +9,6 @@ export default {
       colors: {
         red: {
           DEFAULT: "#da0037",
-        },
-        dark: {
-          DEFAULT: "#101010"
         }
       }
     },

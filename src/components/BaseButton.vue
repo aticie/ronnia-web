@@ -6,7 +6,7 @@
       p-4 py-2 rounded
       text-sm select-none
     ">
-    <div v-if="$slots.icon" class="h-7 aspect-square">
+    <div v-if="$slots.icon" class="h-6 aspect-square">
       <slot name="icon"></slot>
     </div>
     <slot></slot>
