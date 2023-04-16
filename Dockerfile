@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:1.24.0-alpine
 
 # Copy the build files
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
