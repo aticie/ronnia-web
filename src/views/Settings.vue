@@ -111,7 +111,7 @@ const settings = ref(data.value.settings);
     </BaseButton>
   </div>
 
-  <div class="flex flex-col gap-2">
+  <div class="grid gap-8 w-full max-w-lg">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <img :src="data?.avatar_url" class="h-12 aspect-square rounded" />
