@@ -35,31 +35,36 @@ watch([elementX, pressed], () => {
 
   let x = props.max * leftOffset.value / 100;
   emit("update:modelValue", x);
-
-  console.log(props.modelValue);
 })
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full relative">
     <div ref="track" class="
-      flex items-center grow rounded-full
-      bg-neutral-950 h-2.5
-    ">
+        flex items-center grow rounded-full relative
+        bg-neutral-950 h-2.5
+      ">
       <div class="flex items-center w-full h-full mr-4 relative inset-0">
-        <div class="absolute w-5 h-5 bg-red rounded-full" :style="{
+        <button class="absolute w-5 h-5 bg-red rounded-full" :style="{
           left: `${leftOffset}%`
         }" />
 
         <div class="absolute h-full bg-red rounded-full" :style="{
           width: `${leftOffset + 1}%`
         }" />
+
+        <p v-if="dragging"
+          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-red" :style="{
+            left: `${leftOffset}%`
+          }">
+          {{ modelValue.toFixed(1) }}
+        </p>
       </div>
     </div>
 
     <div>
       <div class="flex p-2 pb-0 justify-between">
-        <p v-for="i in pipStep">{{ i * pipStep }}</p>
+        <p v-for="i in pipStep" class="select-none text-xs text-neutral-500 font-bold">{{ i * pipStep }}</p>
       </div>
     </div>
   </div>
