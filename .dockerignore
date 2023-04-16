@@ -1,0 +1,7 @@
+.vscode
+.idea_bkp
+.idea
+node_modules
+backend
+frontend
+venv
