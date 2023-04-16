@@ -17,14 +17,19 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="grid gap-4 w-full max-w-sm p-4 rounded">
-    <div>
-      <div class="ml-0.5 mb-1 font-semibold">
-        <p v-if="!signup">Log in Ronnia with:</p>
-        <p v-else>Complete your sign-up to Ronnia with</p>
+  <div class="grid gap-8 w-full max-w-sm rounded">
+    <div class="flex flex-col gap-20">
+      <div class="flex justify-center items-end -ml-8">
+        <img src="/favicon.png" class="h-10 -mr-1 -mb-0.5" />
+        <h1 class="font-bold text-center">onnia Dashboard</h1>
       </div>
 
       <div class="grid gap-2">
+        <div class="ml-0.5 font-semibold">
+          <p v-if="!signup">Log in with:</p>
+          <p v-else>Complete your sign-up to Ronnia with</p>
+        </div>
+
         <a v-if="!signup || signup === 'osu'" :href="twitchAuth">
           <BaseButton class="w-full">
             <template #icon>
