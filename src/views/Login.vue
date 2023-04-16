@@ -20,8 +20,9 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
   <div class="grid gap-8 w-full max-w-sm rounded">
     <div class="flex flex-col gap-20">
       <div class="flex justify-center items-end -ml-8">
-        <img src="/favicon.png" class="h-10 -mr-1 -mb-0.5" />
-        <h1 class="font-bold text-center">onnia Dashboard</h1>
+        <h1 class="font-bold text-center text-xl">
+          <span class="text-rose-700 text-2xl translate-y-[0.450px] translate-x-[3px] inline-block">R</span>
+          onnia Dashboard</h1>
       </div>
 
       <div class="grid gap-2">

@@ -26,7 +26,11 @@ const settings = ref(data.value?.settings);
 </script>
 
 <template>
-  <div v-if="error || !data" class="flex flex-col text-center">
+  <div 
+    v-if="error || !data" 
+    class="grid gap-4 p-4 bg-rose-800 rounded"
+  >
+    <p>{{ error }}</p>
     <BaseButton @click="execute">
       <template #icon>
         <IconRefresh :class="{ 'animate-spin': isFetching }" />
@@ -36,7 +40,7 @@ const settings = ref(data.value?.settings);
   </div>
 
   <div v-else class="grid gap-2 w-full max-w-lg">
-    <p class="font-bold text-lg text-white bg-red w-fit p-2 rounded mb-10">
+    <p class="font-bold text-lg text-white bg-rose-700 w-fit p-2 rounded mb-10">
       Dashboard
     </p>
 

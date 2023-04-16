@@ -7,7 +7,7 @@ defineEmits(["update:modelValue"]);
 
 <template>
   <input 
-    class="appearance-none w-5 h-5 bg-neutral-950 rounded-md checked:bg-red checked:bg-[url('/tick.svg')]"
+    class="appearance-none w-5 h-5 bg-neutral-950 rounded-md checked:bg-rose-700 checked:bg-[url('/tick.svg')]"
     type="checkbox"
     :value="modelValue"
     :checked="modelValue"

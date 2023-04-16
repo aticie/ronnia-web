@@ -45,11 +45,11 @@ watch([elementX, pressed], () => {
         bg-neutral-950 h-2.5
       ">
       <div class="flex items-center w-full h-full mr-4 relative inset-0">
-        <button class="absolute w-5 h-5 bg-red rounded-full" :style="{
+        <button class="absolute w-5 h-5 bg-rose-700 rounded-full" :style="{
           left: `${leftOffset}%`
         }" />
 
-        <div class="absolute h-full bg-red rounded-full" :style="{
+        <div class="absolute h-full bg-rose-700 rounded-full" :style="{
           width: `${leftOffset + 1}%`
         }" />
 
