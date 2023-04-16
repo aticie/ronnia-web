@@ -4,13 +4,13 @@ interface SettingBase {
   description: string
 }
 
-interface SettingToggle extends SettingBase {
+export interface SettingToggle extends SettingBase {
   default_value: number,
   value: number,
   type: "toggle" | "value",
 }
 
-interface SettingRange extends SettingBase {
+export interface SettingRange extends SettingBase {
   default_low: number,
   default_high: number,
   range_start: number,
@@ -18,9 +18,9 @@ interface SettingRange extends SettingBase {
   type: "range" 
 }
 
-type Setting = SettingToggle | SettingRange;
+export type Setting = SettingToggle | SettingRange;
 
-interface UserDetails {
+export interface UserDetails {
   command: string,
   osu_username: string,
   osu_id: number,

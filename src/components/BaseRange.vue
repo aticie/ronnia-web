@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useMouseInElement, useMousePressed } from '@vueuse/core';
 

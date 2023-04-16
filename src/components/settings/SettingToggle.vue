@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SettingBase from "./SettingBase.vue";
 import BaseCheckbox from '../BaseCheckbox.vue';
+import { SettingToggle } from "../../types";
 
 defineProps<{
   data: SettingToggle

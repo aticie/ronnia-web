@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SettingBase from "./SettingBase.vue";
 import BaseRange from "../BaseRange.vue";
+import { SettingRange } from "../../types";
 
 defineProps<{
   data: SettingRange

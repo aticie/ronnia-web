@@ -1,6 +1,6 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts">
 defineProps<{
-  modelValue?: T
+  modelValue?: any
 }>();
 defineEmits(["update:modelValue"]);
 </script>
@@ -10,7 +10,7 @@ defineEmits(["update:modelValue"]);
     class="appearance-none w-5 h-5 bg-neutral-950 rounded-md checked:bg-red checked:bg-[url('/tick.svg')]"
     type="checkbox"
     :value="modelValue"
-    :checked="modelValue as boolean"
+    :checked="modelValue"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).checked)"
   />
 </template>
