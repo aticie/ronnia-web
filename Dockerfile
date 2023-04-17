@@ -31,5 +31,7 @@ FROM nginx:1.24.0-alpine
 # Copy the build files
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+COPY default.conf /etc/nginx/conf.d/default.conf
+
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
