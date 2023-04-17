@@ -5,13 +5,22 @@ FROM node:18.16.0-alpine3.17 as builder
 WORKDIR /app
 
 # Copy the package.json and package-lock.json
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --ignore-scripts true
 
 # Copy the rest of the files
-COPY . .
+COPY ./src ./src
+COPY ./public ./public
+COPY ./.env.local ./.env
+COPY ./tsconfig.json ./
+COPY ./tsconfig.node.json ./
+COPY ./vite.config.ts ./
+COPY ./postcss.config.js ./
+COPY ./tailwind.config.js ./
+COPY ./index.html ./
 
 # Build the app
 RUN npm run build
