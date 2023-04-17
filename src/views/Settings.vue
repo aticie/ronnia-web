@@ -24,6 +24,69 @@ const { data, error, execute, isFetching } = await useFetch<UserDetails>(
 
 const settings = ref<SettingType[] | undefined>(data.value?.settings);
 
+settings.value =
+  [
+    {
+      "id": 1,
+      "key": "echo",
+      "default_value": 1,
+      "description": "Enables Twitch chat acknowledge message.",
+      "type": "toggle",
+      "value": 1
+    },
+    {
+      "id": 2,
+      "key": "enable",
+      "default_value": 1,
+      "description": "Enables the bot.",
+      "type": "toggle",
+      "value": 1
+    },
+    {
+      "id": 3,
+      "key": "sub-only",
+      "default_value": 0,
+      "description": "Subscribers only request mode.",
+      "type": "toggle",
+      "value": 0
+    },
+    {
+      "id": 4,
+      "key": "cp-only",
+      "default_value": 0,
+      "description": "Channel Points only request mode.",
+      "type": "toggle",
+      "value": 0
+    },
+    {
+      "id": 5,
+      "key": "test",
+      "default_value": 0,
+      "description": "Enables test mode.",
+      "type": "toggle",
+      "value": 0
+    },
+    {
+      "id": 1,
+      "key": "sr",
+      "default_low": -1.0,
+      "default_high": -1.0,
+      "description": "Set star rating limit for requests.",
+      "type": "range",
+      "range_start": -1.0,
+      "range_end": -1.0
+    },
+    {
+      "id": 6,
+      "key": "cooldown",
+      "default_value": 30,
+      "description": "Cooldown for requests.",
+      "type": "value",
+      "value": 30
+    }
+  ]
+
+
 const logout = () => {
   cookies.remove("token");
   router.replace("/login");
@@ -31,10 +94,7 @@ const logout = () => {
 </script>
 
 <template>
-  <div 
-    v-if="error || !data" 
-    class="grid gap-4 p-4 bg-rose-800 rounded"
-  >
+  <div v-if="error || !data" class="grid gap-4 p-4 bg-rose-800 rounded">
     <p>{{ error }}</p>
     <BaseButton @click="execute">
       <template #icon>
@@ -44,15 +104,15 @@ const logout = () => {
     </BaseButton>
   </div>
 
-  <div v-else class="grid gap-2 w-full max-w-lg">
+  <div class="grid gap-2 w-full max-w-lg">
     <p class="font-bold text-lg text-white bg-rose-700 w-fit p-2 rounded mb-10">
       Dashboard
     </p>
 
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <img :src="data.avatar_url" class="h-12 aspect-square rounded" />
-        <p>{{ data.osu_username }}</p>
+        <img :src="data?.avatar_url" class="h-12 aspect-square rounded" />
+        <p>{{ data?.osu_username }}</p>
       </div>
       <BaseButton @click="logout">
         <template #icon>
