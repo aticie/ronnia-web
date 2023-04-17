@@ -23,6 +23,11 @@ const { data, error, execute, isFetching } = await useFetch<UserDetails>(
 );
 
 const settings = ref(data.value?.settings);
+
+const logout = () => {
+  cookies.remove("token");
+  router.replace("/login");
+}
 </script>
 
 <template>
@@ -49,7 +54,7 @@ const settings = ref(data.value?.settings);
         <img :src="data.avatar_url" class="h-12 aspect-square rounded" />
         <p>{{ data.osu_username }}</p>
       </div>
-      <BaseButton>
+      <BaseButton @click="logout">
         <template #icon>
           <IconLogout />
         </template>
