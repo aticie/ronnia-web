@@ -8,7 +8,7 @@ import SettingsRange from "../components/settings/SettingRange.vue";
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { useFetch } from "@vueuse/core";
 import { useRouter } from 'vue-router';
-import { UserDetails } from "../types";
+import { UserDetails, SettingType } from "../types";
 import { ref } from "vue";
 
 const router = useRouter();
@@ -22,7 +22,7 @@ const { data, error, execute, isFetching } = await useFetch<UserDetails>(
   })}`
 );
 
-const settings = ref(data.value?.settings);
+const settings = ref<SettingType[] | undefined>(data.value?.settings);
 
 const logout = () => {
   cookies.remove("token");
