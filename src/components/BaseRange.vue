@@ -3,10 +3,10 @@ import { computed, reactive, ref, watch } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
 
 const props = defineProps<{
-  modelValue?: [number, number];
+  modelValue: [number, number] | number;
   min: number;
   max: number;
-  pipStep: number;
+  pipStep?: number;
   range?: boolean;
 }>();
 
@@ -56,31 +56,46 @@ watch(offset, () => {
 
   thumbRight.offset = Math.min(
     Math.max(offset.value, thumbLeft.offset),
-    props.max
-  );
-  
-  emit("update:modelValue", [
-    (props.max * thumbLeft.offset) / 100,
-    (props.max * thumbRight.offset) / 100,
-  ]);
-});
-
-watch(offset, () => {
-  if (shouldDrag(thumbLeft.dragging, leftPressed.value)) {
-    thumbRight.dragging = false;
-    return;
-  }
-
-  thumbLeft.offset = Math.max(
-    Math.min(offset.value, thumbRight.offset),
-    props.min
+    100
   );
 
-  emit("update:modelValue", [
-    (props.max * thumbLeft.offset) / 100,
-    (props.max * thumbRight.offset) / 100,
-  ]);
+  // let interPolatedMax = 
+  //   ((thumbRight.offset - 0) * (props.max - props.min) / (100 - 0)) + 0
+  let interPolatedMax = 
+    props.min + ((thumbRight.offset - 0) / (100 - 0) * (props.max - props.min))
+
+  emit(
+    "update:modelValue",
+    Array.isArray(props.modelValue)
+      ? [
+          props.min + ((thumbLeft.offset - 0) / (100 - 0) * (props.max - props.min)),
+          interPolatedMax
+        ]
+      : interPolatedMax
+  );
 });
+
+if (props.range) {
+  watch(offset, () => {
+    if (shouldDrag(thumbLeft.dragging, leftPressed.value)) {
+      thumbRight.dragging = false;
+      return;
+    }
+
+    thumbLeft.offset = Math.max(
+      Math.min(offset.value, thumbRight.offset),
+      props.min
+    );
+
+    let interPolatedMax = 
+      props.min + ((thumbRight.offset - 0) / (100 - 0) * (props.max - props.min))
+
+    emit("update:modelValue", [
+      props.min + ((thumbLeft.offset - 0) / (100 - 0) * (props.max - props.min)),
+      interPolatedMax
+    ]);
+  });
+}
 </script>
 
 <template>
@@ -119,13 +134,13 @@ watch(offset, () => {
         />
 
         <p
-          v-if="leftPressed"
+          v-if="leftPressed && range"
           class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-700 select-none"
           :style="{
             left: `${thumbLeft.offset}%`,
           }"
         >
-          {{ modelValue?.[0].toFixed(1) }}
+          {{ (Array.isArray(modelValue) ? modelValue[0] : modelValue).toFixed(1) }}
         </p>
 
         <!-- right thumb value -->
@@ -136,12 +151,12 @@ watch(offset, () => {
             left: `${thumbRight.offset}%`,
           }"
         >
-          {{ modelValue?.[1].toFixed(1) }}
+          {{ (Array.isArray(modelValue) ? modelValue[1] : modelValue).toFixed(1) }}
         </p>
       </div>
     </div>
 
-    <div>
+    <div v-if="pipStep">
       <div class="flex p-2 pb-0 justify-between">
         <p
           v-for="i in pipStep"

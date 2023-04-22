@@ -8,7 +8,10 @@ const props = defineProps<{
   data: SettingRange;
 }>();
 
-const values = ref<[number, number]>([props.data.range_start, props.data.range_end]);
+let start = props.data.range_start === -1 ? 0 : props.data.range_start;
+let end = props.data.range_end === -1 ? 10 : props.data.range_end;
+
+const values = ref<[number, number]>([start, end]);
 </script>
 
 <template>
@@ -16,8 +19,7 @@ const values = ref<[number, number]>([props.data.range_start, props.data.range_e
     <BaseRange
       v-model="values"
       :min="0"
-      :max="100"
-      :pipStep="10"
+      :max="10"
       range
     />
   </SettingBase>
