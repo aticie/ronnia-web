@@ -17,9 +17,9 @@ const token = cookies.get<string>("token");
 if (!token && !import.meta.env.DEV) router.replace("/login");
 
 const { data, error, execute, isFetching } = await useFetch<UserDetails>(
-  `${import.meta.env.VITE_API_BASE}/user_details?${new URLSearchParams({
-    jwt_token: token,
-  })}`
+  `${import.meta.env.VITE_API_BASE}/user_details`,
+
+    {credentials: "same-origin"}
 );
 
 const settings = ref<SettingType[] | undefined>(data.value?.settings);

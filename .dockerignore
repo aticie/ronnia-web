@@ -1,7 +1,8 @@
 .vscode
 .idea_bkp
 .idea
+mount
 node_modules
 backend
 frontend
-venv
+venv*
