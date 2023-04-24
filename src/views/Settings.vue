@@ -21,12 +21,13 @@ if (!token && !import.meta.env.DEV) router.replace("/login");
 const { data, error, execute, isFetching } = await useFetch<UserDetails>(
   `${import.meta.env.VITE_API_BASE}/user_details`,
   { credentials: "include" }
-);
+).json();
 
-const settings = ref<SettingType[] | undefined>(data.value?.settings);
+// const settings = ref<SettingType[] | undefined>(data.value?.settings);
 
 const logout = () => {
   cookies.remove("token");
+  cookies.remove("signup");
   router.replace("/login");
 };
 </script>
@@ -42,15 +43,15 @@ const logout = () => {
     </BaseButton>
   </div>
 
-  <div class="grid gap-2 w-full max-w-lg">
+  <div v-else class="grid gap-2 w-full max-w-lg">
     <p class="font-bold text-lg text-white bg-rose-700 w-fit p-2 rounded mb-10">
       Dashboard
     </p>
 
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <img :src="data?.avatar_url" class="h-12 aspect-square rounded" />
-        <p>{{ data?.osu_username }}</p>
+        <img :src="data.osu_avatar_url" class="h-12 aspect-square rounded" />
+        <p>{{ data.osu_username }}</p>
       </div>
       <BaseButton @click="logout">
         <template #icon>
@@ -60,7 +61,7 @@ const logout = () => {
       </BaseButton>
     </div>
 
-    <div class="grid gap-2">
+    <!-- <div class="grid gap-2">
       <template v-for="setting in settings">
         <SettingToggle v-if="setting.type === 'toggle'" :data="setting" />
 
@@ -70,6 +71,6 @@ const logout = () => {
 
         <SettingsRange v-if="setting.type === 'range'" :data="setting" />
       </template>
-    </div>
+    </div> -->
   </div>
 </template>

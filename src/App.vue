@@ -8,7 +8,7 @@ const cookies = useCookies();
 
 const isDev = import.meta.env.DEV;
 
-if (!cookies.get("token") && !import.meta.env.DEV) {
+if (!cookies.get("token")) {
   router.replace("/login");
 } else {
   router.replace("/settings");
