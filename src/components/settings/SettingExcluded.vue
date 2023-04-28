@@ -2,6 +2,7 @@
 import BaseButton from "../BaseButton.vue";
 import SettingBase from "./SettingBase.vue";
 import IconAdd from "../icons/IconAdd.vue";
+import IconDelete from "../icons/IconDelete.vue";
 import { ref } from "vue";
 
 const userId = ref<number>();
@@ -12,6 +13,10 @@ const addUser = () => {
   userIds.value.push(userId.value);
 
   userId.value = undefined;
+};
+
+const removeUser = (index: number) => {
+  userIds.value.splice(index, 1);
 };
 </script>
 
@@ -39,7 +44,7 @@ const addUser = () => {
       Users
     </p>
     <ul
-      class="bg-neutral-950 w-full rounded divide-y divide-neutral-800 overflow-hidden"
+      class="bg-neutral-950 w-full relative rounded divide-y divide-neutral-800 overflow-hidden"
     >
       <p
         v-if="userIds.length === 0"
@@ -47,13 +52,43 @@ const addUser = () => {
       >
         You can add users that should be excluded here!
       </p>
-      <li
-        v-for="id in userIds"
-        :key="id"
-        class="p-2 hover:bg-neutral-800 transition-colors"
-      >
-        {{ id }}
-      </li>
+      <TransitionGroup name="ids">
+        <li
+          v-for="(id, index) in userIds"
+          :key="id"
+          class="flex items-center justify-between p-1 group"
+        >
+          <p class="ml-2">{{ id }}</p>
+          <BaseButton
+            class="translate-x-full group-hover:translate-x-0 transition-transform"
+            @click="removeUser(index)"
+          >
+            <template #icon>
+              <IconDelete />
+            </template>
+            <p>Delete</p>
+          </BaseButton>
+        </li>
+      </TransitionGroup>
     </ul>
   </SettingBase>
 </template>
+
+<style scoped>
+.ids-move {
+  transition: all 500ms ease-in-out;
+}
+
+.ids-leave-active, .ids-enter-active {
+  transition: all 500ms ease-in-out;
+}
+
+.ids-leave-active {
+  position: absolute;
+  width: 100%;
+}
+
+.ids-enter-from, .ids-leave-to {
+  opacity: 0;
+}
+</style>
