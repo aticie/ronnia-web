@@ -12,6 +12,7 @@ import { useFetch } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { UserDetails } from "../types";
 import { ref } from "vue";
+import SettingExcluded from "../components/settings/SettingExcluded.vue";
 
 const router = useRouter();
 const cookies = useCookies();
@@ -59,6 +60,10 @@ const logout = () => {
         </template>
         <p>Logout</p>
       </BaseButton>
+    </div>
+
+    <div class="grid gap-2">
+      <SettingExcluded />
     </div>
 
     <!-- <div class="grid gap-2">

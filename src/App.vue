@@ -16,7 +16,7 @@ if (!cookies.get("token")) {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col justify-center items-center">
+  <div class="p-2 min-h-screen flex flex-col justify-center items-center">
     <RouterView v-slot="{ Component }">
       <Suspense :timeout="0">
         <component :is="Component" />
