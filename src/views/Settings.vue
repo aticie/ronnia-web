@@ -62,10 +62,6 @@ const logout = () => {
       </BaseButton>
     </div>
 
-    <div class="grid gap-2">
-      <SettingExcluded />
-    </div>
-
     <!-- <div class="grid gap-2">
       <template v-for="setting in settings">
         <SettingToggle v-if="setting.type === 'toggle'" :data="setting" />
