@@ -10,7 +10,7 @@ import BaseRange from "../components/BaseRange.vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useFetch } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import { UserDetails, SettingType } from "../types";
+import { UserDetails } from "../types";
 import { ref } from "vue";
 
 const router = useRouter();
