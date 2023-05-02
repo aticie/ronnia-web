@@ -10,8 +10,7 @@ const userIds = ref<Array<number>>([]);
 
 const addUser = () => {
   if (!userId.value) return;
-  userIds.value.push(userId.value);
-
+  userIds.value.unshift(userId.value);
   userId.value = undefined;
 };
 
@@ -22,7 +21,7 @@ const removeUser = (index: number) => {
 
 <template>
   <SettingBase class="flex-col gap-2">
-    <p class="text-neutral-500 font-bold text-left w-full text-sm ml-2 mt-2">
+    <p class="text-neutral-500 font-bold text-left w-full text-sm ml-2">
       User to be excluded
     </p>
 
@@ -52,43 +51,22 @@ const removeUser = (index: number) => {
       >
         You can add users that should be excluded here!
       </p>
-      <TransitionGroup name="ids">
-        <li
-          v-for="(id, index) in userIds"
-          :key="id"
-          class="flex items-center justify-between p-1 group"
+      <li
+        v-for="(id, index) in userIds"
+        :key="id"
+        class="flex items-center justify-between p-1 group"
+      >
+        <p class="ml-2">{{ id }}</p>
+        <BaseButton
+          class="translate-x-full group-hover:translate-x-0 transition-transform"
+          @click="removeUser(index)"
         >
-          <p class="ml-2">{{ id }}</p>
-          <BaseButton
-            class="translate-x-full group-hover:translate-x-0 transition-transform"
-            @click="removeUser(index)"
-          >
-            <template #icon>
-              <IconDelete />
-            </template>
-            <p>Delete</p>
-          </BaseButton>
-        </li>
-      </TransitionGroup>
+          <template #icon>
+            <IconDelete />
+          </template>
+          <p>Delete</p>
+        </BaseButton>
+      </li>
     </ul>
   </SettingBase>
 </template>
-
-<style scoped>
-.ids-move {
-  transition: all 500ms ease-in-out;
-}
-
-.ids-leave-active, .ids-enter-active {
-  transition: all 500ms ease-in-out;
-}
-
-.ids-leave-active {
-  position: absolute;
-  width: 100%;
-}
-
-.ids-enter-from, .ids-leave-to {
-  opacity: 0;
-}
-</style>

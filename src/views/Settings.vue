@@ -4,6 +4,7 @@ import { useFetch } from "@vueuse/core";
 import { ref } from "vue";
 
 import TheUser from '../components/TheUser.vue';
+import SettingExcluded from "../components/settings/SettingExcluded.vue";
 import SettingToggle from "../components/settings/SettingToggle.vue";
 import SettingBase from "../components/settings/SettingBase.vue";
 import BaseRange from "../components/BaseRange.vue";
@@ -37,6 +38,8 @@ const settings = ref(data.value);
           <BaseRange v-model="setting.value" :min="0" :max="10" :pipStep="1" range />
         </SettingBase>
       </template>
+
+      <SettingExcluded />
     </div>
   </div>
 </template>
