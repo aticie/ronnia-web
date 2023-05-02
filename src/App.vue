@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Development from "./components/Development.vue";
+import Development from "./components/TheDevRouter.vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useRouter } from 'vue-router';
 
