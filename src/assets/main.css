@@ -9,4 +9,17 @@
     font-family: "Inter", sans-serif;
     @apply bg-neutral-950 text-white;
   }
+
+  ::-webkit-scrollbar {
+    @apply w-4;
+    @apply rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+
+    @apply bg-neutral-200 dark:bg-neutral-800;
+    @apply border-4 border-solid border-transparent;
+    @apply rounded-full;
+  }
 }
