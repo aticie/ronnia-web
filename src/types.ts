@@ -1,42 +1,31 @@
-// interface Setting {
-//   id: number,
-//   key: string,
-//   description: string
-// }
+export interface Setting {
+  name: string,
+  type: "toggle" | "value" | "range",
+  description: string
+}
 
-// export interface SettingToggle extends Setting {
-//   default_value: number,
-//   value: number,
-//   type: "toggle" | "value",
-// }
+export interface SettingValue extends Setting {
+  value: number,
+  type: "value"
+}
 
-// export interface SettingRange extends Setting {
-//   default_low: number,
-//   default_high: number,
-//   range_start: number,
-//   range_end: number
-//   type: "range" 
-// }
+export interface SettingRange extends Setting {
+  value: [number, number],
+  type: "range"
+}
 
-// export type SettingType = SettingRange | SettingToggle;
+export interface SettingToggle extends Setting {
+  value: 1 | 0,
+  type: "toggle"
+}
+
+export type Settings = (SettingValue | SettingRange | SettingToggle)[];
 
 export interface UserDetails {
-  exp: number,
-  osu_avatar_url: string,
-  osu_id: number,
-  osu_username: string,
-  twitch_avatar_url: string,
-  twitch_id: number,
-  twitch_username: string
-  // command: string,
-  // osu_username: string,
-  // osu_id: number,
-  // twitch_username: string,
-  // twitch_id: string,
-  // avatar_url: string,
-  // user_id: number,
-  // username: string,
-  // exp: number,
-  // excluded_users: string[],
-  // settings: SettingType[]
+  osuId: number,
+  osuUsername: string,
+  osuAvatarUrl: string,
+  twitchId: number,
+  twitchUsername: string,
+  twitchAvatarUrl: string,
 }

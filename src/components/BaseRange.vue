@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, onMounted } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
 
 const props = defineProps<{
@@ -12,14 +12,16 @@ const props = defineProps<{
 
 const emit = defineEmits(["update:modelValue"]);
 
-const track = ref(null);
+const track = ref<HTMLElement | null>(null);
 const thumbRightElement = ref(null);
 const thumbLeftElement = ref(null);
 
-const thumbRight = reactive({
-  dragging: false,
-  pressed: false,
-  offset: 0,
+const { elementX, elementWidth, isOutside } = useMouseInElement(track);
+const { pressed: rightPressed } = useMousePressed({ target: thumbRightElement });
+const { pressed: leftPressed } = useMousePressed({ target: thumbLeftElement });
+
+const offset = computed(() => {
+  return (elementX.value * 100) / elementWidth.value;
 });
 
 const thumbLeft = reactive({
@@ -28,15 +30,18 @@ const thumbLeft = reactive({
   offset: 0,
 });
 
-const { elementX, elementWidth, isOutside } = useMouseInElement(track);
-const { pressed: rightPressed } = useMousePressed({
-  target: thumbRightElement,
+const thumbRight = reactive({
+  dragging: false,
+  pressed: false,
+  offset: 0
 });
-const { pressed: leftPressed } = useMousePressed({ target: thumbLeftElement });
 
-const offset = computed(() => {
-  return (elementX.value * 100) / elementWidth.value;
-});
+onMounted(() => {
+  let interpolatedRight = 
+    0 + ((props.modelValue as number - props.min) / (props.max - props.min) * (100 - 0))
+
+  thumbRight.offset = interpolatedRight;
+})
 
 const shouldDrag = (isDragging: boolean, pressed: boolean) => {
   if (pressed) {
@@ -59,8 +64,6 @@ watch(offset, () => {
     100
   );
 
-  // let interPolatedMax = 
-  //   ((thumbRight.offset - 0) * (props.max - props.min) / (100 - 0)) + 0
   let interPolatedMax = 
     props.min + ((thumbRight.offset - 0) / (100 - 0) * (props.max - props.min))
 
@@ -159,10 +162,10 @@ if (props.range) {
     <div v-if="pipStep">
       <div class="flex p-2 pb-0 justify-between">
         <p
-          v-for="i in pipStep"
+          v-for="i in max / pipStep"
           class="select-none text-xs text-neutral-500 font-bold"
         >
-          {{ i * pipStep }}
+          {{ i }}
         </p>
       </div>
     </div>

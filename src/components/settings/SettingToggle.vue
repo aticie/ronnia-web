@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <SettingBase>
-    <label :for="data.id.toString()" class="select-none w-full">{{ data.description }}</label>
-    <BaseCheckbox :id="data.id" v-model="data.value" />
+    <label :for="data.name" class="select-none w-full">{{ data.description }}</label>
+    <BaseCheckbox :id="data.name" v-model="data.value" />
   </SettingBase>
 </template>
