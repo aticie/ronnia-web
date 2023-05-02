@@ -7,7 +7,7 @@ import { UserDetails } from "../types";
 import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
 import IconLogout from "./icons/IconLogout.vue"
-import BaseButton from "./BaseButton.vue";
+import BaseButton from "./base/BaseButton.vue";
 
 const router = useRouter();
 const cookies = useCookies();

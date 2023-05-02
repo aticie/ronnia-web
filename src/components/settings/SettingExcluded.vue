@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseButton from "../BaseButton.vue";
+import BaseButton from "../base/BaseButton.vue";
 import SettingBase from "./SettingBase.vue";
 import IconAdd from "../icons/IconAdd.vue";
 import IconDelete from "../icons/IconDelete.vue";

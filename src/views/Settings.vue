@@ -7,7 +7,7 @@ import TheUser from '../components/TheUser.vue';
 import SettingExcluded from "../components/settings/SettingExcluded.vue";
 import SettingToggle from "../components/settings/SettingToggle.vue";
 import SettingBase from "../components/settings/SettingBase.vue";
-import BaseRange from "../components/BaseRange.vue";
+import BaseRange from "../components/base/BaseRange.vue";
 
 const { data } = await useFetch(
   `${import.meta.env.VITE_API_BASE}/user/settings`,

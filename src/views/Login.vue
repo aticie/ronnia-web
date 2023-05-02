@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseButton from '../components/BaseButton.vue';
-import BaseIcon from '../components/BaseIcon.vue';
+import BaseButton from '../components/base/BaseButton.vue';
+import BaseIcon from '../components/base/BaseIcon.vue';
 import IconTwitch from "../components/icons/IconTwitch.vue";
 import IconDiscord from '../components/icons/IconDiscord.vue';
 import IconGithub from '../components/icons/IconGithub.vue';
