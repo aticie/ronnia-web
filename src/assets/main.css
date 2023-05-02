@@ -7,7 +7,7 @@
 @layer base {
   html {
     font-family: "Inter", sans-serif;
-    @apply bg-neutral-950 text-white;
+    @apply bg-neutral-950 text-neutral-300;
   }
 
   ::-webkit-scrollbar {

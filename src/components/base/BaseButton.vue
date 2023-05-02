@@ -2,7 +2,7 @@
   <button
     class="
       flex items-center gap-2
-      bg-rose-700 hover:bg-rose-600 transition-colors
+      bg-rose-800 hover:bg-rose-700 transition-colors
       p-4 py-2 rounded
       text-sm select-none
     ">

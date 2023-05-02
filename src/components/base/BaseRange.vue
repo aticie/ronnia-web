@@ -112,7 +112,7 @@ if (props.range) {
         <button
           ref="thumbLeftElement"
           v-if="range"
-          class="absolute w-5 h-5 bg-rose-700 rounded-full"
+          class="absolute w-5 h-5 bg-rose-800 rounded-full"
           :style="{
             left: `${thumbLeft.offset}%`,
           }"
@@ -121,7 +121,7 @@ if (props.range) {
         <!-- right thumb -->
         <button
           ref="thumbRightElement"
-          class="absolute w-5 h-5 bg-rose-700 rounded-full"
+          class="absolute w-5 h-5 bg-rose-800 rounded-full"
           :style="{
             left: `${thumbRight.offset}%`,
           }"
@@ -129,7 +129,7 @@ if (props.range) {
 
         <!-- track -->
         <div
-          class="absolute h-full bg-rose-700 rounded-full pointer-events-none"
+          class="absolute h-full bg-rose-800 rounded-full pointer-events-none"
           :style="{
             width: `${thumbRight.offset - thumbLeft.offset + 1}%`,
             left: `${thumbLeft.offset}%`,
@@ -138,7 +138,7 @@ if (props.range) {
 
         <p
           v-if="leftPressed && range"
-          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-700 select-none"
+          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-800 select-none"
           :style="{
             left: `${thumbLeft.offset}%`,
           }"
@@ -149,7 +149,7 @@ if (props.range) {
         <!-- right thumb value -->
         <p
           v-if="rightPressed"
-          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-700 select-none"
+          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-800 select-none"
           :style="{
             left: `${thumbRight.offset}%`,
           }"
