@@ -21,7 +21,6 @@ const { data } = await useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
 }).json<UserDetails>();
 
 const logout = () => {
-  cookies.remove("token");
   cookies.remove("signup");
   router.replace("/login");
 
