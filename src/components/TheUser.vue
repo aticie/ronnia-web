@@ -6,7 +6,7 @@ import { UserDetails } from "../types";
 
 import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
-import IconLogout from "./icons/IconLogout.vue"
+import IconLogout from "./icons/IconLogout.vue";
 import BaseButton from "./base/BaseButton.vue";
 
 const router = useRouter();
@@ -24,7 +24,11 @@ const logout = () => {
   cookies.remove("token");
   cookies.remove("signup");
   router.replace("/login");
-}
+
+  useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
+    credentials: "include",
+  }).delete();
+};
 </script>
 
 <template>
