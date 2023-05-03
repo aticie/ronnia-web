@@ -21,12 +21,12 @@ const { data } = await useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
 }).json<UserDetails>();
 
 const logout = () => {
-  cookies.remove("signup");
-  router.replace("/login");
-
   useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
     credentials: "include",
   }).delete();
+
+  cookies.remove("signup");
+  router.replace("/login");
 };
 </script>
 
