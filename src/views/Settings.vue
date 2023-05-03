@@ -3,12 +3,14 @@ import { ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import { Settings } from "../types";
 
+import IconDone from "../components/icons/IconDone.vue";
 import TheUser from "../components/TheUser.vue";
 import SettingExcluded from "../components/settings/SettingExcluded.vue";
 import SettingToggle from "../components/settings/SettingToggle.vue";
 import SettingBase from "../components/settings/SettingBase.vue";
 import BaseSuspense from "../components/base/BaseSuspense.vue";
 import BaseRange from "../components/base/BaseRange.vue";
+import BaseButton from "../components/base/BaseButton.vue";
 
 const { data } = await useFetch(
   `${import.meta.env.VITE_API_BASE}/user/settings`,
@@ -16,6 +18,25 @@ const { data } = await useFetch(
 ).json<Settings>();
 
 const settings = ref(data.value);
+const excludedUsers = ref([]);
+
+const saveSettings = async () => {
+  if (!settings.value) return;
+
+  const values: { [key: string]: any } = {};
+  for (const setting of settings.value) {
+    values[setting.name] = setting.value;
+  }
+
+  const { error } = await useFetch(
+    `${import.meta.env.VITE_API_BASE}/user/settings`,
+    {
+      credentials: "include",
+    }
+  ).post(values);
+
+  console.log(error.value);
+};
 </script>
 
 <template>
@@ -48,7 +69,14 @@ const settings = ref(data.value);
         </SettingBase>
       </template>
 
-      <SettingExcluded />
+      <SettingExcluded v-model="excludedUsers" />
+
+      <BaseButton @click="saveSettings">
+        <template #icon>
+          <IconDone />
+        </template>
+        <p>Save Changes</p>
+      </BaseButton>
     </div>
   </div>
 </template>

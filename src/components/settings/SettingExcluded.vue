@@ -4,18 +4,28 @@ import SettingBase from "./SettingBase.vue";
 import IconAdd from "../icons/IconAdd.vue";
 import IconDelete from "../icons/IconDelete.vue";
 import { ref } from "vue";
+import { useVModel } from "@vueuse/core";
 
-const userId = ref<number>();
-const userIds = ref<Array<number>>([]);
+const props = defineProps<{
+  modelValue: string[];
+}>();
+const emit = defineEmits(["update:modelValue"]);
+const ids = useVModel(props, "modelValue", emit);
+
+const userId = ref("");
+// const userIds = ref<Array<number>>([]);
 
 const addUser = () => {
   if (!userId.value) return;
-  userIds.value.unshift(userId.value);
-  userId.value = undefined;
+  ids.value.unshift(userId.value);
+  userId.value = "";
+
+  // userIds.value.unshift(userId.value);
+  // userId.value = undefined;
 };
 
 const removeUser = (index: number) => {
-  userIds.value.splice(index, 1);
+  // userIds.value.splice(index, 1);
 };
 </script>
 
@@ -25,7 +35,7 @@ const removeUser = (index: number) => {
       User to be excluded
     </p>
 
-    <div class="flex gap-2 w-full">
+    <div class="flex flex-wrap gap-2 w-full">
       <input
         v-model="userId"
         @keyup.enter="addUser"
@@ -43,24 +53,21 @@ const removeUser = (index: number) => {
       Users
     </p>
     <ul
-      class="bg-neutral-950 w-full relative rounded divide-y divide-neutral-800 overflow-hidden"
+      class="bg-neutral-950 max-h-60 overflow-y-auto w-full relative rounded divide-y divide-neutral-800 overflow-hidden"
     >
       <p
-        v-if="userIds.length === 0"
+        v-if="ids.length === 0"
         class="p-2 text-center text-neutral-700 text-sm"
       >
         You can add users that should be excluded here!
       </p>
       <li
-        v-for="(id, index) in userIds"
+        v-for="(id, index) in ids"
         :key="id"
         class="flex items-center justify-between p-1 group"
       >
         <p class="ml-2">{{ id }}</p>
-        <BaseButton
-          class="translate-x-full group-hover:translate-x-0 transition-transform"
-          @click="removeUser(index)"
-        >
+        <BaseButton @click="removeUser(index)">
           <template #icon>
             <IconDelete />
           </template>
