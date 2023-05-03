@@ -19,9 +19,11 @@ const { data } = await useFetch(
 
 const settings = ref(data.value);
 const excludedUsers = ref([]);
+const isFetching = ref(false);
 
 const saveSettings = async () => {
   if (!settings.value) return;
+  isFetching.value = true;
 
   const values: { [key: string]: any } = {};
   for (const setting of settings.value) {
@@ -35,7 +37,7 @@ const saveSettings = async () => {
     }
   ).post(values);
 
-  console.log(error.value);
+    isFetching.value = false;
 };
 </script>
 
@@ -71,7 +73,7 @@ const saveSettings = async () => {
 
       <SettingExcluded v-model="excludedUsers" />
 
-      <BaseButton @click="saveSettings">
+      <BaseButton @click="saveSettings" :isLoading="isFetching">
         <template #icon>
           <IconDone />
         </template>
