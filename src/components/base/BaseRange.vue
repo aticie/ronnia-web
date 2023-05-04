@@ -39,12 +39,20 @@ const thumbRight = reactive({
 });
 
 onMounted(() => {
-  let interpolatedRight =
-    0 +
-    (((props.modelValue as number) - props.min) / (props.max - props.min)) *
-      (100 - 0);
+  let right = Array.isArray(props.modelValue)
+    ? props.modelValue[1]
+    : props.modelValue;
 
-  thumbRight.offset = interpolatedRight;
+  thumbRight.offset =
+    0 + (((right as number) - props.min) / (props.max - props.min)) * (100 - 0);
+
+  if (Array.isArray(props.modelValue)) {
+    thumbLeft.offset =
+      0 +
+      (((props.modelValue[0] as number) - props.min) /
+        (props.max - props.min)) *
+        (100 - 0);
+  }
 });
 
 const shouldDrag = (isDragging: boolean, pressed: boolean) => {
