@@ -54,14 +54,14 @@ const logout = () => {
     </div>
 
     <div class="flex gap-2">
-      <BaseButton @click="logout">
+      <BaseButton @click="logout" class="basis-44">
         <template #icon>
           <IconLogout />
         </template>
         <p>Logout</p>
       </BaseButton>
 
-      <BaseButton @click="removeUser">
+      <BaseButton @click="removeUser" class="basis-44">
         <template #icon>
           <IconDelete />
         </template>
