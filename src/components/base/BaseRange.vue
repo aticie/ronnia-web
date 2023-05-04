@@ -17,7 +17,9 @@ const thumbRightElement = ref(null);
 const thumbLeftElement = ref(null);
 
 const { elementX, elementWidth, isOutside } = useMouseInElement(track);
-const { pressed: rightPressed } = useMousePressed({ target: thumbRightElement });
+const { pressed: rightPressed } = useMousePressed({
+  target: thumbRightElement,
+});
 const { pressed: leftPressed } = useMousePressed({ target: thumbLeftElement });
 
 const offset = computed(() => {
@@ -33,15 +35,17 @@ const thumbLeft = reactive({
 const thumbRight = reactive({
   dragging: false,
   pressed: false,
-  offset: 0
+  offset: 0,
 });
 
 onMounted(() => {
-  let interpolatedRight = 
-    0 + ((props.modelValue as number - props.min) / (props.max - props.min) * (100 - 0))
+  let interpolatedRight =
+    0 +
+    (((props.modelValue as number) - props.min) / (props.max - props.min)) *
+      (100 - 0);
 
   thumbRight.offset = interpolatedRight;
-})
+});
 
 const shouldDrag = (isDragging: boolean, pressed: boolean) => {
   if (pressed) {
@@ -59,20 +63,18 @@ watch(offset, () => {
     return;
   }
 
-  thumbRight.offset = Math.min(
-    Math.max(offset.value, thumbLeft.offset),
-    100
-  );
+  thumbRight.offset = Math.min(Math.max(offset.value, thumbLeft.offset), 100);
 
-  let interPolatedMax = 
-    props.min + ((thumbRight.offset - 0) / (100 - 0) * (props.max - props.min))
+  let interPolatedMax =
+    props.min + ((thumbRight.offset - 0) / (100 - 0)) * (props.max - props.min);
 
   emit(
     "update:modelValue",
     Array.isArray(props.modelValue)
       ? [
-          props.min + ((thumbLeft.offset - 0) / (100 - 0) * (props.max - props.min)),
-          interPolatedMax
+          props.min +
+            ((thumbLeft.offset - 0) / (100 - 0)) * (props.max - props.min),
+          interPolatedMax,
         ]
       : interPolatedMax
   );
@@ -90,15 +92,21 @@ if (props.range) {
       props.min
     );
 
-    let interPolatedMax = 
-      props.min + ((thumbRight.offset - 0) / (100 - 0) * (props.max - props.min))
+    let interPolatedMax =
+      props.min +
+      ((thumbRight.offset - 0) / (100 - 0)) * (props.max - props.min);
 
     emit("update:modelValue", [
-      props.min + ((thumbLeft.offset - 0) / (100 - 0) * (props.max - props.min)),
-      interPolatedMax
+      props.min +
+        ((thumbLeft.offset - 0) / (100 - 0)) * (props.max - props.min),
+      interPolatedMax,
     ]);
   });
 }
+
+const slotValue = computed(() =>
+  Array.isArray(props.modelValue) ? props.modelValue[1] : props.modelValue
+);
 </script>
 
 <template>
@@ -143,18 +151,22 @@ if (props.range) {
             left: `${thumbLeft.offset}%`,
           }"
         >
-          {{ (Array.isArray(modelValue) ? modelValue[0] : modelValue).toFixed(1) }}
+          {{
+            (Array.isArray(modelValue) ? modelValue[0] : modelValue).toFixed(1)
+          }}
         </p>
 
         <!-- right thumb value -->
         <p
           v-if="rightPressed"
-          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-800 select-none"
+          class="absolute bottom-6 text-xs rounded-full p-1 px-2 flex items-center justify-center bg-rose-800 select-none"
           :style="{
             left: `${thumbRight.offset}%`,
           }"
         >
-          {{ (Array.isArray(modelValue) ? modelValue[1] : modelValue).toFixed(1) }}
+          <slot :value="slotValue">
+            {{ slotValue.toFixed(1) }}
+          </slot>
         </p>
       </div>
     </div>

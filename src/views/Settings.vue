@@ -42,6 +42,14 @@ const saveSettings = async () => {
   isFetching.value = false;
   setTimeout(() => cooldown.value = false, 2000);
 };
+
+const thumbValue = (val: number) => {
+  let rounded = Math.round(val);
+
+  if (val < 60) return `${rounded}s`
+  if (val % 60 === 0) return `${Math.round(val/60)}m`
+  return `${Math.floor(rounded / 60)}m${rounded % 60}s`
+}
 </script>
 
 <template>
@@ -60,7 +68,10 @@ const saveSettings = async () => {
             :min="0"
             :max="15 * 60"
             :pipStep="60"
-          />
+            v-slot="{ value }"
+          >
+            <p>{{ thumbValue(value) }}</p>
+          </BaseRange>
         </SettingBase>
         <SettingBase v-if="setting.type === 'range'" class="flex-col">
           <p class="text-left w-full mb-2">{{ setting.description }}</p>
