@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Development from "./components/TheDevRouter.vue";
+import TheToaster from "./components/TheToaster.vue";
 import BaseSuspense from "./components/base/BaseSuspense.vue";
 
 const isDev = import.meta.env.DEV;
@@ -7,6 +8,8 @@ const isDev = import.meta.env.DEV;
 
 <template>
   <div class="p-2 min-h-screen flex flex-col justify-center items-center">
+    <TheToaster />
+
     <RouterView v-slot="{ Component }">
       <BaseSuspense>
         <component :is="Component" />
