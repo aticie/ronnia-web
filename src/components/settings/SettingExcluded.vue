@@ -74,11 +74,10 @@ const removeExcluded = async (user: string) => {
         @keyup.enter="addExcluded"
         class="bg-neutral-950 rounded p-2 grow"
       />
-      <BaseButton @click="addExcluded">
+      <BaseButton @click="addExcluded" class="px-2">
         <template #icon>
           <IconAdd />
         </template>
-        <p>Add</p>
       </BaseButton>
     </div>
 
@@ -100,11 +99,10 @@ const removeExcluded = async (user: string) => {
         class="flex items-center justify-between p-1 group"
       >
         <p class="ml-2">{{ user }}</p>
-        <BaseButton @click="removeExcluded(user)">
+        <BaseButton @click="removeExcluded(user)" class="px-2">
           <template #icon>
             <IconDelete />
           </template>
-          <p>Delete</p>
         </BaseButton>
       </li>
     </ul>
