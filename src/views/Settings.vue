@@ -80,8 +80,10 @@ const thumbValue = (val: number) => {
             :min="0"
             :max="10"
             :pipStep="1"
-            range
-          />
+            range v-slot="{ value }"
+          >
+            <p>{{ value === 10 ? "∞" : value.toFixed(2) }}</p>
+          </BaseRange>
         </SettingBase>
       </template>
 
