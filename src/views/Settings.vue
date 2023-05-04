@@ -20,10 +20,12 @@ const { data } = await useFetch(
 const settings = ref(data.value);
 const excludedUsers = ref([]);
 const isFetching = ref(false);
+const cooldown = ref(false);
 
 const saveSettings = async () => {
   if (!settings.value) return;
   isFetching.value = true;
+  cooldown.value = true;
 
   const values: { [key: string]: any } = {};
   for (const setting of settings.value) {
@@ -37,7 +39,8 @@ const saveSettings = async () => {
     }
   ).post(values);
 
-    isFetching.value = false;
+  isFetching.value = false;
+  setTimeout(() => cooldown.value = false, 2000);
 };
 </script>
 
@@ -73,7 +76,7 @@ const saveSettings = async () => {
 
       <SettingExcluded v-model="excludedUsers" />
 
-      <BaseButton @click="saveSettings" :isLoading="isFetching">
+      <BaseButton @click="saveSettings" :isLoading="isFetching" :disabled="cooldown">
         <template #icon>
           <IconDone />
         </template>

@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <button
-    class="flex items-center gap-2 relative bg-rose-800 hover:bg-rose-700 transition-colors p-4 py-2 rounded overflow-hidden text-sm select-none"
+    class="relative flex select-none items-center gap-2 overflow-hidden rounded bg-rose-800 p-4 py-2 text-sm transition-colors hover:bg-rose-700 disabled:pointer-events-none disabled:opacity-50"
   >
     <Transition
       enter-from-class="scale-0 opacity-0"
@@ -19,7 +19,7 @@ defineProps<{
       <div v-if="isLoading" icon="spin">
         <IconSpinner />
       </div>
-      <div v-else-if="$slots.icon" key="icon" class="h-6 aspect-square">
+      <div v-else-if="$slots.icon" key="icon" class="aspect-square h-6">
         <slot name="icon"></slot>
       </div>
     </Transition>
