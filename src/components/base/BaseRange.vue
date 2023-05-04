@@ -46,6 +46,10 @@ onMounted(() => {
   thumbRight.offset =
     0 + (((right as number) - props.min) / (props.max - props.min)) * (100 - 0);
 
+  if (thumbRight.offset === -10) {
+    thumbRight.offset = 100;
+  }
+
   if (Array.isArray(props.modelValue)) {
     thumbLeft.offset =
       0 +
