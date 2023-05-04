@@ -20,11 +20,17 @@ const { data } = await useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
   credentials: "include",
 }).json<UserDetails>();
 
-const logout = () => {
+const removeUser = () => {
   useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
     credentials: "include",
   }).delete();
 
+  cookies.remove("signup");
+  router.replace("/login");
+};
+
+const logout = () => {
+  cookies.remove("token");
   cookies.remove("signup");
   router.replace("/login");
 };
