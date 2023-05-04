@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useFetch } from "@vueuse/core";
 import { Settings } from "../types";
-import { useBus, useMinuteFormat } from "../composables";
+import { useBus, useMinuteFormat, useCooldown } from "../composables";
 
 import IconDone from "../components/icons/IconDone.vue";
 import TheUser from "../components/TheUser.vue";
@@ -19,15 +19,16 @@ const { data } = await useFetch(
 ).json<Settings>();
 
 const settings = ref(data.value);
-const excludedUsers = ref([]);
 const isFetching = ref(false);
-const cooldown = ref(false);
+const excludedUsers = ref([]);
+
 const bus = useBus();
+const { count, onCooldown, resetCooldown } = useCooldown(5);
 
 const saveSettings = async () => {
   if (!settings.value) return;
   isFetching.value = true;
-  cooldown.value = true;
+  resetCooldown();
 
   const values: { [key: string]: any } = {};
   for (const setting of settings.value) {
@@ -51,7 +52,6 @@ const saveSettings = async () => {
   }
 
   isFetching.value = false;
-  setTimeout(() => (cooldown.value = false), 2000);
 };
 </script>
 
@@ -96,7 +96,7 @@ const saveSettings = async () => {
       <BaseButton
         @click="saveSettings"
         :isLoading="isFetching"
-        :disabled="cooldown"
+        :disabled="onCooldown"
       >
         <template #icon>
           <IconDone />
