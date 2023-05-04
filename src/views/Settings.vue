@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { Settings } from "../types";
+import { watchDebounced } from "@vueuse/core";
 import { useBus, useMinuteFormat, useCooldown } from "../composables";
 import axios from "axios";
 
@@ -35,6 +36,10 @@ const saveSettings = async () => {
   try {
     await axios.post("/user/settings", values);
     isFetching.value = false;
+
+    bus.emit({
+      title: "Saved your settings!"
+    })
   } catch (error) {
     if (axios.isAxiosError(error)) {
       bus.emit({
@@ -46,6 +51,11 @@ const saveSettings = async () => {
     isFetching.value = false;
   }
 };
+
+watchDebounced(settings, saveSettings, {
+  debounce: 1500,
+  deep: true,
+});
 </script>
 
 <template>
