@@ -8,6 +8,7 @@ import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
 import IconLogout from "./icons/IconLogout.vue";
 import BaseButton from "./base/BaseButton.vue";
+import IconDelete from "./icons/IconDelete.vue";
 
 const router = useRouter();
 const cookies = useCookies();
@@ -56,11 +57,20 @@ const logout = () => {
       </div>
     </div>
 
-    <BaseButton @click="logout">
-      <template #icon>
-        <IconLogout />
-      </template>
-      <p>Logout</p>
-    </BaseButton>
+    <div class="flex gap-2">
+      <BaseButton @click="logout">
+        <template #icon>
+          <IconLogout />
+        </template>
+        <p>Logout</p>
+      </BaseButton>
+
+      <BaseButton @click="removeUser">
+        <template #icon>
+          <IconDelete />
+        </template>
+        <p>Delete Account</p>
+      </BaseButton>
+    </div>
   </div>
 </template>
