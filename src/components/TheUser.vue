@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useFetch } from "@vueuse/core";
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useRouter } from "vue-router";
 import { UserDetails } from "../types";
+import axios from "axios";
 
 import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
@@ -17,15 +17,11 @@ if (!cookies.get("token")) {
   router.replace("/login");
 }
 
-const { data } = await useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
-  credentials: "include",
-}).json<UserDetails>();
+const response = await axios.get<UserDetails>("/user/me");
+const data = response.data;
 
-const removeUser = () => {
-  useFetch(`${import.meta.env.VITE_API_BASE}/user/me`, {
-    credentials: "include",
-  }).delete();
-
+const removeUser = async () => {
+  await axios.delete("/user/me");
   cookies.remove("signup");
   router.replace("/login");
 };

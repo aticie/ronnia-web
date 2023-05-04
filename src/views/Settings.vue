@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useFetch } from "@vueuse/core";
 import { Settings } from "../types";
 import { useBus, useMinuteFormat, useCooldown } from "../composables";
+import axios from "axios";
 
 import IconDone from "../components/icons/IconDone.vue";
 import TheUser from "../components/TheUser.vue";
@@ -10,20 +10,17 @@ import SettingExcluded from "../components/settings/SettingExcluded.vue";
 import SettingToggle from "../components/settings/SettingToggle.vue";
 import SettingBase from "../components/settings/SettingBase.vue";
 import BaseSuspense from "../components/base/BaseSuspense.vue";
-import BaseRange from "../components/base/BaseRange.vue";
 import BaseButton from "../components/base/BaseButton.vue";
+import BaseRange from "../components/base/BaseRange.vue";
 
-const { data } = await useFetch(
-  `${import.meta.env.VITE_API_BASE}/user/settings`,
-  { credentials: "include" }
-).json<Settings>();
+const data = (await axios.get<Settings>("/user/settings")).data;
 
-const settings = ref(data.value);
+const settings = ref(data);
 const isFetching = ref(false);
 const excludedUsers = ref([]);
 
 const bus = useBus();
-const { count, onCooldown, resetCooldown } = useCooldown(5);
+const { onCooldown, resetCooldown } = useCooldown(5);
 
 const saveSettings = async () => {
   if (!settings.value) return;
@@ -35,23 +32,19 @@ const saveSettings = async () => {
     values[setting.name] = setting.value;
   }
 
-  const { statusCode, error } = await useFetch(
-    `${import.meta.env.VITE_API_BASE}/user/settings`,
-    {
-      credentials: "include",
+  try {
+    await axios.post("/user/settings", values);
+    isFetching.value = false;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      bus.emit({
+        title: "Error while saving!",
+        description: error.response?.data || error.message,
+      });
     }
-  ).post(values);
-
-  if (statusCode.value !== 200) {
-    bus.emit({
-      title: "Error while saving!",
-      description: error.value,
-    });
-  } else {
-    bus.emit({ title: "Saved your settings!" });
+  } finally {
+    isFetching.value = false;
   }
-
-  isFetching.value = false;
 };
 </script>
 
