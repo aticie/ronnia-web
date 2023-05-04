@@ -9,7 +9,7 @@ import IconSpinner from '../icons/IconSpinner.vue';
     </template>
 
     <template #fallback>
-      <IconSpinner />
+      <IconSpinner class="mx-auto" />
     </template>
   </Suspense>
 </template>

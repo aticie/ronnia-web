@@ -94,7 +94,9 @@ watchDebounced(settings, saveSettings, {
         </SettingBase>
       </template>
 
-      <SettingExcluded v-model="excludedUsers" />
+      <BaseSuspense>
+        <SettingExcluded v-model="excludedUsers" />
+      </BaseSuspense>
 
       <BaseButton
         @click="saveSettings"
