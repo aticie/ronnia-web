@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import BaseSuspense from "../components/base/BaseSuspense.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 import BaseIcon from "../components/base/BaseIcon.vue";
 import IconDiscord from "../components/icons/IconDiscord.vue";
 import IconTwitch from "../components/icons/IconTwitch.vue";
 import IconGithub from "../components/icons/IconGithub.vue";
 import IconOsu from "../components/icons/IconOsu.vue";
+import TheLiveStreams from "../components/TheLiveStreams.vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
 
 type SignupTypes = "twitch" | "osu";
@@ -73,4 +75,8 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
       </div>
     </div>
   </div>
+
+  <BaseSuspense>
+    <TheLiveStreams class="mt-14" />
+  </BaseSuspense>
 </template>

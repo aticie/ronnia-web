@@ -23,3 +23,9 @@
     @apply rounded-full;
   }
 }
+
+@layer utilities {
+  .mask {
+    mask-image: linear-gradient(to right, transparent 0%, black 10% 90%, transparent 100%);
+  }
+}
