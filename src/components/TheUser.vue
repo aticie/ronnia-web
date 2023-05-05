@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useCookies } from "@vueuse/integrations/useCookies";
 import { useRouter } from "vue-router";
 import { UserDetails } from "../types";
 import axios from "axios";
@@ -11,24 +10,16 @@ import BaseButton from "./base/BaseButton.vue";
 import IconDelete from "./icons/IconDelete.vue";
 
 const router = useRouter();
-const cookies = useCookies();
-
-if (!cookies.get("token")) {
-  router.replace("/login");
-}
 
 const response = await axios.get<UserDetails>("/user/me");
 let data = response.data;
 
 const removeUser = async () => {
   await axios.delete("/user/me");
-  cookies.remove("signup");
   router.replace("/login");
 };
 
 const logout = () => {
-  cookies.remove("token");
-  cookies.remove("signup");
   router.replace("/login");
 };
 </script>

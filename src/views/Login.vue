@@ -2,11 +2,11 @@
 import BaseSuspense from "../components/base/BaseSuspense.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 import BaseIcon from "../components/base/BaseIcon.vue";
+import TheLiveStreams from "../components/TheLiveStreams.vue";
 import IconDiscord from "../components/icons/IconDiscord.vue";
 import IconTwitch from "../components/icons/IconTwitch.vue";
 import IconGithub from "../components/icons/IconGithub.vue";
 import IconOsu from "../components/icons/IconOsu.vue";
-import TheLiveStreams from "../components/TheLiveStreams.vue";
 
 import { useCookies } from "@vueuse/integrations/useCookies";
 import { useWindowSize } from "@vueuse/core";
@@ -21,18 +21,18 @@ const cookies = useCookies();
 const signup = cookies.get<SignupTypes>("signup");
 
 try {
-  await axios.get("/user/me")
-  router.replace("/settings")
-} catch {
-
-}
+  await axios.get("/user/me");
+  router.replace("/settings");
+} catch {}
 
 const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
 const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="w-full pt-32 flex flex-col gap-8 justify-center min-h-full lg:min-h-0 max-w-sm rounded z-10">
+  <div
+    class="w-full pt-32 flex flex-col gap-8 justify-center min-h-full lg:min-h-0 max-w-sm rounded z-10"
+  >
     <div class="flex flex-col gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">

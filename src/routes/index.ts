@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useCookies } from "@vueuse/integrations/useCookies";
-import axios from "axios";
 
 const Router = createRouter({
   history: createWebHistory(),
