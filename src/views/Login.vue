@@ -19,8 +19,8 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="grid gap-8 w-full max-w-sm rounded">
-    <div class="flex flex-col gap-20">
+  <div class="w-full flex flex-col gap-8 justify-center min-h-screen lg:min-h-0 max-w-sm rounded z-10">
+    <div class="flex flex-col gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">
           <span
@@ -77,6 +77,6 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
   </div>
 
   <BaseSuspense>
-    <TheLiveStreams class="mt-14" />
+    <TheLiveStreams />
   </BaseSuspense>
 </template>
