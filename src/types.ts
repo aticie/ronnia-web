@@ -28,4 +28,5 @@ export interface UserDetails {
   twitchId: number,
   twitchUsername: string,
   twitchAvatarUrl: string,
+  isLive: boolean
 }

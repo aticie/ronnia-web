@@ -18,7 +18,7 @@ if (!cookies.get("token")) {
 }
 
 const response = await axios.get<UserDetails>("/user/me");
-const data = response.data;
+let data = response.data;
 
 const removeUser = async () => {
   await axios.delete("/user/me");
@@ -36,7 +36,7 @@ const logout = () => {
 <template>
   <div v-if="data" class="grid gap-2">
     <div class="flex gap-2">
-      <div class="bg-neutral-900 p-2 rounded flex-1 relative">
+      <div class="flex items-end bg-neutral-900 p-2 rounded flex-1 relative">
         <IconOsu class="h-6 mb-2 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
           <img :src="data.osuAvatarUrl" class="w-14 aspect-square rounded" />
@@ -44,7 +44,12 @@ const logout = () => {
         </div>
       </div>
 
-      <div class="bg-neutral-900 p-2 rounded flex-1 relative">
+      <div class="bg-neutral-900 p-2 rounded flex-1 relative" :class="{ 'border-2 border-green-500': data.isLive }">
+        <div class="flex items-center gap-2 pb-2">
+          <div class="w-2.5 h-2.5 bg-neutral-500 rounded-full" :class="{ 'bg-green-500': data.isLive }" />
+          <p class="text-sm">{{ data.isLive ? 'Online' : 'Offline' }}</p>
+        </div>
+
         <IconTwitch class="h-6 mb-2 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
           <img :src="data.twitchAvatarUrl" class="w-14 aspect-square rounded" />
