@@ -8,9 +8,11 @@ import IconGithub from "../components/icons/IconGithub.vue";
 import IconOsu from "../components/icons/IconOsu.vue";
 import TheLiveStreams from "../components/TheLiveStreams.vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
+import { useWindowSize } from "@vueuse/core";
 
 type SignupTypes = "twitch" | "osu";
 
+const { width } = useWindowSize();
 const cookies = useCookies();
 const signup = cookies.get<SignupTypes>("signup");
 
@@ -19,7 +21,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="w-full pt-32 flex flex-col gap-8 justify-center min-h-screen lg:min-h-0 max-w-sm rounded z-10">
+  <div class="w-full pt-32 flex flex-col gap-8 justify-center min-h-full lg:min-h-0 max-w-sm rounded z-10">
     <div class="flex flex-col gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">
@@ -77,6 +79,6 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
   </div>
 
   <BaseSuspense>
-    <TheLiveStreams />
+    <TheLiveStreams v-if="width > 1024" />
   </BaseSuspense>
 </template>
