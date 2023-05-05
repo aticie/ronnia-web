@@ -3,7 +3,7 @@ import axios from "axios";
 import { ref, onMounted, onUnmounted } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 
-const response = await axios.get<string[]>("/live", {
+const response = await axios.get<string[]>("/live/users", {
   withCredentials: false,
   params: { limit: 1000 },
 });
