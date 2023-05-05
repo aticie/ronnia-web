@@ -14,7 +14,7 @@ RUN npm install --ignore-scripts true
 # Copy the rest of the files
 COPY ./src ./src
 COPY ./public ./public
-COPY ./.env.local ./.env
+COPY ./.env.production ./.env
 COPY ./tsconfig.json ./
 COPY ./tsconfig.node.json ./
 COPY ./vite.config.ts ./
