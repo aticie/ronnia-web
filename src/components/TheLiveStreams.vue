@@ -48,11 +48,14 @@ useInfiniteScroll(
         <a
           v-for="streamer in streamers"
           :href="`https://twitch.tv/${streamer}`"
+          class="group"
         >
-          <img
-            :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
-            class="w-full rounded-lg border border-neutral-800 aspect-video object-cover hover:-translate-x-4 hover:-translate-y-4 transition-transform"
-          />
+          <div class="group-hover:bg-rose-700 transition-colors rounded-xl">
+            <img
+              :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
+              class="w-full border border-neutral-700 rounded-lg aspect-video object-cover group-hover:-translate-x-4 group-hover:-translate-y-4 transition-transform"
+            />
+          </div>
           <p class="ml-4" style="font-family: 'Bebas Neue', cursive">{{ streamer }}</p>
         </a>
       </div>
