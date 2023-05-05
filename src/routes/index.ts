@@ -1,15 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useCookies } from "@vueuse/integrations/useCookies";
+import axios from "axios";
 
 const Router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: "/",
-      redirect: () => {
-        const cookies = useCookies();
-        return cookies.get("token") ? "/settings" : "/login"
-      }
+      redirect: "/login"
     },
     {
       path: "/login",
