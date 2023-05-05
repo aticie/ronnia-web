@@ -26,11 +26,11 @@
 
 @layer utilities {
   .mask {
-    mask-image: linear-gradient(to bottom right, transparent 0%, black 50% 50%, transparent 100%);
+    mask-image: linear-gradient(to top, black 50%, transparent);
   }
 
   .surface {
-    transform: skew(-50deg, 20deg) translateX(30rem) translateY(50rem);
-    scale: 0.7;
+    transform: skew(-50deg, 20deg) translateX(-60%);
+    scale: 0.8;
   }
 }

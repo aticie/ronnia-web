@@ -19,7 +19,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8 justify-center min-h-screen lg:min-h-0 max-w-sm rounded z-10">
+  <div class="w-full pt-32 flex flex-col gap-8 justify-center min-h-screen lg:min-h-0 max-w-sm rounded z-10">
     <div class="flex flex-col gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">

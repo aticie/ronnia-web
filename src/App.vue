@@ -11,7 +11,7 @@ const isDev = import.meta.env.DEV;
 </script>
 
 <template>
-  <div class="p-2 min-h-screen flex flex-col justify-center items-center">
+  <div class="p-2 min-h-screen flex flex-col items-center">
     <TheToaster />
 
     <RouterView v-slot="{ Component }">
