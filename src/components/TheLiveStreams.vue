@@ -14,30 +14,46 @@ const target = ref<HTMLElement | null>(null);
 let interval: number;
 onMounted(() => {
   interval = setInterval(() => {
-    target.value?.scrollTo({ top: target.value.scrollTop + 1, behavior: "smooth" });
-  }, 40)
-})
+    target.value?.scrollTo({
+      top: target.value.scrollTop + 1,
+      behavior: "smooth",
+    });
+  }, 40);
+});
 
-onUnmounted(() => clearInterval(interval))
+onUnmounted(() => clearInterval(interval));
 
-useInfiniteScroll(target, () => {
-  streamers.value.push(...streamers.value);
-}, { distance: 50 })
+useInfiniteScroll(
+  target,
+  () => {
+    streamers.value.push(...streamers.value);
+  },
+  { distance: 50 }
+);
 </script>
 
 <template>
   <div class="lg:absolute inset-0 flex justify-end items-end overflow-hidden">
     <div class="surface max-w-7xl h-[70%]">
-      <p class="text-neutral-800 font-bold text-center">Some cool streamers that use Ronnia!</p>
+      <p
+        class="text-neutral-800 font-bold text-center text-2xl select-none"
+        style="font-family: 'Bebas Neue', cursive"
+      >
+        Some cool streamers that use Ronnia!
+      </p>
       <div
         ref="target"
         class="mask grid grid-cols-4 gap-4 overflow-y-auto h-full"
       >
-        <img
+        <a
           v-for="streamer in streamers"
-          :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
-          class="w-full aspect-video object-cover hover:scale-110 transition-transform"
-        />
+          :href="`https://twitch.tv/${streamer}`"
+        >
+          <img
+            :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
+            class="w-full aspect-video object-cover hover:scale-110 transition-transform"
+          />
+        </a>
       </div>
     </div>
   </div>
