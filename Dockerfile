@@ -1,31 +1,37 @@
-FROM node:18 AS frontend_public
+# Start from low size builder image
+FROM node:18.16.0-alpine3.17 as builder
 
-WORKDIR /usr/src
+# Set the working directory
+WORKDIR /app
 
-ADD ./frontend ./app
+# Copy the package.json and package-lock.json
+COPY package.json ./
+COPY package-lock.json ./
 
-WORKDIR /usr/src/app
+# Install dependencies
+RUN npm install --ignore-scripts true
 
-RUN npm install
+# Copy the rest of the files
+COPY ./src ./src
+COPY ./public ./public
+COPY ./.env.production ./.env
+COPY ./tsconfig.json ./
+COPY ./tsconfig.node.json ./
+COPY ./vite.config.ts ./
+COPY ./postcss.config.js ./
+COPY ./tailwind.config.js ./
+COPY ./index.html ./
+
+# Build the app
 RUN npm run build
 
-FROM python:3.10-slim
+# Path: Dockerfile
+FROM nginx:1.24.0-alpine
 
-WORKDIR /src
+# Copy the build files
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN mkdir -p /src/frontend
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=frontend_public /usr/src/app/dist ./frontend/dist
-
-RUN mkdir -p /src/backend
-
-RUN apt-get update && apt-get install -y build-essential libssl-dev uuid-dev cmake libcurl4-openssl-dev pkg-config -y
-COPY backend/requirements.txt ./backend/requirements.txt
-RUN pip install -r backend/requirements.txt
-
-ADD backend ./backend
-COPY ./main.py .
-
-ENV PYTHONPATH=$PYTHONPATH:/src/backend
-
-ENTRYPOINT ["python", "main.py"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
