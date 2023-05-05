@@ -34,7 +34,7 @@ useInfiniteScroll(
 
 <template>
   <div class="lg:absolute inset-0 flex justify-end items-end overflow-hidden">
-    <div class="surface max-w-7xl h-[70%]">
+    <div class="surface max-w-7xl h-[70%] overlfow-x-visible">
       <p
         class="text-neutral-800 font-bold text-center text-2xl select-none"
         style="font-family: 'Bebas Neue', cursive"
@@ -43,7 +43,7 @@ useInfiniteScroll(
       </p>
       <div
         ref="target"
-        class="mask grid grid-cols-4 gap-4 overflow-y-auto h-full"
+        class="mask grid grid-cols-4 gap-2 px-10 overflow-y-auto h-full"
       >
         <a
           v-for="streamer in streamers"
@@ -51,8 +51,9 @@ useInfiniteScroll(
         >
           <img
             :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
-            class="w-full aspect-video object-cover hover:scale-110 transition-transform"
+            class="w-full rounded-lg border border-neutral-800 aspect-video object-cover hover:-translate-x-4 hover:-translate-y-4 transition-transform"
           />
+          <p class="ml-4" style="font-family: 'Bebas Neue', cursive">{{ streamer }}</p>
         </a>
       </div>
     </div>
