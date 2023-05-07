@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Settings from "../views/Settings.vue";
 import Login from "../views/Login.vue";
+import { useUserStore } from "../store";
 
-const Router = createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -16,9 +17,15 @@ const Router = createRouter({
     },
     {
       path: "/settings",
-      component: Settings
+      component: Settings,
+      beforeEnter: () => {
+        const userStore = useUserStore();
+        return userStore.user ? true : {
+          path: "/login"
+        }
+      }
     }
   ]
 });
 
-export default Router;
+export default router;

@@ -12,6 +12,7 @@
     "@vueuse/core": "^10.1.0",
     "@vueuse/integrations": "^10.1.0",
     "axios": "^1.4.0",
+    "pinia": "^2.0.35",
     "universal-cookie": "^4.0.4",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"

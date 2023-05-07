@@ -11,28 +11,23 @@ import IconOsu from "../components/icons/IconOsu.vue";
 import { ref } from "vue";
 import { useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import { UserDetails } from "../types";
-import axios from "axios";
+import { useUserStore } from "../store";
 
 const { width } = useWindowSize();
 const router = useRouter();
+const userStore = useUserStore();
 const signup = ref<SignupTypes>();
 
 type SignupTypes = "osu" | "twitch";
-interface Signup {
-  signup: SignupTypes
-}
 
 try {
-  const response = await axios.get<UserDetails | Signup>("/user/me");
-  const data = response.data;
+  const isSignup = await userStore.getUser();
+  if (isSignup) signup.value = isSignup;
+  
+  router.replace("/settings");
+} catch {
 
-  if ("signup" in data) {
-    signup.value = data.signup;
-  } else {
-    router.replace("/settings");
-  }
-} catch {}
+}
 
 const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
 const osuAuth = import.meta.env.VITE_OSU_AUTH;

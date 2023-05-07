@@ -1,29 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { UserDetails } from "../types";
-import axios from "axios";
+import { useUserStore } from "../store";
 
 import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
 import IconLogout from "./icons/IconLogout.vue";
-import BaseButton from "./base/BaseButton.vue";
 import IconDelete from "./icons/IconDelete.vue";
+import BaseButton from "./base/BaseButton.vue";
 
+const userStore = useUserStore();
 const router = useRouter();
-const data = ref();
-
-try {
-  const response = await axios.get<UserDetails>("/user/me");
-  data.value = response.data;
-} catch {
-  router.replace("/login");
-}
 
 const removeUser = async () => {
   try {
-    await axios.delete("/user/me");
-  } catch {
+    await userStore.deleteUser();;
   } finally {
     router.replace("/login");
   }
@@ -31,8 +21,7 @@ const removeUser = async () => {
 
 const logout = async () => {
   try {
-    await axios.get("/user/logout");
-  } catch {
+    await userStore.logoutUser();
   } finally {
     router.replace("/login");
   }
@@ -40,32 +29,32 @@ const logout = async () => {
 </script>
 
 <template>
-  <div v-if="data" class="grid gap-2">
+  <div v-if="userStore.user" class="grid gap-2">
     <div class="flex gap-2">
       <div class="flex items-end bg-neutral-900 p-2 rounded flex-1 relative">
         <IconOsu class="h-6 mb-2 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
-          <img :src="data.osuAvatarUrl" class="w-14 aspect-square rounded" />
-          <p>{{ data.osuUsername }}</p>
+          <img :src="userStore.user.osuAvatarUrl" class="w-14 aspect-square rounded" />
+          <p>{{ userStore.user.osuUsername }}</p>
         </div>
       </div>
 
       <div
         class="bg-neutral-900 p-2 rounded flex-1 relative"
-        :class="{ 'border-2 border-green-500': data.isLive }"
+        :class="{ 'border-2 border-green-500': userStore.user.isLive }"
       >
         <div class="flex items-center gap-2 pb-2">
           <div
             class="w-2.5 h-2.5 bg-neutral-500 rounded-full"
-            :class="{ 'bg-green-500': data.isLive }"
+            :class="{ 'bg-green-500': userStore.user.isLive }"
           />
-          <p class="text-sm">{{ data.isLive ? "Online" : "Offline" }}</p>
+          <p class="text-sm">{{ userStore.user.isLive ? "Online" : "Offline" }}</p>
         </div>
 
         <IconTwitch class="h-6 mb-2 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
-          <img :src="data.twitchAvatarUrl" class="w-14 aspect-square rounded" />
-          <p>{{ data.twitchUsername }}</p>
+          <img :src="userStore.user.twitchAvatarUrl" class="w-14 aspect-square rounded" />
+          <p>{{ userStore.user.twitchUsername }}</p>
         </div>
       </div>
     </div>
