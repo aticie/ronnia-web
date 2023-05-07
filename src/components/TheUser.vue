@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { UserDetails } from "../types";
 import axios from "axios";
@@ -10,18 +11,29 @@ import BaseButton from "./base/BaseButton.vue";
 import IconDelete from "./icons/IconDelete.vue";
 
 const router = useRouter();
+const data = ref();
 
-const response = await axios.get<UserDetails>("/user/me");
-let data = response.data;
+try {
+  const response = await axios.get<UserDetails>("/user/me");
+  data.value = response.data;
+} catch {
+  router.replace("/login");
+}
 
 const removeUser = async () => {
-  await axios.delete("/user/me");
-  router.replace("/login");
+  try {
+    await axios.delete("/user/me");
+  } finally {
+    router.replace("/login");
+  }
 };
 
 const logout = async () => {
-  await axios.get("/user/logout");
-  router.replace("/login");
+  try {
+    await axios.get("/user/logout");
+  } finally {
+    router.replace("/login");
+  }
 };
 </script>
 

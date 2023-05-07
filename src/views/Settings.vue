@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { Settings } from "../types";
 import { watchDebounced } from "@vueuse/core";
 import { useBus, useMinuteFormat, useCooldown } from "../composables";
+import { useRouter } from "vue-router";
 import axios from "axios";
 
 import IconDone from "../components/icons/IconDone.vue";
@@ -14,11 +15,19 @@ import BaseSuspense from "../components/base/BaseSuspense.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 import BaseRange from "../components/base/BaseRange.vue";
 
-const data = (await axios.get<Settings>("/user/settings")).data;
+const router = useRouter();
 
-const settings = ref(data);
+
+const settings = ref();
 const isFetching = ref(false);
 const excludedUsers = ref([]);
+
+try {
+  const response = await axios.get<Settings>("/user/settings");
+  settings.value = response.data;
+} catch {
+  router.replace("/login");
+}
 
 const bus = useBus();
 const { onCooldown, resetCooldown } = useCooldown(5);
