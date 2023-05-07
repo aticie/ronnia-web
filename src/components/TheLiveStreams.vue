@@ -36,7 +36,7 @@ useInfiniteScroll(
   <div class="lg:absolute inset-0 flex justify-end items-end overflow-hidden">
     <div class="surface max-w-7xl h-[70%] overlfow-x-visible">
       <p
-        class="text-neutral-800 font-bold text-center text-2xl select-none"
+        class="text-neutral-400 text-center text-3xl select-none"
         style="font-family: 'Bebas Neue', cursive"
       >
         Some cool streamers that use Ronnia!

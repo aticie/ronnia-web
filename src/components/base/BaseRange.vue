@@ -186,10 +186,10 @@ const slotValue = computed(() =>
     <div v-if="pipStep">
       <div class="flex p-2 pb-0 justify-between">
         <p
-          v-for="i in max / pipStep"
+          v-for="i in (max / pipStep)+1"
           class="select-none text-xs text-neutral-500 font-bold"
         >
-          {{ i }}
+          {{ i - 1 }}
         </p>
       </div>
     </div>
