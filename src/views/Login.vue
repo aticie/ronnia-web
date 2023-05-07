@@ -8,21 +8,30 @@ import IconTwitch from "../components/icons/IconTwitch.vue";
 import IconGithub from "../components/icons/IconGithub.vue";
 import IconOsu from "../components/icons/IconOsu.vue";
 
-import { useCookies } from "@vueuse/integrations/useCookies";
+import { ref } from "vue";
 import { useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
+import { UserDetails } from "../types";
 import axios from "axios";
-
-type SignupTypes = "twitch" | "osu";
 
 const { width } = useWindowSize();
 const router = useRouter();
-const cookies = useCookies();
-const signup = cookies.get<SignupTypes>("signup");
+const signup = ref<SignupTypes>();
+
+type SignupTypes = "osu" | "twitch";
+interface Signup {
+  signup: SignupTypes
+}
 
 try {
-  await axios.get("/user/me");
-  router.replace("/settings");
+  const response = await axios.get<UserDetails | Signup>("/user/me");
+  const data = response.data;
+
+  if ("signup" in data) {
+    signup.value = data.signup;
+  } else {
+    router.replace("/settings");
+  }
 } catch {}
 
 const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
