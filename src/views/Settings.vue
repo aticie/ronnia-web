@@ -15,8 +15,9 @@ import BaseSuspense from "../components/base/BaseSuspense.vue";
 import BaseButton from "../components/base/BaseButton.vue";
 import BaseRange from "../components/base/BaseRange.vue";
 
+const bus = useBus();
 const router = useRouter();
-
+const { onCooldown, resetCooldown } = useCooldown(5);
 
 const settings = ref();
 const isFetching = ref(false);
@@ -28,9 +29,6 @@ try {
 } catch {
   router.replace("/login");
 }
-
-const bus = useBus();
-const { onCooldown, resetCooldown } = useCooldown(5);
 
 const saveSettings = async () => {
   if (!settings.value) return;
