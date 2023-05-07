@@ -46,7 +46,7 @@ const logout = async () => {
         <div class="flex items-center gap-2 pb-2">
           <div
             class="w-2.5 h-2.5 bg-neutral-500 rounded-full"
-            :class="{ 'bg-green-500': userStore.user.isLive }"
+            :class="{ '!bg-green-500': userStore.user.isLive }"
           />
           <p class="text-sm">{{ userStore.user.isLive ? "Online" : "Offline" }}</p>
         </div>
