@@ -19,7 +19,8 @@ const removeUser = async () => {
   router.replace("/login");
 };
 
-const logout = () => {
+const logout = async () => {
+  await axios.get("/user/logout");
   router.replace("/login");
 };
 </script>
