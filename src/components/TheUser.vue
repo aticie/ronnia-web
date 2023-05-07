@@ -23,6 +23,7 @@ try {
 const removeUser = async () => {
   try {
     await axios.delete("/user/me");
+  } catch {
   } finally {
     router.replace("/login");
   }
@@ -31,6 +32,7 @@ const removeUser = async () => {
 const logout = async () => {
   try {
     await axios.get("/user/logout");
+  } catch {
   } finally {
     router.replace("/login");
   }
@@ -48,10 +50,16 @@ const logout = async () => {
         </div>
       </div>
 
-      <div class="bg-neutral-900 p-2 rounded flex-1 relative" :class="{ 'border-2 border-green-500': data.isLive }">
+      <div
+        class="bg-neutral-900 p-2 rounded flex-1 relative"
+        :class="{ 'border-2 border-green-500': data.isLive }"
+      >
         <div class="flex items-center gap-2 pb-2">
-          <div class="w-2.5 h-2.5 bg-neutral-500 rounded-full" :class="{ 'bg-green-500': data.isLive }" />
-          <p class="text-sm">{{ data.isLive ? 'Online' : 'Offline' }}</p>
+          <div
+            class="w-2.5 h-2.5 bg-neutral-500 rounded-full"
+            :class="{ 'bg-green-500': data.isLive }"
+          />
+          <p class="text-sm">{{ data.isLive ? "Online" : "Offline" }}</p>
         </div>
 
         <IconTwitch class="h-6 mb-2 absolute right-2 opacity-40" />
