@@ -183,15 +183,14 @@ const slotValue = computed(() =>
       </div>
     </div>
 
-    <div v-if="pipStep">
-      <div class="flex p-2 pb-0 justify-between">
-        <p
-          v-for="i in (max / pipStep)+1"
-          class="select-none text-xs text-neutral-500 font-bold"
-        >
-          {{ i - 1 }}
-        </p>
-      </div>
+    <div v-if="pipStep" class="relative w-full py-2.5">
+      <p
+        v-for="i in (max / pipStep) + 1"
+        class="absolute select-none text-xs text-neutral-500 font-bold"
+        :style="{ left: `${100 / ((max / pipStep)) * (i - 1)}%`, transform: `translateX(-50%)` }"
+      >
+        {{ i - 1}}
+      </p>
     </div>
   </div>
 </template>
