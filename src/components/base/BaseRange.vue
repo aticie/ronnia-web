@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends [number, number] | number">
-import { ref, computed, StyleValue, watch } from "vue";
+import { ref, computed, StyleValue, watch, onMounted } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
 import { interpolate } from "../../utils";
 
@@ -27,18 +27,43 @@ const thumbRight = ref<Element>(null);
 const thumbLeft = ref<Element>(null);
 const track = ref<Element>(null);
 
+const { elementWidth, elementX } = useMouseInElement(track, {
+  handleOutside: false,
+});
+const { pressed: pressRight } = useMousePressed({ target: thumbRight });
+const { pressed: pressLeft } = useMousePressed({ target: thumbLeft });
+
 let right = Array.isArray(props.modelValue)
   ? props.modelValue[1]
   : props.modelValue;
 
-// default values for position of thumbs, Updated on mouse event.
-let interpolated = interpolate(right as number, props.min, 0, props.max, 100);
-const currentXRight = ref(interpolated);
-const currentXLeft = ref(
-  props.range && Array.isArray(props.modelValue)
-    ? props.modelValue[0]
-    : undefined
-);
+const currentXRight = ref();
+const currentXLeft = ref(0);
+
+onMounted(() => {
+  if (!track.value) return;
+
+  // default values for position of thumbs, Updated on mouse event.
+  let interpolatedRight = interpolate(
+    right as number,
+    props.min,
+    0,
+    props.max,
+    track.value.clientWidth
+  );
+  currentXRight.value = interpolatedRight;
+
+  // same for left thumb
+  if (props.range && Array.isArray(props.modelValue)) {
+    currentXLeft.value = interpolate(
+      props.modelValue[0],
+      props.min,
+      0,
+      props.max,
+      track.value.clientWidth
+    );
+  }
+});
 
 const thumbRightStyle = computed<StyleValue>(() => {
   return {
@@ -68,12 +93,6 @@ const thumbLeftStyle = computed<StyleValue>(() => {
     transform: "translateX(-50%)",
   };
 });
-
-const { elementWidth, elementX } = useMouseInElement(track, {
-  handleOutside: false,
-});
-const { pressed: pressRight } = useMousePressed({ target: thumbRight });
-const { pressed: pressLeft } = useMousePressed({ target: thumbLeft });
 
 const clamp = (x: number, x1: number, x2: number) => {
   return Math.max(x1, Math.min(x, x2));
