@@ -2,6 +2,7 @@
 import { ref, onUnmounted } from "vue";
 import { useBus, Notification } from "../composables/useBus";
 import IconDone from "./icons/IconDone.vue";
+import IconError from "./icons/IconError.vue";
 
 const notifications = ref<Notification[]>([]);
 const bus = useBus();
@@ -37,10 +38,16 @@ onUnmounted(unsub);
       :key="notif.id"
       class="flex gap-3 bg-neutral-950 border border-neutral-800 rounded-lg p-3"
     >
-      <IconDone class="h-6 w-6 bg-neutral-900 p-1 rounded-full" />
+      <div 
+        class="h-7 w-7 aspect-square p-1 bg-neutral-900 rounded-full flex items-center"
+        :class="{ 'bg-red-500/25': notif.type === 'error' }"
+      >
+        <IconDone v-if="notif.type === 'success'" />
+        <IconError v-if="notif.type === 'error'" :class="{ 'fill-red-400': notif.type === 'error' }" />
+      </div>
 
       <div class="pt-0.5 w-full">
-        <p>{{ notif.title }}</p>
+        <p :class="{ 'text-red-400': notif.type === 'error' }">{{ notif.title }}</p>
         <p v-if="notif.description" class="text-xs mt-1 text-neutral-400">
           {{ notif.description }}
         </p>
