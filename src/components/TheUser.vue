@@ -44,7 +44,7 @@ const logout = async () => {
 
       <div
         class="bg-neutral-900 p-2 rounded flex-1 relative"
-        :class="{ 'border-2 border-green-500': userStore.user.isLive }"
+        :class="{ 'outline outline-2 outline-green-500': userStore.user.isLive }"
       >
         <IconTwitch class="h-6 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
