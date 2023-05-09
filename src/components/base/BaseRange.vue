@@ -37,7 +37,11 @@ let right = Array.isArray(props.modelValue)
   ? props.modelValue[1]
   : props.modelValue;
 
-const currentXRight = ref();
+if (right === -1) {
+  right = props.max;
+}
+
+const currentXRight = ref(0);
 const currentXLeft = ref(0);
 
 onMounted(() => {
