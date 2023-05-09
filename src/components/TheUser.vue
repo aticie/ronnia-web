@@ -13,7 +13,7 @@ const router = useRouter();
 
 const removeUser = async () => {
   try {
-    await userStore.deleteUser();;
+    await userStore.deleteUser();
   } finally {
     router.replace("/login");
   }
@@ -31,10 +31,13 @@ const logout = async () => {
 <template>
   <div v-if="userStore.user" class="grid gap-2">
     <div class="flex gap-2">
-      <div class="flex items-end bg-neutral-900 p-2 rounded flex-1 relative">
+      <div class="bg-neutral-900 p-2 rounded flex-1 relative">
         <IconOsu class="h-6 mb-2 absolute right-2 opacity-40" />
         <div class="flex items-center gap-2">
-          <img :src="userStore.user.osuAvatarUrl" class="w-14 aspect-square rounded" />
+          <img
+            :src="userStore.user.osuAvatarUrl"
+            class="w-14 aspect-square rounded"
+          />
           <p>{{ userStore.user.osuUsername }}</p>
         </div>
       </div>
@@ -43,18 +46,23 @@ const logout = async () => {
         class="bg-neutral-900 p-2 rounded flex-1 relative"
         :class="{ 'border-2 border-green-500': userStore.user.isLive }"
       >
-        <div class="flex items-center gap-2 pb-2">
+        <IconTwitch class="h-6 absolute right-2 opacity-40" />
+        <div class="flex items-center gap-2">
+          <img
+            :src="userStore.user.twitchAvatarUrl"
+            class="w-14 aspect-square rounded"
+          />
+          <p>{{ userStore.user.twitchUsername }}</p>
+        </div>
+
+        <div class="flex items-center gap-2 mt-2">
           <div
             class="w-2.5 h-2.5 bg-neutral-500 rounded-full"
             :class="{ '!bg-green-500': userStore.user.isLive }"
           />
-          <p class="text-sm">{{ userStore.user.isLive ? "Online" : "Offline" }}</p>
-        </div>
-
-        <IconTwitch class="h-6 mb-2 absolute right-2 opacity-40" />
-        <div class="flex items-center gap-2">
-          <img :src="userStore.user.twitchAvatarUrl" class="w-14 aspect-square rounded" />
-          <p>{{ userStore.user.twitchUsername }}</p>
+          <p class="text-sm">
+            {{ userStore.user.isLive ? "Online" : "Offline" }}
+          </p>
         </div>
       </div>
     </div>
