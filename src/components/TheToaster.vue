@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from "vue";
 import { useBus, Notification } from "../composables/useBus";
+import IconDone from "./icons/IconDone.vue";
 
 const notifications = ref<Notification[]>([]);
 const bus = useBus();
 
-const unsub = bus.on(notification => {
+const unsub = bus.on((notification) => {
   if (!notification.id) {
     notification.id = Math.random();
   }
-  
+
   setTimeout(() => {
-    let index = notifications.value.findIndex(x => x.id);
+    let index = notifications.value.findIndex((x) => x.id);
     notifications.value.splice(index, 1);
-  }, 5000)
+  }, 5000);
 
   notifications.value.push(notification);
-})
+});
 
 onUnmounted(unsub);
 </script>
@@ -31,13 +32,19 @@ onUnmounted(unsub);
     leave-active-class="transition-all absolute"
     move-class="transition-all"
   >
-    <div 
+    <div
       v-for="notif in notifications"
       :key="notif.id"
-      class="p-3 bg-neutral-900 rounded w-full border border-neutral-700"
+      class="flex gap-3 bg-neutral-950 border border-neutral-800 rounded-lg p-3"
     >
-      <p class="font-semibold">{{ notif.title }}</p>
-      <p class="text-xs">{{ notif.description }}</p>
+      <IconDone class="h-6 w-6 bg-neutral-900 p-1 rounded-full" />
+
+      <div class="pt-0.5 w-full">
+        <p>{{ notif.title }}</p>
+        <p v-if="notif.description" class="text-xs mt-1 text-neutral-400">
+          {{ notif.description }}
+        </p>
+      </div>
     </div>
   </TransitionGroup>
 </template>

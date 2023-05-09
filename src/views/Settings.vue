@@ -46,6 +46,7 @@ const saveSettings = async () => {
 
     bus.emit({
       title: "Saved your settings!",
+      description: "your settings are saved every time you make a change"
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
