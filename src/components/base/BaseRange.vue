@@ -1,195 +1,179 @@
-<script setup lang="ts">
-import { computed, reactive, ref, watch, onMounted } from "vue";
+<script setup lang="ts" generic="T extends [number, number] | number">
+import { ref, computed, StyleValue, watch } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
+import { interpolate } from "../../utils";
 
-const props = defineProps<{
-  modelValue: [number, number] | number;
+interface Props {
+  modelValue: T;
   min: number;
   max: number;
-  pipStep?: number;
   range?: boolean;
-}>();
-
-const emit = defineEmits(["update:modelValue"]);
-
-const track = ref<HTMLElement | null>(null);
-const thumbRightElement = ref(null);
-const thumbLeftElement = ref(null);
-
-const { elementX, elementWidth, isOutside } = useMouseInElement(track);
-const { pressed: rightPressed } = useMousePressed({
-  target: thumbRightElement,
-});
-const { pressed: leftPressed } = useMousePressed({ target: thumbLeftElement });
-
-const offset = computed(() => {
-  return (elementX.value * 100) / elementWidth.value;
-});
-
-const thumbLeft = reactive({
-  dragging: false,
-  pressed: false,
-  offset: 0,
-});
-
-const thumbRight = reactive({
-  dragging: false,
-  pressed: false,
-  offset: 0,
-});
-
-onMounted(() => {
-  let right = Array.isArray(props.modelValue)
-    ? props.modelValue[1]
-    : props.modelValue;
-
-  thumbRight.offset =
-    0 + (((right as number) - props.min) / (props.max - props.min)) * (100 - 0);
-
-  if (thumbRight.offset === -10) {
-    thumbRight.offset = 100;
-  }
-
-  if (Array.isArray(props.modelValue)) {
-    thumbLeft.offset =
-      0 +
-      (((props.modelValue[0] as number) - props.min) /
-        (props.max - props.min)) *
-        (100 - 0);
-  }
-});
-
-const shouldDrag = (isDragging: boolean, pressed: boolean) => {
-  if (pressed) {
-    return false; // return early
-  }
-
-  if (isOutside.value || !pressed) {
-    return true; // don't return
-  }
-};
-
-watch(offset, () => {
-  if (shouldDrag(thumbRight.dragging, rightPressed.value)) {
-    thumbRight.dragging = false;
-    return;
-  }
-
-  thumbRight.offset = Math.min(Math.max(offset.value, thumbLeft.offset), 100);
-
-  let interPolatedMax =
-    props.min + ((thumbRight.offset - 0) / (100 - 0)) * (props.max - props.min);
-
-  emit(
-    "update:modelValue",
-    Array.isArray(props.modelValue)
-      ? [
-          props.min +
-            ((thumbLeft.offset - 0) / (100 - 0)) * (props.max - props.min),
-          interPolatedMax,
-        ]
-      : interPolatedMax
-  );
-});
-
-if (props.range) {
-  watch(offset, () => {
-    if (shouldDrag(thumbLeft.dragging, leftPressed.value)) {
-      thumbRight.dragging = false;
-      return;
-    }
-
-    thumbLeft.offset = Math.max(
-      Math.min(offset.value, thumbRight.offset),
-      props.min
-    );
-
-    let interPolatedMax =
-      props.min +
-      ((thumbRight.offset - 0) / (100 - 0)) * (props.max - props.min);
-
-    emit("update:modelValue", [
-      props.min +
-        ((thumbLeft.offset - 0) / (100 - 0)) * (props.max - props.min),
-      interPolatedMax,
-    ]);
-  });
+  pipStep?: number;
 }
 
-const slotValue = computed(() =>
-  Array.isArray(props.modelValue) ? props.modelValue[1] : props.modelValue
+interface Emits {
+  (e: "update:modelValue", payload: [number, number] | number): void;
+}
+
+const emit = defineEmits<Emits>();
+const xprops = defineProps<Props>();
+
+// workaround until vue 3.3 lands
+const props = xprops as unknown as Props;
+
+type Element = HTMLElement | null;
+
+const thumbRight = ref<Element>(null);
+const thumbLeft = ref<Element>(null);
+const track = ref<Element>(null);
+
+let right = Array.isArray(props.modelValue)
+  ? props.modelValue[1]
+  : props.modelValue;
+
+// default values for position of thumbs, Updated on mouse event.
+let interpolated = interpolate(right as number, props.min, 0, props.max, 100);
+const currentXRight = ref(interpolated);
+const currentXLeft = ref(
+  props.range && Array.isArray(props.modelValue)
+    ? props.modelValue[0]
+    : undefined
 );
+
+const thumbRightStyle = computed<StyleValue>(() => {
+  return {
+    left: `${(currentXRight.value * 100) / elementWidth.value}%`,
+    transform: "translateX(-50%)",
+  };
+});
+
+const trackStyle = computed<StyleValue>(() => {
+  // left offset of track should be zero if there is no left thumb, else
+  // should be offset of left thumb
+  let left = currentXLeft.value
+    ? (currentXLeft.value * 100) / elementWidth.value
+    : 0;
+
+  return {
+    width: `${(currentXRight.value * 100) / elementWidth.value - left}%`,
+    left: `${left}%`,
+  };
+});
+
+const thumbLeftStyle = computed<StyleValue>(() => {
+  if (!currentXLeft.value) return {};
+
+  return {
+    left: `${(currentXLeft.value * 100) / elementWidth.value}%`,
+    transform: "translateX(-50%)",
+  };
+});
+
+const { elementWidth, elementX } = useMouseInElement(track, {
+  handleOutside: false,
+});
+const { pressed: pressRight } = useMousePressed({ target: thumbRight });
+const { pressed: pressLeft } = useMousePressed({ target: thumbLeft });
+
+const clamp = (x: number, x1: number, x2: number) => {
+  return Math.max(x1, Math.min(x, x2));
+};
+
+// update thumb positions if they are pressed
+watch(elementX, () => {
+  if (!thumbRight.value) return;
+
+  // clamp the x so it doesn't overflow from left or right
+  let clampedX = clamp(elementX.value, 0, elementWidth.value);
+
+  if (pressRight.value) {
+    currentXRight.value = clampedX;
+
+    // block right thumb from going more to the right than the left thumb
+    if (currentXLeft.value && props.range) {
+      currentXRight.value = Math.max(currentXRight.value, currentXLeft.value);
+    }
+  } else if (pressLeft.value && props.range) {
+    // cap thumb value so it doesn't overflow
+    currentXLeft.value = Math.min(currentXRight.value, clampedX);
+  }
+
+  // update the values that are given with v-model after interpolation.
+  emit(
+    "update:modelValue",
+    Array.isArray(props.modelValue) && currentXLeft.value !== undefined
+      ? [
+          interpolate(
+            currentXLeft.value,
+            0,
+            props.min,
+            elementWidth.value,
+            props.max
+          ),
+          interpolate(
+            currentXRight.value,
+            0,
+            props.min,
+            elementWidth.value,
+            props.max
+          ),
+        ]
+      : interpolate(
+          currentXRight.value,
+          0,
+          props.min,
+          elementWidth.value,
+          props.max
+        )
+  );
+});
 </script>
 
 <template>
-  <div class="w-full relative">
-    <div
-      ref="track"
-      class="flex items-center grow rounded-full relative bg-neutral-950 h-2.5"
-    >
-      <div class="flex items-center w-full h-full mr-4 relative inset-0">
-        <!-- left thumb -->
-        <button
-          ref="thumbLeftElement"
-          v-if="range"
-          class="absolute w-5 h-5 bg-rose-800 rounded-full"
-          :style="{
-            left: `${thumbLeft.offset}%`,
-          }"
-        />
+  <div class="w-full">
+    <div ref="track" class="w-full flex items-center relative h-8">
+      <div class="absolute h-3 rounded-full w-full bg-neutral-950" />
+      <div class="absolute h-3 rounded-full bg-rose-700" :style="trackStyle" />
 
-        <!-- right thumb -->
-        <button
-          ref="thumbRightElement"
-          class="absolute w-5 h-5 bg-rose-800 rounded-full"
-          :style="{
-            left: `${thumbRight.offset}%`,
-          }"
-        />
+      <button
+        v-if="range"
+        ref="thumbLeft"
+        :style="thumbLeftStyle"
+        class="absolute w-5 h-5 bg-rose-800 rounded-full"
+      />
+      <button
+        ref="thumbRight"
+        :style="thumbRightStyle"
+        class="absolute w-5 h-5 bg-rose-800 rounded-full"
+      />
 
-        <!-- track -->
-        <div
-          class="absolute h-full bg-rose-800 rounded-full pointer-events-none"
-          :style="{
-            width: `${thumbRight.offset - thumbLeft.offset + 1}%`,
-            left: `${thumbLeft.offset}%`,
-          }"
-        />
+      <p
+        v-if="pressRight"
+        class="absolute mb-16 bg-rose-700 text-xs rounded-lg p-1"
+        :style="thumbRightStyle"
+      >
+        <slot :values="modelValue">{{ modelValue }}</slot>
+      </p>
 
-        <p
-          v-if="leftPressed && range"
-          class="absolute bottom-6 text-xs rounded-full w-8 h-8 flex items-center justify-center bg-rose-800 select-none"
-          :style="{
-            left: `${thumbLeft.offset}%`,
-          }"
-        >
-          {{
-            (Array.isArray(modelValue) ? modelValue[0] : modelValue).toFixed(1)
-          }}
-        </p>
-
-        <!-- right thumb value -->
-        <p
-          v-if="rightPressed"
-          class="absolute bottom-6 text-xs rounded-full p-1 px-2 flex items-center justify-center bg-rose-800 select-none"
-          :style="{
-            left: `${thumbRight.offset}%`,
-          }"
-        >
-          <slot :value="slotValue">
-            {{ slotValue.toFixed(1) }}
-          </slot>
-        </p>
-      </div>
+      <p
+        v-if="pressLeft && range"
+        class="absolute mb-16 bg-rose-700 text-xs rounded-lg p-1"
+        :style="thumbLeftStyle"
+      >
+        <slot name="left" :values="modelValue">{{ modelValue }}</slot>
+      </p>
     </div>
 
-    <div v-if="pipStep" class="relative w-full py-2.5">
+    <div v-if="pipStep" class="flex relative mb-4">
       <p
-        v-for="i in (max / pipStep) + 1"
+        v-for="i in max / pipStep + 1"
         class="absolute select-none text-xs text-neutral-500 font-bold"
-        :style="{ left: `${100 / ((max / pipStep)) * (i - 1)}%`, transform: `translateX(-50%)` }"
+        :style="{
+          left: `${(100 / (max / pipStep)) * (i - 1)}%`,
+          transform: 'translateX(-50%)',
+        }"
       >
-        {{ i - 1}}
+        {{ i - 1 }}
       </p>
     </div>
   </div>

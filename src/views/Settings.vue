@@ -19,7 +19,7 @@ const bus = useBus();
 const router = useRouter();
 const { onCooldown, resetCooldown } = useCooldown(5);
 
-const settings = ref();
+const settings = ref<Settings>();
 const isFetching = ref(false);
 const excludedUsers = ref([]);
 
@@ -45,8 +45,8 @@ const saveSettings = async () => {
     isFetching.value = false;
 
     bus.emit({
-      title: "Saved your settings!"
-    })
+      title: "Saved your settings!",
+    });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       bus.emit({
@@ -81,9 +81,9 @@ watchDebounced(settings, saveSettings, {
             :min="0"
             :max="15 * 60"
             :pipStep="60"
-            v-slot="{ value }"
+            v-slot="{ values }"
           >
-            <p>{{ useMinuteFormat(value) }}</p>
+            <p>{{ useMinuteFormat(values) }}</p>
           </BaseRange>
         </SettingBase>
         <SettingBase v-if="setting.type === 'range'" class="flex-col">
@@ -94,9 +94,13 @@ watchDebounced(settings, saveSettings, {
             :max="10"
             :pipStep="1"
             range
-            v-slot="{ value }"
           >
-            <p>{{ value === 10 ? "∞" : value.toFixed(2) }}</p>
+            <template #default="{ values }">
+              <p>{{ values[1] === 10 ? "∞" : values[1].toFixed(1) }}</p>
+            </template>
+            <template #left="{ values }">
+              <p>{{ values[0].toFixed(1) }}</p>
+            </template>
           </BaseRange>
         </SettingBase>
       </template>
