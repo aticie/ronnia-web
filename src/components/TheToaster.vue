@@ -40,14 +40,14 @@ onUnmounted(unsub);
     >
       <div 
         class="h-7 w-7 aspect-square p-1 bg-neutral-900 rounded-full flex items-center"
-        :class="{ 'bg-red-500/25': notif.type === 'error' }"
+        :class="{ '!bg-red-500/25': notif.type === 'error' }"
       >
         <IconDone v-if="notif.type === 'success'" />
-        <IconError v-if="notif.type === 'error'" :class="{ 'fill-red-400': notif.type === 'error' }" />
+        <IconError v-if="notif.type === 'error'" :class="{ '!fill-red-400': notif.type === 'error' }" />
       </div>
 
       <div class="pt-0.5 w-full">
-        <p :class="{ 'text-red-400': notif.type === 'error' }">{{ notif.title }}</p>
+        <p :class="{ '!text-red-400': notif.type === 'error' }">{{ notif.title }}</p>
         <p v-if="notif.description" class="text-xs mt-1 text-neutral-400">
           {{ notif.description }}
         </p>
