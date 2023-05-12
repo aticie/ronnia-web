@@ -34,7 +34,7 @@ useInfiniteScroll(
 
 <template>
   <div class="lg:absolute inset-0 flex justify-end items-end overflow-hidden">
-    <div class="surface max-w-7xl h-[70%] overlfow-x-visible">
+    <div class="surface max-w-7xl h-[70%]">
       <p
         class="text-neutral-400 text-center text-3xl select-none"
         style="font-family: 'Bebas Neue', cursive"
@@ -52,7 +52,7 @@ useInfiniteScroll(
         >
           <div class="group-hover:bg-rose-700 transition-colors rounded-xl">
             <img
-              :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}.jpg`"
+              :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}-484x268.jpg`"
               class="w-full border border-neutral-700 rounded-lg aspect-video object-cover group-hover:-translate-x-4 group-hover:-translate-y-4 transition-transform"
             />
           </div>
