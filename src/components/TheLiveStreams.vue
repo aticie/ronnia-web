@@ -43,7 +43,7 @@ useInfiniteScroll(
       </p>
       <div
         ref="target"
-        class="mask grid grid-cols-4 gap-2 px-10 overflow-y-auto h-full"
+        class="mask hide-scroll grid grid-cols-4 gap-2 px-10 overflow-y-auto h-full"
       >
         <a
           v-for="streamer in streamers"

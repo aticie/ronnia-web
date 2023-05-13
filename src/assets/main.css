@@ -35,7 +35,7 @@
     transform: skew(-50deg, 20deg) translateY(20rem) translateX(5rem);
   }
 
-  .surface::-webkit-scrollbar {
+  .hide-scroll::-webkit-scrollbar {
     @apply hidden;
   }
 }
