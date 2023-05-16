@@ -1,10 +1,10 @@
-<script setup lang="ts" generic="T extends [number, number] | number">
+<script setup lang="ts">
 import { ref, computed, StyleValue, watch, onMounted } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
 import { interpolate } from "../../utils";
 
 interface Props {
-  modelValue: T;
+  modelValue: [number, number] | number;
   min: number;
   max: number;
   range?: boolean;
