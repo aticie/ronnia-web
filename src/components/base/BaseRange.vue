@@ -1,13 +1,14 @@
-<script setup lang="ts" generic="T extends [number, number] | number">
+<script setup lang="ts">
 import { ref, computed, StyleValue, watch, onMounted } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
 import { interpolate } from "../../utils";
 
 interface Props {
-  modelValue: T;
+  modelValue: [number, number] | number;
   min: number;
   max: number;
   range?: boolean;
+  round?: boolean;
   pipStep?: number;
 }
 
@@ -36,6 +37,8 @@ const { pressed: pressLeft } = useMousePressed({ target: thumbLeft });
 let right = Array.isArray(props.modelValue)
   ? props.modelValue[1]
   : props.modelValue;
+
+let pipStepCount = props.max / (props.pipStep || 2) + 1;
 
 if (right === -1) {
   right = props.max;
@@ -102,6 +105,19 @@ const clamp = (x: number, x1: number, x2: number) => {
   return Math.max(x1, Math.min(x, x2));
 };
 
+const roundTo = (x: number, every_x: number = 10) => {
+  return Math.round(x / every_x) * every_x;
+};
+
+// if (props.round) {
+//   watch(
+//     [() => pressLeft.value, () => pressRight.value],
+//     (x) => {
+//       console.log(x)
+//     }
+//   );
+// }
+
 // update thumb positions if they are pressed
 watch(elementX, () => {
   if (!thumbRight.value) return;
@@ -110,7 +126,14 @@ watch(elementX, () => {
   let clampedX = clamp(elementX.value, 0, elementWidth.value);
 
   if (pressRight.value) {
-    currentXRight.value = clampedX;
+    if (props.round) {
+      currentXRight.value = roundTo(
+        clampedX,
+        elementWidth.value / (pipStepCount - 1)
+      );
+    } else {
+      currentXRight.value = clampedX;
+    }
 
     // block right thumb from going more to the right than the left thumb
     if (currentXLeft.value && props.range) {
@@ -118,36 +141,45 @@ watch(elementX, () => {
     }
   } else if (pressLeft.value && props.range) {
     // cap thumb value so it doesn't overflow
-    currentXLeft.value = Math.min(currentXRight.value, clampedX);
+    // currentXLeft.value = Math.min(currentXRight.value, clampedX);
+
+    if (props.round) {
+      currentXLeft.value = roundTo(
+        Math.min(currentXRight.value, clampedX),
+        elementWidth.value / (pipStepCount - 1)
+      );
+    } else {
+      currentXLeft.value = Math.min(currentXRight.value, clampedX);
+    }
+  }
+
+  let interPolatedRight = interpolate(
+    currentXRight.value,
+    0,
+    props.min,
+    elementWidth.value,
+    props.max
+  );
+
+  let interPolatedLeft = interpolate(
+    currentXLeft.value,
+    0,
+    props.min,
+    elementWidth.value,
+    props.max
+  );
+
+  if (props.round) {
+    interPolatedRight = roundTo(interPolatedRight, props.pipStep);
+    interPolatedLeft = roundTo(interPolatedLeft, props.pipStep);
   }
 
   // update the values that are given with v-model after interpolation.
   emit(
     "update:modelValue",
     Array.isArray(props.modelValue) && currentXLeft.value !== undefined
-      ? [
-          interpolate(
-            currentXLeft.value,
-            0,
-            props.min,
-            elementWidth.value,
-            props.max
-          ),
-          interpolate(
-            currentXRight.value,
-            0,
-            props.min,
-            elementWidth.value,
-            props.max
-          ),
-        ]
-      : interpolate(
-          currentXRight.value,
-          0,
-          props.min,
-          elementWidth.value,
-          props.max
-        )
+      ? [interPolatedLeft, interPolatedRight]
+      : interPolatedRight
   );
 });
 </script>
@@ -189,7 +221,7 @@ watch(elementX, () => {
 
     <div v-if="pipStep" class="flex relative mb-4">
       <p
-        v-for="i in max / pipStep + 1"
+        v-for="i in pipStepCount"
         class="absolute select-none text-xs text-neutral-500 font-bold"
         :style="{
           left: `${(100 / (max / pipStep)) * (i - 1)}%`,
