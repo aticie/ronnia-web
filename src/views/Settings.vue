@@ -84,7 +84,6 @@ watchDebounced(settings, saveSettings, {
             :min="0"
             :max="15 * 60"
             :pipStep="60"
-            round
             v-slot="{ values }"
           >
             <p>{{ useMinuteFormat(values) }}</p>
@@ -97,7 +96,6 @@ watchDebounced(settings, saveSettings, {
             :min="0"
             :max="10"
             :pipStep="1"
-            round
             range
           >
             <template #default="{ values }">
