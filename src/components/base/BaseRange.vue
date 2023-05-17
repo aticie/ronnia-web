@@ -106,7 +106,7 @@ const roundOffset = computed(() => (pipDistance.value / 100) * 15);
 
 // update thumb positions if they are pressed
 watch(elementX, () => {
-  if (!thumbRight.value) return;
+  if (!thumbRight.value || !(pressRight.value || pressLeft.value)) return;
 
   // clamp the x so it doesn't overflow from left or right
   let clampedX = clamp(elementX.value, 0, elementWidth.value);
@@ -164,12 +164,8 @@ watch(elementX, () => {
     props.max
   );
 
-  if (props.round) {
-    let fifteenPercent = ((props.pipStep || 10) / 100) * 15;
-
-    // interPolatedRight = roundTo(interPolatedRight, props.pipStep);
-    // interPolatedLeft = roundTo(interPolatedLeft, props.pipStep);
-  }
+  interPolatedLeft = Math.round(interPolatedLeft * 1e2) / 1e2;
+  interPolatedRight = Math.round(interPolatedRight * 1e2) / 1e2;
 
   // update the values that are given with v-model after interpolation.
   emit(
