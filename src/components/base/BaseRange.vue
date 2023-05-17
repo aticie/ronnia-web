@@ -109,14 +109,8 @@ const roundTo = (x: number, every_x: number = 10) => {
   return Math.round(x / every_x) * every_x;
 };
 
-// if (props.round) {
-//   watch(
-//     [() => pressLeft.value, () => pressRight.value],
-//     (x) => {
-//       console.log(x)
-//     }
-//   );
-// }
+const pipDistance = computed(() => elementWidth.value / (pipStepCount - 1));
+const roundOffset = computed(() => (pipDistance.value / 100) * 15);
 
 // update thumb positions if they are pressed
 watch(elementX, () => {
@@ -127,10 +121,13 @@ watch(elementX, () => {
 
   if (pressRight.value) {
     if (props.round) {
-      currentXRight.value = roundTo(
-        clampedX,
-        elementWidth.value / (pipStepCount - 1)
-      );
+      let rounded = roundTo(clampedX, pipDistance.value);
+
+      if (Math.abs(rounded - clampedX) < roundOffset.value) {
+        currentXRight.value = rounded;
+      } else {
+        currentXRight.value = clampedX;
+      }
     } else {
       currentXRight.value = clampedX;
     }
@@ -144,10 +141,16 @@ watch(elementX, () => {
     // currentXLeft.value = Math.min(currentXRight.value, clampedX);
 
     if (props.round) {
-      currentXLeft.value = roundTo(
+      let rounded = roundTo(
         Math.min(currentXRight.value, clampedX),
-        elementWidth.value / (pipStepCount - 1)
+        pipDistance.value
       );
+
+      if (Math.abs(rounded - clampedX) < roundOffset.value) {
+        currentXLeft.value = rounded;
+      } else {
+        currentXLeft.value = clampedX;
+      }
     } else {
       currentXLeft.value = Math.min(currentXRight.value, clampedX);
     }
@@ -170,8 +173,10 @@ watch(elementX, () => {
   );
 
   if (props.round) {
-    interPolatedRight = roundTo(interPolatedRight, props.pipStep);
-    interPolatedLeft = roundTo(interPolatedLeft, props.pipStep);
+    let fifteenPercent = ((props.pipStep || 10) / 100) * 15;
+
+    // interPolatedRight = roundTo(interPolatedRight, props.pipStep);
+    // interPolatedLeft = roundTo(interPolatedLeft, props.pipStep);
   }
 
   // update the values that are given with v-model after interpolation.
