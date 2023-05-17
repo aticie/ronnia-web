@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends [number, number] | number">
 import { ref, computed, StyleValue, watch, onMounted } from "vue";
 import { useMouseInElement, useMousePressed } from "@vueuse/core";
-import { interpolate } from "../../utils";
+import { interpolate, clamp, roundTo } from "../../utils";
 
 interface Props {
   modelValue: T;
@@ -100,14 +100,6 @@ const thumbLeftStyle = computed<StyleValue>(() => {
     transform: "translateX(-50%)",
   };
 });
-
-const clamp = (x: number, x1: number, x2: number) => {
-  return Math.max(x1, Math.min(x, x2));
-};
-
-const roundTo = (x: number, every_x: number = 10) => {
-  return Math.round(x / every_x) * every_x;
-};
 
 const pipDistance = computed(() => elementWidth.value / (pipStepCount - 1));
 const roundOffset = computed(() => (pipDistance.value / 100) * 15);
