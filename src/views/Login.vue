@@ -23,11 +23,9 @@ type SignupTypes = "osu" | "twitch";
 try {
   const isSignup = await userStore.getUser();
   if (isSignup) signup.value = isSignup;
-  
-  router.replace("/settings");
-} catch {
 
-}
+  router.replace("/settings");
+} catch {}
 
 const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
 const osuAuth = import.meta.env.VITE_OSU_AUTH;
@@ -35,7 +33,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 
 <template>
   <div
-    class="w-full pt-32 flex flex-col gap-8 justify-center min-h-full lg:min-h-0 max-w-sm rounded z-10"
+    class="w-full flex flex-col gap-8 justify-center h-screen lg:min-h-0 max-w-sm rounded z-10"
   >
     <div class="flex flex-col gap-10">
       <div class="flex justify-center items-end -ml-8">
@@ -93,7 +91,11 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
     </div>
   </div>
 
-  <BaseSuspense>
-    <TheLiveStreams v-if="width > 1024" />
+  <BaseSuspense v-if="width > 1024">
+    <TheLiveStreams />
   </BaseSuspense>
+
+  <div class="h-screen">
+    <p>hey</p>
+  </div>
 </template>
