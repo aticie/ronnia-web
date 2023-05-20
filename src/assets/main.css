@@ -8,7 +8,6 @@
 @layer base {
   html {
     font-family: "Inter", sans-serif;
-    scroll-behavior: smooth; 
     @apply bg-neutral-950 text-neutral-300;
   }
 
@@ -32,7 +31,7 @@
   }
 
   .surface {
-    transform: skew(-50deg, 20deg) translateY(20rem) translateX(5rem);
+    transform: skew(-50deg, 20deg) translateY(10rem) translateX(18rem);
   }
 
   .hide-scroll::-webkit-scrollbar {

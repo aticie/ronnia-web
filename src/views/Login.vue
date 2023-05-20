@@ -32,10 +32,8 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div
-    class="w-full flex flex-col gap-8 justify-center h-screen lg:min-h-0 max-w-sm rounded z-10"
-  >
-    <div class="flex flex-col gap-10">
+  <div class="w-full">
+    <div class="h-screen max-w-sm mx-auto flex flex-col pt-32 gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">
           <span
@@ -70,32 +68,32 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
           </BaseButton>
         </a>
       </div>
-    </div>
 
-    <div class="flex flex-col items-start">
-      <p class="text-xs text-neutral-500 font-bold ml-0.5 mb-1">Links</p>
-      <div
-        class="flex rounded overflow-hidden bg-neutral-900 divide-x divide-neutral-950"
-      >
-        <a href="https://discord.gg/J4WPJsceFc">
-          <BaseIcon>
-            <IconDiscord />
-          </BaseIcon>
-        </a>
-        <a href="https://github.com/aticie/ronnia-web">
-          <BaseIcon>
-            <IconGithub />
-          </BaseIcon>
-        </a>
+      <div class="flex flex-col items-start">
+        <p class="text-xs text-neutral-500 font-bold ml-0.5 mb-1">Links</p>
+        <div
+          class="flex rounded overflow-hidden bg-neutral-900 divide-x divide-neutral-950"
+        >
+          <a href="https://discord.gg/J4WPJsceFc">
+            <BaseIcon>
+              <IconDiscord />
+            </BaseIcon>
+          </a>
+          <a href="https://github.com/aticie/ronnia-web">
+            <BaseIcon>
+              <IconGithub />
+            </BaseIcon>
+          </a>
+        </div>
       </div>
+
+      <BaseSuspense v-if="width > 1024">
+        <TheLiveStreams />
+      </BaseSuspense>
     </div>
   </div>
 
-  <BaseSuspense v-if="width > 1024">
-    <TheLiveStreams />
-  </BaseSuspense>
-
-  <div class="h-screen">
+  <div class="h-screen bg-green-500">
     <p>hey</p>
   </div>
 </template>

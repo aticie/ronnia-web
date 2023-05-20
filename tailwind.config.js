@@ -10,6 +10,15 @@ export default {
         red: {
           DEFAULT: "#da0037",
         }
+      },
+      animation: {
+        "scroll": "scroll 20s linear infinite"
+      },
+      keyframes: {
+        'scroll': {
+          '0%': { transform: `translateY(0px)` },
+          '100%': { transform: `translateY(var(--row))` }
+        }
       }
     },
   },
