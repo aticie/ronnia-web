@@ -32,7 +32,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full snap-center">
     <div class="h-screen max-w-sm mx-auto flex flex-col pt-32 gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">
@@ -93,7 +93,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
     </div>
   </div>
 
-  <div class="h-screen bg-green-500">
+  <div class="h-screen bg-green-500 snap-center">
     <p>hey</p>
   </div>
 </template>
