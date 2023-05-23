@@ -18,13 +18,13 @@ onMounted(() => {
 
   let rowCount = response.data.length / 4;
   // the height of first half of the elements, required for it to feel like infinite loop
-  target.value.style.setProperty("--row", `${-190 * rowCount}px`);
+  target.value.style.setProperty("--row", `${-209 * rowCount}px`);
 });
 </script>
 
 <template>
-  <div class="absolute bottom-0 inset-x-0 w-full pt-10 h-[70%] overflow-hidden">
-    <div class="surface">
+  <div class="absolute flex items-end bottom-0 inset-x-0 w-full pt-10 h-[70%] overflow-hidden">
+    <div class="surface mx-auto">
       <p
         class="text-neutral-400 text-center text-3xl select-none"
         style="font-family: 'Bebas Neue', cursive"
@@ -37,7 +37,7 @@ onMounted(() => {
       >
         <div
           ref="target"
-          class="animate-scroll max-w-6xl grid grid-cols-4 gap-2"
+          class="animate-scroll max-w-7xl grid grid-cols-4 gap-2"
         >
           <a
             v-for="streamer in streamers"
