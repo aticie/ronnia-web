@@ -14,8 +14,8 @@ const beatmaps = ref<Beatmap[]>(response.data);
 </script>
 
 <template>
-  <div class="grid gap-4">
-    <p class="w-fit p-2 px-4 rounded bg-neutral-900 mb-4">Most Requested Beatmaps</p>
+  <div class="grid gap-4 max-w-2xl mx-auto">
+    <p class="w-fit p-2 px-4 rounded bg-neutral-950 mb-4">Most Requested Beatmaps</p>
     <ol class="grid gap-2">
       <li
         v-for="map in beatmaps"

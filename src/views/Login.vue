@@ -94,7 +94,12 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
     </div>
   </div>
 
-  <div class="h-screen snap-center flex flex-col justify-center w-full max-w-2xl">
+  <div 
+    class="
+      h-screen w-full flex flex-col justify-center
+      bg-neutral-900 rounded-t-2xl
+    ">
+  <!-- <div class="h-screen snap-center flex flex-col justify-center bg-neutral-900 w-full max-w-2xl"> -->
     <BaseSuspense>
       <TheStatistics />
     </BaseSuspense>
