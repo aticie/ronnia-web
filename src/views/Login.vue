@@ -12,7 +12,7 @@ import { ref } from "vue";
 import { useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store";
-import TheStatistics from "../components/TheStatistics.vue";
+// import TheStatistics from "../components/TheStatistics.vue";
 
 const { width } = useWindowSize();
 const router = useRouter();
@@ -93,15 +93,14 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
       </BaseSuspense>
     </div>
   </div>
-
+<!-- 
   <div 
     class="
       h-screen w-full flex flex-col justify-center
       bg-neutral-900 rounded-t-2xl
     ">
-  <!-- <div class="h-screen snap-center flex flex-col justify-center bg-neutral-900 w-full max-w-2xl"> -->
     <BaseSuspense>
       <TheStatistics />
     </BaseSuspense>
-  </div>
+  </div> -->
 </template>
