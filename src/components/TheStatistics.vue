@@ -2,6 +2,7 @@
 import axios from "axios";
 import { ref } from "vue";
 import { Beatmap } from "../types";
+import { sanitizeUrl} from "@braintree/sanitize-url";
 
 const response = await axios.get<Beatmap[]>("/requests/beatmaps/top", {
   params: {
@@ -26,7 +27,7 @@ const beatmaps = ref<Beatmap[]>(response.data);
           backgroundPosition: 'center',
         }"
       >
-        <a :href="map.url" target="_blank" class="relative z-10 break-all">
+        <a :href="sanitizeUrl(map.url)" target="_blank" class="relative z-10 break-all">
           <p class="text-lg font-semibold h-14">
             {{ map.beatmapset.title }}
           </p>

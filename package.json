@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@braintree/sanitize-url": "^6.0.4",
     "@vueuse/core": "^10.1.0",
     "@vueuse/integrations": "^10.1.2",
     "axios": "^1.4.0",
