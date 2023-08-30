@@ -26,7 +26,7 @@ const beatmaps = ref<Beatmap[]>(response.data);
           backgroundPosition: 'center',
         }"
       >
-        <a :href="map.url" class="relative z-10 break-all">
+        <a :href="map.url" target="_blank" class="relative z-10 break-all">
           <p class="text-lg font-semibold h-14">
             {{ map.beatmapset.title }}
           </p>
