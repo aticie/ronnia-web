@@ -7,6 +7,9 @@ const response = await axios.get<string[]>("/live/users", {
   params: { limit: 1000 },
 });
 
+const animationDuration = response.data.length * 1.38;
+document.documentElement.style.setProperty("--duration", `${animationDuration}s`);
+
 let popCount = response.data.length % 4;
 response.data.splice(response.data.length - popCount, popCount);
 
