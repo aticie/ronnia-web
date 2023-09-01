@@ -1,63 +1,60 @@
 <script setup lang="ts">
 import axios from "axios";
-import { ref, onMounted, onUnmounted } from "vue";
-import { useInfiniteScroll } from "@vueuse/core";
+import { ref, onMounted } from "vue";
 
 const response = await axios.get<string[]>("/live/users", {
   withCredentials: false,
   params: { limit: 1000 },
 });
 
-const streamers = ref(response.data);
+let popCount = response.data.length % 4;
+response.data.splice(response.data.length - popCount, popCount);
+
+const streamers = ref<Array<string>>([...response.data, ...response.data]);
 const target = ref<HTMLElement | null>(null);
 
-let interval: number;
 onMounted(() => {
-  interval = setInterval(() => {
-    target.value?.scrollTo({
-      top: target.value.scrollTop + 1,
-      behavior: "smooth",
-    });
-  }, 40);
+  if (!target.value) return;
+
+  let rowCount = response.data.length / 4;
+  // the height of first half of the elements, required for it to feel like infinite loop
+  target.value.style.setProperty("--row", `${-209 * rowCount}px`);
 });
-
-onUnmounted(() => clearInterval(interval));
-
-useInfiniteScroll(
-  target,
-  () => {
-    streamers.value.push(...streamers.value);
-  },
-  { distance: 50 }
-);
 </script>
 
 <template>
-  <div class="lg:absolute inset-0 flex justify-end items-end overflow-hidden">
-    <div class="surface max-w-7xl h-[70%]">
+  <div class="absolute flex items-end bottom-0 inset-x-0 w-full pt-10 h-[70%] overflow-hidden">
+    <div class="surface mx-auto">
       <p
         class="text-neutral-400 text-center text-3xl select-none"
         style="font-family: 'Bebas Neue', cursive"
       >
         Some cool streamers that use Ronnia!
       </p>
+
       <div
-        ref="target"
-        class="mask hide-scroll grid grid-cols-4 gap-2 px-10 overflow-y-auto h-full"
+        class="mask h-[612px] overflow-hidden flex flex-col items-center -z-10"
       >
-        <a
-          v-for="streamer in streamers"
-          :href="`https://twitch.tv/${streamer}`"
-          class="group"
+        <div
+          ref="target"
+          class="animate-scroll max-w-7xl grid grid-cols-4 gap-2"
         >
-          <div class="group-hover:bg-rose-700 transition-colors rounded-xl">
-            <img
-              :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}-484x268.jpg`"
-              class="w-full border border-neutral-700 rounded-lg aspect-video object-cover group-hover:-translate-x-4 group-hover:-translate-y-4 transition-transform"
-            />
-          </div>
-          <p class="ml-4" style="font-family: 'Bebas Neue', cursive">{{ streamer }}</p>
-        </a>
+          <a
+            v-for="streamer in streamers"
+            :href="`https://twitch.tv/${streamer}`"
+            class="group"
+          >
+            <div class="group-hover:bg-rose-700 transition-colors rounded-xl">
+              <img
+                :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}-484x268.jpg`"
+                class="border border-neutral-700 rounded-lg aspect-video object-cover group-hover:-translate-x-4 group-hover:-translate-y-4 transition-transform"
+              />
+            </div>
+            <p class="ml-4" style="font-family: 'Bebas Neue', cursive">
+              {{ streamer }}
+            </p>
+          </a>
+        </div>
       </div>
     </div>
   </div>

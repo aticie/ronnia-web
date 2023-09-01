@@ -23,21 +23,17 @@ type SignupTypes = "osu" | "twitch";
 try {
   const isSignup = await userStore.getUser();
   if (isSignup) signup.value = isSignup;
-  
-  router.replace("/settings");
-} catch {
 
-}
+  router.replace("/settings");
+} catch {}
 
 const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
 const osuAuth = import.meta.env.VITE_OSU_AUTH;
 </script>
 
 <template>
-  <div
-    class="w-full pt-32 flex flex-col gap-8 justify-center min-h-full lg:min-h-0 max-w-sm rounded z-10"
-  >
-    <div class="flex flex-col gap-10">
+  <div class="w-full snap-center">
+    <div class="h-screen max-w-sm mx-auto flex flex-col pt-32 gap-10">
       <div class="flex justify-center items-end -ml-8">
         <h1 class="font-bold text-center text-xl">
           <span
@@ -72,28 +68,28 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
           </BaseButton>
         </a>
       </div>
-    </div>
 
-    <div class="flex flex-col items-start">
-      <p class="text-xs text-neutral-500 font-bold ml-0.5 mb-1">Links</p>
-      <div
-        class="flex rounded overflow-hidden bg-neutral-900 divide-x divide-neutral-950"
-      >
-        <a href="https://discord.gg/J4WPJsceFc">
-          <BaseIcon>
-            <IconDiscord />
-          </BaseIcon>
-        </a>
-        <a href="https://github.com/aticie/ronnia-web">
-          <BaseIcon>
-            <IconGithub />
-          </BaseIcon>
-        </a>
+      <div class="flex flex-col items-start">
+        <p class="text-xs text-neutral-500 font-bold ml-0.5 mb-1">Links</p>
+        <div
+          class="flex rounded overflow-hidden bg-neutral-900 divide-x divide-neutral-950"
+        >
+          <a href="https://discord.gg/J4WPJsceFc">
+            <BaseIcon>
+              <IconDiscord />
+            </BaseIcon>
+          </a>
+          <a href="https://github.com/aticie/ronnia-web">
+            <BaseIcon>
+              <IconGithub />
+            </BaseIcon>
+          </a>
+        </div>
       </div>
+
+      <BaseSuspense v-if="width > 1024">
+        <TheLiveStreams />
+      </BaseSuspense>
     </div>
   </div>
-
-  <BaseSuspense>
-    <TheLiveStreams v-if="width > 1024" />
-  </BaseSuspense>
 </template>
