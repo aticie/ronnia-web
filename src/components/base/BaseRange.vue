@@ -38,7 +38,7 @@ let right = Array.isArray(props.modelValue)
   ? props.modelValue[1]
   : props.modelValue;
 
-let pipStepCount = props.max / (props.pipStep || 2) + 1;
+let pipStepCount = props.max / (props.pipStep ?? 2) + 1;
 
 if (right === -1) {
   right = props.max;

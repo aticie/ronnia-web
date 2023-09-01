@@ -51,6 +51,7 @@ onMounted(() => {
               <img
                 :src="`https://static-cdn.jtvnw.net/previews-ttv/live_user_${streamer}-484x268.jpg`"
                 class="border border-neutral-700 rounded-lg aspect-video object-cover group-hover:-translate-x-4 group-hover:-translate-y-4 transition-transform"
+                alt="twitch live stream"
               />
             </div>
             <p class="ml-4" style="font-family: 'Bebas Neue', cursive">

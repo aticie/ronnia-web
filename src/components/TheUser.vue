@@ -37,6 +37,7 @@ const logout = async () => {
           <img
             :src="userStore.user.osuAvatarUrl"
             class="w-14 aspect-square rounded"
+            alt="osu user avatar"
           />
           <p>{{ userStore.user.osuUsername }}</p>
         </div>
@@ -51,6 +52,7 @@ const logout = async () => {
           <img
             :src="userStore.user.twitchAvatarUrl"
             class="w-14 aspect-square rounded"
+            alt="twitch user avatar"
           />
           <p>{{ userStore.user.twitchUsername }}</p>
         </div>
