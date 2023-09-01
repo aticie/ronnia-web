@@ -12,7 +12,7 @@ export default {
         }
       },
       animation: {
-        "scroll": "scroll 20s linear infinite"
+        "scroll": "scroll 50s linear infinite"
       },
       keyframes: {
         'scroll': {
