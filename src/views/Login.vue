@@ -34,7 +34,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
 <template>
   <div class="w-full snap-center">
     <div class="h-screen max-w-sm mx-auto flex flex-col pt-32 gap-10">
-      <div class="flex justify-center items-end -ml-8">
+      <div class="flex justify-center items-end -ml-8 z-10">
         <h1 class="font-bold text-center text-xl">
           <span
             class="text-rose-700 text-2xl translate-y-[0.450px] translate-x-[3px] inline-block"
@@ -44,7 +44,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
         </h1>
       </div>
 
-      <div class="grid gap-2">
+      <div class="grid gap-2 z-10">
         <div class="ml-0.5 font-semibold">
           <p v-if="!signup">Log in with:</p>
           <p v-else>Complete your sign-up to Ronnia with</p>
@@ -69,7 +69,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
         </a>
       </div>
 
-      <div class="flex flex-col items-start">
+      <div class="flex flex-col items-start z-10">
         <p class="text-xs text-neutral-500 font-bold ml-0.5 mb-1">Links</p>
         <div
           class="flex rounded overflow-hidden bg-neutral-900 divide-x divide-neutral-950"
