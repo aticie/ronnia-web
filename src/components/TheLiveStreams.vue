@@ -26,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="absolute flex items-end bottom-0 inset-x-0 w-full pt-10 h-[70%] overflow-hidden">
+  <div class="absolute flex items-end bottom-0 inset-x-0 w-full pt-10 h-[70%] overflow-hidden pointer-events-none">
     <div class="surface mx-auto">
       <p
         class="text-neutral-400 text-center text-3xl select-none"
