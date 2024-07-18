@@ -26,7 +26,7 @@ COPY ./index.html ./
 RUN npm run build
 
 # Path: Dockerfile
-FROM nginx:1.24.0-alpine
+FROM nginx:1.27.0
 
 # Copy the build files
 COPY --from=builder /app/dist /usr/share/nginx/html
