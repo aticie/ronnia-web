@@ -22,6 +22,8 @@ With those example ports, set the backend's `PUBLIC_ORIGIN=http://localhost:3001
 
 Both Compose projects must use the same `RONNIA_NETWORK` and `BIND_PORT` values; start the backend before the dashboard so the external network and `ronnia` service are available. `API_UPSTREAM` is an optional server-only override for an existing backend reachable from the dashboard container, for example `API_UPSTREAM=http://other-backend:8080 docker compose up --build -d`. It is never compiled into browser JavaScript. The shared network keeps backend traffic inside Docker while the host-published backend port remains loopback-only.
 
+For an HTTPS backend, set `API_UPSTREAM=https://api.new.ronnia.me` (without a trailing slash). Nginx sends the upstream host in `Host` and enables TLS SNI; its default [`proxy_ssl_name $proxy_host`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ssl_name) selects the upstream hostname for SNI, without a non-default port. The browser's `Origin`, `Referer`, and cookies are preserved, so keep `PUBLIC_ORIGIN` set to the dashboard origin; the backend validates those configured origins, not the forwarded `Host`. `/api/` is still stripped and `/api/internal/` remains blocked.
+
 The browser contract is fixed and public:
 
 - Axios uses `/api` with browser credentials enabled, initialized before routing.
