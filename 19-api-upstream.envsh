@@ -1,0 +1,68 @@
+#!/bin/sh
+# Sourced by the official nginx entrypoint before template substitution.
+set -eu
+
+upstream_error() {
+    echo "API_UPSTREAM must be an http:// or https:// host with an optional port, without a path, query, credentials, or fragment" >&2
+    exit 1
+}
+
+case "${API_UPSTREAM:-}" in
+    http://*) API_UPSTREAM_SCHEME=http; default_port=80 ;;
+    https://*) API_UPSTREAM_SCHEME=https; default_port=443 ;;
+    *) upstream_error ;;
+esac
+
+authority=${API_UPSTREAM#*://}
+case "$authority" in
+    ''|*[!a-zA-Z0-9.:\[\]_-]*) upstream_error ;;
+esac
+
+case "$authority" in
+    \[*\]*)
+        host=${authority%%\]*}]
+        API_UPSTREAM_NAME=${host#\[}
+        API_UPSTREAM_NAME=${API_UPSTREAM_NAME%\]}
+        case "$API_UPSTREAM_NAME" in
+            *:*) ;;
+            *) upstream_error ;;
+        esac
+        suffix=${authority#"$host"}
+        case "$suffix" in
+            '') port=$default_port ;;
+            :*) port=${suffix#:} ;;
+            *) upstream_error ;;
+        esac
+        ;;
+    *)
+        host=${authority%%:*}
+        API_UPSTREAM_NAME=$host
+        case "$host" in
+            ''|*[!a-zA-Z0-9._-]*) upstream_error ;;
+        esac
+        case "$authority" in
+            *:*) port=${authority#*:} ;;
+            *) port=$default_port ;;
+        esac
+        ;;
+esac
+
+case "$port" in
+    ''|*[!0-9]*|??????*) upstream_error ;;
+esac
+# Normalize leading zeroes before comparing ports (shell arithmetic can be octal).
+while [ "${port#0}" != "$port" ]; do port=${port#0}; done
+[ -n "$port" ] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || upstream_error
+
+API_UPSTREAM_ADDRESS=$host:$port
+API_UPSTREAM_HOST=$host
+if [ "$port" != "$default_port" ]; then
+    API_UPSTREAM_HOST=$host:$port
+fi
+
+# 15-local-resolvers.envsh reads /etc/resolv.conf, including bracketed IPv6.
+[ -n "${NGINX_LOCAL_RESOLVERS:-}" ] || {
+    echo "No container DNS resolvers found; keep NGINX_ENTRYPOINT_LOCAL_RESOLVERS enabled" >&2
+    exit 1
+}
+export API_UPSTREAM_SCHEME API_UPSTREAM_ADDRESS API_UPSTREAM_HOST API_UPSTREAM_NAME

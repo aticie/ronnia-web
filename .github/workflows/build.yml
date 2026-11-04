@@ -26,5 +26,7 @@ jobs:
         run: npm run build
       - name: Build standalone container
         run: docker build --tag ronnia-web:ci .
+      - name: Verify dynamic upstream DNS and proxy contract
+        run: python3 tests/proxy_dns.py --image ronnia-web:ci
       - name: Validate standalone Compose
         run: docker compose config

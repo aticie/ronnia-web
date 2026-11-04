@@ -22,7 +22,15 @@ With those example ports, set the backend's `PUBLIC_ORIGIN=http://localhost:3001
 
 Both Compose projects must use the same `RONNIA_NETWORK` and `BIND_PORT` values; start the backend before the dashboard so the external network and `ronnia` service are available. `API_UPSTREAM` is an optional server-only override for an existing backend reachable from the dashboard container, for example `API_UPSTREAM=http://other-backend:8080 docker compose up --build -d`. It is never compiled into browser JavaScript. The shared network keeps backend traffic inside Docker while the host-published backend port remains loopback-only.
 
-For an HTTPS backend, set `API_UPSTREAM=https://api.new.ronnia.me` (without a trailing slash). Nginx sends the upstream host in `Host` and enables TLS SNI; its default [`proxy_ssl_name $proxy_host`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ssl_name) selects the upstream hostname for SNI, without a non-default port. The browser's `Origin`, `Referer`, and cookies are preserved, so keep `PUBLIC_ORIGIN` set to the dashboard origin; the backend validates those configured origins, not the forwarded `Host`. `/api/` is still stripped and `/api/internal/` remains blocked.
+For an HTTPS backend, set `API_UPSTREAM=https://api.new.ronnia.me` (without a trailing slash). Supported values are an `http://` or `https://` hostname, IPv4 address, or bracketed IPv6 address, optionally followed by a port. Omitted ports mean 80 for HTTP and 443 for HTTPS. Paths, trailing slashes, credentials, queries, and fragments are rejected at startup. Nginx sends the upstream authority in `Host` (omitting the scheme's default port) and explicitly sets [`proxy_ssl_name`](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ssl_name) to the upstream hostname, never the internal pool name. The browser's `Origin`, `Referer`, and cookies are preserved, so keep `PUBLIC_ORIGIN` set to the dashboard origin; the backend validates those configured origins, not the forwarded `Host`. The static [`proxy_pass` URI mapping](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass) strips `/api/`, preserves query strings, and keeps `/api/internal/` blocked.
+
+### Backend redeploys and Railway private DNS
+
+The runtime is Nginx 1.28 Alpine. Its native [`upstream` `resolve`](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#resolve) support (open source since 1.27.3) updates the backend addresses in a shared zone without reloading or restarting the frontend. DNS answers are cached for five seconds, with a five-second lookup timeout; this avoids pinning the backend's old private IP after a redeploy. This is DNS refresh, not zero-downtime failover: requests can receive 502 while the backend or its DNS record is unavailable, then recover automatically. Nginx can start and serve the dashboard even if the backend hostname does not yet resolve.
+
+The image enables `NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1`. The official image's [`15-local-resolvers.envsh`](https://github.com/nginx/docker-nginx/blob/master/entrypoint/15-local-resolvers.envsh) reads the container's `/etc/resolv.conf` and exports `NGINX_LOCAL_RESOLVERS` before template substitution, including bracketed IPv6 nameservers. Do not disable it or replace it with public DNS: Railway's `.railway.internal` names require Railway's private resolver, while Compose uses Docker's embedded resolver. The small `19-api-upstream.envsh` helper only parses the upstream URL into scheme, socket address, HTTP Host, and TLS server name; DNS discovery remains owned by the official image.
+
+On Railway, set the frontend's server-only `API_UPSTREAM` to `http://<backend-service>.railway.internal:<backend-listening-port>` (or retain an existing supported HTTPS upstream). Both services must share the private network/environment, and the backend must listen on the configured port and reachable address family. No backend origin, OAuth callback, secret, or browser configuration changes are needed for this DNS fix. Deploy the updated frontend image once; subsequent backend IP changes do not require another frontend deployment. An existing frontend image still needs that initial update.
 
 The browser contract is fixed and public:
 
@@ -54,15 +62,20 @@ Build runs the real Vue/TypeScript check (`vue-tsc --noEmit`) before Vite create
 
 ## Continuous integration
 
-The GitHub Actions build uses Node 24, installs the lockfile with `npm ci --ignore-scripts`, audits dependencies with `npm audit --audit-level=high`, runs the Vue/TypeScript and Vite production build, then builds the standalone Docker image. To run the same checks from this repository root:
+The GitHub Actions build uses Node 24, installs the lockfile with `npm ci --ignore-scripts`, audits dependencies with `npm audit --audit-level=high`, runs the Vue/TypeScript and Vite production build, then builds the standalone Docker image and exercises its real proxy against isolated DNS and HTTP/TLS fixtures. To run the same checks from this repository root:
 
 ```sh
 npm ci --ignore-scripts
 npm audit --audit-level=high
 npm run build
 docker build -t ronnia-web:local .
+python3 tests/proxy_dns.py --image ronnia-web:local
 docker compose config
 ```
+
+The proxy regression requires Docker, Python 3, and OpenSSL on the test host, and pulls `python:3.13-alpine` for standard-library-only fixtures. It creates a uniquely named isolated bridge network and disposable containers/certificate, publishes only the frontend on an ephemeral loopback port, then removes them. It starts the frontend with NXDOMAIN, restores DNS, changes the backend IP between two actual servers, and checks recovery without frontend restart for HTTP/HTTPS at default and non-default ports, plus a runtime DNS/backend outage and recovery. Assertions cover TLS SNI and Host, escaped paths and query strings, request/response cookies, Origin/Referer, the internal API block, and upstream parsing. It does not contact Railway or OAuth providers.
+
+Local verification on 2026-11-05 passed the real `nginx:1.28-alpine` runtime (Nginx 1.28.3), with four traffic scenarios: HTTP on 80/8080 and HTTPS on 443/8443. Each frontend started while the private-style hostname returned NXDOMAIN, recovered when DNS appeared, and switched to the second upstream IP without a frontend restart; the first upstream was then stopped while traffic continued successfully. A separate runtime DNS/backend outage recovered too. Host/SNI, escaped path/query forwarding, cookies, Origin/Referer, and internal-path blocking passed. The production Docker build ran `npm run build` (`vue-tsc --noEmit` then Vite) successfully, and `docker compose config` passed. IPv4/bracketed-IPv6 parser and default-port configuration checks passed; IPv6 DNS traffic and a real Railway rollout were not exercised.
 
 ### Split deployment verification (2026-11-04)
 
