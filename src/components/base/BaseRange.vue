@@ -13,14 +13,16 @@ interface Props {
 }
 
 interface Emits {
-  (e: "update:modelValue", payload: [number, number] | number): void;
+  (e: "update:modelValue", payload: T): void;
 }
 
 const emit = defineEmits<Emits>();
-const xprops = defineProps<Props>();
+const props = defineProps<Props>();
 
-// workaround until vue 3.3 lands
-const props = xprops as unknown as Props;
+defineSlots<{
+  default(props: { values: T }): unknown;
+  left(props: { values: T }): unknown;
+}>();
 
 type Element = HTMLElement | null;
 
@@ -38,7 +40,7 @@ let right = Array.isArray(props.modelValue)
   ? props.modelValue[1]
   : props.modelValue;
 
-let pipStepCount = props.max / (props.pipStep ?? 2) + 1;
+const pipStepCount = (props.max - props.min) / (props.pipStep ?? 2) + 1;
 
 if (right === -1) {
   right = props.max;
@@ -141,7 +143,7 @@ watch(elementX, () => {
       if (Math.abs(rounded - clampedX) < roundOffset.value) {
         currentXLeft.value = rounded;
       } else {
-        currentXLeft.value = clampedX;
+        currentXLeft.value = Math.min(currentXRight.value, clampedX);
       }
     } else {
       currentXLeft.value = Math.min(currentXRight.value, clampedX);
@@ -168,11 +170,10 @@ watch(elementX, () => {
   interPolatedRight = Math.round(interPolatedRight * 1e2) / 1e2;
 
   // update the values that are given with v-model after interpolation.
+  const upper = props.range && interPolatedRight >= props.max ? -1 : interPolatedRight;
   emit(
     "update:modelValue",
-    Array.isArray(props.modelValue) && currentXLeft.value !== undefined
-      ? [interPolatedLeft, interPolatedRight]
-      : interPolatedRight
+    (Array.isArray(props.modelValue) ? [interPolatedLeft, upper] : interPolatedRight) as T
   );
 });
 </script>

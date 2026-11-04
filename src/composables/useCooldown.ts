@@ -13,7 +13,7 @@ export const useCooldown = (delay: number) => {
       clearInterval(interval);
     }
     
-    interval = setInterval(() => {
+    interval = window.setInterval(() => {
       count.value--;
       if (count.value === 0) {
         onCooldown.value = false;

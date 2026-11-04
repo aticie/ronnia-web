@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [master, migration/rust-backend-integration]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+      - name: Typecheck and build dashboard
+        run: npm run build
+      - name: Build standalone container
+        run: docker build --tag ronnia-web:ci .
+      - name: Validate standalone Compose
+        run: docker compose config

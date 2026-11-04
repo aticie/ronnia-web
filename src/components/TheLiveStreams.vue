@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import axios from "axios";
+import { api, apiErrorMessage } from "../api";
 import { ref, onMounted } from "vue";
 
-const response = await axios.get<string[]>("/live/users", {
-  withCredentials: false,
-  params: { limit: 1000 },
-});
-
-const animationDuration = response.data.length * 1.38;
-document.documentElement.style.setProperty("--duration", `${animationDuration}s`);
-
-let popCount = response.data.length % 4;
-response.data.splice(response.data.length - popCount, popCount);
-
-const streamers = ref<Array<string>>([...response.data, ...response.data]);
+const streamers = ref<string[]>([]);
+const loadError = ref("");
 const target = ref<HTMLElement | null>(null);
+let rowCount = 0;
+
+try {
+  const response = await api.get<string[]>("/live/users", { params: { limit: 100 } });
+  const users = response.data;
+  document.documentElement.style.setProperty("--duration", `${Math.max(users.length, 1) * 1.38}s`);
+  // Keep short lists visible too; the upstream splice erased 1–3 live users.
+  rowCount = Math.ceil(users.length / 4);
+  streamers.value = [...users, ...users];
+} catch (error) {
+  loadError.value = apiErrorMessage(error);
+}
 
 onMounted(() => {
-  if (!target.value) return;
-
-  let rowCount = response.data.length / 4;
-  // the height of first half of the elements, required for it to feel like infinite loop
-  target.value.style.setProperty("--row", `${-209 * rowCount}px`);
+  target.value?.style.setProperty("--row", `${-209 * rowCount}px`);
 });
 </script>
 
@@ -34,6 +32,12 @@ onMounted(() => {
       >
         Some cool streamers that use Ronnia!
       </p>
+      <p v-if="loadError" role="alert" class="text-red-400 text-center text-sm">
+        Could not load live streams: {{ loadError }}
+      </p>
+      <p v-else-if="!streamers.length" class="text-neutral-500 text-center text-sm">
+        No Ronnia streamers are live right now.
+      </p>
 
       <div
         class="mask h-[612px] overflow-hidden flex flex-col items-center -z-10"
@@ -43,7 +47,8 @@ onMounted(() => {
           class="animate-scroll max-w-7xl grid grid-cols-4 gap-2"
         >
           <a
-            v-for="streamer in streamers"
+            v-for="(streamer, index) in streamers"
+            :key="`${streamer}-${index}`"
             :href="`https://twitch.tv/${streamer}`"
             class="group"
           >
