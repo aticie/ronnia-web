@@ -18,11 +18,15 @@ const router = createRouter({
     {
       path: "/settings",
       component: Settings,
-      beforeEnter: () => {
+      beforeEnter: async () => {
         const userStore = useUserStore();
-        return userStore.user ? true : {
-          path: "/login"
+        try {
+          await userStore.getUser();
+        } catch {
+          // getUser retains the API error for the login status and retry action.
+          return { path: "/login" };
         }
+        return userStore.user ? true : { path: "/login" };
       }
     }
   ]

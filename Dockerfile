@@ -1,37 +1,14 @@
-# Start from low size builder image
-FROM node:18.16.0-alpine3.17 as builder
-
-# Set the working directory
+FROM node:24-alpine AS build
 WORKDIR /app
-
-# Copy the package.json and package-lock.json
-COPY package.json ./
-COPY package-lock.json ./
-
-# Install dependencies
-RUN npm install --ignore-scripts true
-
-# Copy the rest of the files
-COPY ./src ./src
-COPY ./public ./public
-COPY ./.env.production ./.env
-COPY ./tsconfig.json ./
-COPY ./tsconfig.node.json ./
-COPY ./vite.config.ts ./
-COPY ./postcss.config.js ./
-COPY ./tailwind.config.js ./
-COPY ./index.html ./
-
-# Build the app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY . .
 RUN npm run build
 
-# Path: Dockerfile
-FROM nginx:1.27.0
-
-# Copy the build files
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-COPY default.conf /etc/nginx/conf.d/default.conf
-
-# Start nginx
+FROM nginx:1.28-alpine
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+COPY --chmod=755 19-api-upstream.envsh /docker-entrypoint.d/19-api-upstream.envsh
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY default.conf.template /etc/nginx/templates/default.conf.template
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
