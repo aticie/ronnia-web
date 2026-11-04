@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { RouterLink } from "vue-router";
 import { formatLocalDateTime } from "../utils";
 
 const props = defineProps<{
@@ -36,13 +35,6 @@ const formattedCutoff = computed(() =>
           (your local time).
         </p>
       </div>
-
-      <RouterLink
-        to="/settings"
-        class="shrink-0 rounded bg-rose-800 px-3 py-2 text-center font-medium text-neutral-100 transition-colors hover:bg-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400"
-      >
-        Open settings
-      </RouterLink>
     </div>
   </section>
 </template>
