@@ -23,11 +23,11 @@ const formattedCutoff = computed(() =>
       class="mx-auto flex w-full max-w-2xl flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center"
     >
       <div class="min-w-0 flex-1">
-        <p class="font-semibold text-neutral-100">Ronnia is migrating</p>
+        <p class="font-semibold text-neutral-100">Ronnia has moved</p>
         <p class="mt-1 text-neutral-300">
-          All accounts and settings now use the new dashboard. To keep Ronnia
-          active in your Twitch channel, log in and re-authorize Twitch bot
-          access.
+          Accounts and settings now use the new dashboard. Sign in and
+          re-authorize Twitch bot access to keep Ronnia responding in your
+          channel.
         </p>
         <p v-if="formattedCutoff" class="mt-1 text-neutral-400">
           Migration cutoff:
