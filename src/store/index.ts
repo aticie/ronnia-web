@@ -1,49 +1,66 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { UserDetails } from "../types";
-import axios from "axios";
+import type { UserDetails } from "../types";
+import { api, apiErrorMessage, isUnauthorized } from "../api";
+
+type SignupProvider = "osu" | "twitch";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<UserDetails>();
+  const signup = ref<SignupProvider>();
+  const loaded = ref(false);
+  const error = ref("");
+  let pending: Promise<void> | undefined;
 
-  const getUser = async () => {
-    try {
-      const response = await axios.get<UserDetails | {
-        signup: "osu" | "twitch"
-      }>("/user/me");
+  const resetSession = (message = "") => {
+    user.value = undefined;
+    signup.value = undefined;
+    loaded.value = true;
+    error.value = message;
+  };
 
-      if ("signup" in response.data) {
-        return response.data.signup;
+  const getUser = (): Promise<void> => {
+    if (pending) return pending;
+    if (loaded.value) return Promise.resolve();
+    pending = (async () => {
+      error.value = "";
+      try {
+        const response = await api.get<UserDetails | { signup: SignupProvider } | null>("/user/me");
+        user.value = undefined;
+        signup.value = undefined;
+        if (response.data && "signup" in response.data) {
+          signup.value = response.data.signup;
+        } else if (response.data) {
+          user.value = response.data;
+        }
+        loaded.value = true;
+      } catch (cause) {
+        error.value = apiErrorMessage(cause);
+        if (isUnauthorized(cause)) resetSession(error.value);
+        else throw cause;
+      } finally {
+        pending = undefined;
       }
+    })();
+    return pending;
+  };
 
-      user.value = response.data;
-    } catch {
+  const retryUser = () => {
+    loaded.value = false;
+    return getUser();
+  };
 
-    }
-  }
-
+  // Axios follows the API's 303 back to the public origin; cookies are handled
+  // by the browser. Only clear local state after a successful response.
   const logoutUser = async () => {
-    try {
-      await axios.get("/user/logout");
-      user.value = undefined;
-    } finally {
-      user.value = undefined;
-    }
-  }
+    await api.get("/user/logout");
+    resetSession();
+  };
 
   const deleteUser = async () => {
-    try {
-      await axios.delete("/user/me");
-      user.value = undefined;
-    } finally {
-      user.value = undefined;
-    }
-  }
+    await api.delete("/user/me");
+    resetSession();
+  };
 
-  return {
-    user,
-    getUser,
-    logoutUser,
-    deleteUser
-  }
-})
+  return { user, signup, loaded, error, getUser, retryUser, resetSession, logoutUser, deleteUser };
+});

@@ -15,7 +15,7 @@ export interface SettingRange extends Setting {
 }
 
 export interface SettingToggle extends Setting {
-  value: 1 | 0,
+  value: boolean,
   type: "toggle"
 }
 
@@ -28,7 +28,14 @@ export interface UserDetails {
   twitchId: number,
   twitchUsername: string,
   twitchAvatarUrl: string,
-  isLive: boolean
+  excludedUsers: string[],
+  isLive: boolean,
+  twitchBotAuthorized: boolean
+}
+
+export interface MigrationStatus {
+  active: boolean,
+  cutoffAt: string | null
 }
 
 export interface Beatmap {

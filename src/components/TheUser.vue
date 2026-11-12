@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store";
+import { ref } from "vue";
+import { apiErrorMessage, twitchLogin } from "../api";
+import { useBus } from "../composables";
 
 import IconOsu from "./icons/IconOsu.vue";
 import IconTwitch from "./icons/IconTwitch.vue";
@@ -11,21 +14,23 @@ import BaseButton from "./base/BaseButton.vue";
 const userStore = useUserStore();
 const router = useRouter();
 
-const removeUser = async () => {
-  try {
-    await userStore.deleteUser();
-  } finally {
-    router.replace("/login");
-  }
-};
+const bus = useBus();
+const isFetching = ref(false);
 
-const logout = async () => {
+const accountAction = async (action: () => Promise<void>) => {
+  if (isFetching.value) return;
+  isFetching.value = true;
   try {
-    await userStore.logoutUser();
+    await action();
+    await router.replace("/login");
+  } catch (error) {
+    bus.emit({ title: "Account action failed", description: apiErrorMessage(error), type: "error" });
   } finally {
-    router.replace("/login");
+    isFetching.value = false;
   }
 };
+const removeUser = () => accountAction(userStore.deleteUser);
+const logout = () => accountAction(userStore.logoutUser);
 </script>
 
 <template>
@@ -69,15 +74,27 @@ const logout = async () => {
       </div>
     </div>
 
+    <div v-if="!userStore.user.twitchBotAuthorized" role="status" class="rounded bg-neutral-900 p-3 text-sm">
+      <p class="font-semibold">Twitch bot consent is required</p>
+      <p class="mt-1 text-neutral-400">
+        Authorize Ronnia to act as a bot in your channel. Sign in as
+        {{ userStore.user.twitchUsername }}: only this linked Twitch account can
+        renew consent. Your linked osu! account and settings will be kept.
+      </p>
+      <a :href="twitchLogin" class="inline-block mt-3 rounded bg-rose-800 px-3 py-2">
+        Re-authorize Twitch
+      </a>
+    </div>
+
     <div class="flex gap-2">
-      <BaseButton @click="logout" class="basis-44">
+      <BaseButton @click="logout" :disabled="isFetching" class="basis-44">
         <template #icon>
           <IconLogout />
         </template>
         <p>Logout</p>
       </BaseButton>
 
-      <BaseButton @click="removeUser" class="basis-44">
+      <BaseButton @click="removeUser" :disabled="isFetching" class="basis-44">
         <template #icon>
           <IconDelete />
         </template>

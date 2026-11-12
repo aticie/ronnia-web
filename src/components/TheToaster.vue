@@ -13,8 +13,8 @@ const unsub = bus.on((notification) => {
   }
 
   setTimeout(() => {
-    let index = notifications.value.findIndex((x) => x.id);
-    notifications.value.splice(index, 1);
+    const index = notifications.value.findIndex((x) => x.id === notification.id);
+    if (index !== -1) notifications.value.splice(index, 1);
   }, 5000);
 
   notifications.value.push(notification);
@@ -36,6 +36,7 @@ onUnmounted(unsub);
     <div
       v-for="notif in notifications"
       :key="notif.id"
+      role="status"
       class="flex gap-3 bg-neutral-950 border border-neutral-800 rounded-lg p-3"
     >
       <div 

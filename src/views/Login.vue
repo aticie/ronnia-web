@@ -8,27 +8,26 @@ import IconTwitch from "../components/icons/IconTwitch.vue";
 import IconGithub from "../components/icons/IconGithub.vue";
 import IconOsu from "../components/icons/IconOsu.vue";
 
-import { ref } from "vue";
+import { computed } from "vue";
 import { useWindowSize } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store";
+import { twitchLogin, osuLogin } from "../api";
 
 const { width } = useWindowSize();
 const router = useRouter();
 const userStore = useUserStore();
-const signup = ref<SignupTypes>();
+const signup = computed(() => userStore.signup);
 
-type SignupTypes = "osu" | "twitch";
-
-try {
-  const isSignup = await userStore.getUser();
-  if (isSignup) signup.value = isSignup;
-
-  router.replace("/settings");
-} catch {}
-
-const twitchAuth = import.meta.env.VITE_TWITCH_AUTH;
-const osuAuth = import.meta.env.VITE_OSU_AUTH;
+const loadUser = async (retry = false) => {
+  try {
+    await (retry ? userStore.retryUser() : userStore.getUser());
+    if (userStore.user) await router.replace("/settings");
+  } catch {
+    // The store retains a visible error; do not pretend authentication worked.
+  }
+};
+await loadUser();
 </script>
 
 <template>
@@ -49,8 +48,12 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
           <p v-if="!signup">Log in with:</p>
           <p v-else>Complete your sign-up to Ronnia with</p>
         </div>
+        <div v-if="userStore.error" role="alert" class="text-sm text-red-400">
+          <p>{{ userStore.error }}</p>
+          <button class="underline" @click="loadUser(true)">Retry loading account</button>
+        </div>
 
-        <a v-if="!signup || signup === 'osu'" :href="twitchAuth">
+        <a v-if="!signup || signup === 'osu'" :href="twitchLogin">
           <BaseButton class="w-full">
             <template #icon>
               <IconTwitch />
@@ -59,7 +62,7 @@ const osuAuth = import.meta.env.VITE_OSU_AUTH;
           </BaseButton>
         </a>
 
-        <a v-if="!signup || signup === 'twitch'" :href="osuAuth">
+        <a v-if="!signup || signup === 'twitch'" :href="osuLogin">
           <BaseButton class="w-full">
             <template #icon>
               <IconOsu />
