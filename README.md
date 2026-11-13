@@ -57,7 +57,7 @@ The image is built once, so browser configuration is written at container start 
 |---|---|---|
 | `SENTRY_DSN` | empty | browser DSN; its public key is safe to ship, never use an auth token here |
 | `SENTRY_ENVIRONMENT` | `production` | Sentry environment tag |
-| `SENTRY_RELEASE` | empty | release tag (use the backend commit for trace/release correlation) |
+| `SENTRY_RELEASE` | Railway commit SHA | build metadata, sent as `ronnia-web@<semver>+<build>`; without it, plain `ronnia-web@<semver>` |
 | `SENTRY_TRACES_SAMPLE_RATE` | `0.1` | fraction of transactions, `0`-`1` |
 | `SENTRY_REPLAYS_SESSION_SAMPLE_RATE` | `0.1` | fraction of ordinary sessions recorded |
 | `SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE` | `1.0` | fraction of sessions recorded once an error occurs |
