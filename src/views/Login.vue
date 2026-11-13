@@ -31,8 +31,8 @@ await loadUser();
 </script>
 
 <template>
-  <div class="w-full snap-center">
-    <div class="h-screen max-w-sm mx-auto flex flex-col pt-32 gap-10">
+  <div class="w-full flex-1 flex flex-col snap-center">
+    <div class="h-full w-full max-w-sm mx-auto flex flex-col pt-32 gap-10">
       <div class="flex justify-center items-end -ml-8 z-10">
         <h1 class="font-bold text-center text-xl">
           <span
