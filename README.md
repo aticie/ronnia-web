@@ -43,6 +43,21 @@ The browser contract is fixed and public:
 
 No client code reads cookies, stores OAuth tokens, or receives provider secrets. Do not put backend secrets in `VITE_*` variables, which are public bundle inputs.
 
+## Sentry (browser errors, traces and replays)
+
+The image is built once, so browser configuration is written at container start by `20-sentry-config.envsh` into `/sentry-config.js` and read from `window.__RONNIA_SENTRY__`. Nothing is compiled into the bundle and no `VITE_*` input is used. An empty `SENTRY_DSN` disables Sentry entirely.
+
+| variable | default | meaning |
+|---|---|---|
+| `SENTRY_DSN` | empty | browser DSN; its public key is safe to ship, never use an auth token here |
+| `SENTRY_ENVIRONMENT` | `production` | Sentry environment tag |
+| `SENTRY_RELEASE` | empty | release tag (use the backend commit for trace/release correlation) |
+| `SENTRY_TRACES_SAMPLE_RATE` | `0.1` | fraction of transactions, `0`-`1` |
+| `SENTRY_REPLAYS_SESSION_SAMPLE_RATE` | `0.1` | fraction of ordinary sessions recorded |
+| `SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE` | `1.0` | fraction of sessions recorded once an error occurs |
+
+Replays mask every input (`maskAllInputs`), and the SDK is configured with `dataCollection` that sends no user identity, cookies, query strings, HTTP headers or bodies. Invalid sample rates abort container start. Traces continue into the Rust API because nginx forwards the browser's `sentry-trace` and `baggage` headers unchanged.
+
 ## Frontend development
 
 Use Node 24 and npm. From this directory:

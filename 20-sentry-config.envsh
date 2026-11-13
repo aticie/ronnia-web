@@ -1,0 +1,46 @@
+#!/bin/sh
+# Sourced by the official nginx entrypoint before the container starts serving.
+#
+# The image is built once and deployed to several environments, so the browser
+# configuration is written at start-up instead of being compiled in: no VITE_*
+# build inputs, no second image for a different DSN.
+#
+# The DSN's public key is safe to ship to browsers (that is what it is for);
+# never put a Sentry auth token here.
+set -eu
+
+rate_error() {
+    echo "SENTRY_$1 must be a number between 0 and 1" >&2
+    exit 1
+}
+
+normalize_rate() {
+    case "$2" in
+        '') printf '%s' "$3" ;;
+        0|1) printf '%s' "$2" ;;
+        0.*|1.0) printf '%s' "$2" ;;
+        *) rate_error "$1" ;;
+    esac
+}
+
+traces_sample_rate=$(normalize_rate TRACES_SAMPLE_RATE "${SENTRY_TRACES_SAMPLE_RATE:-}" 0.1)
+replays_session_sample_rate=$(normalize_rate REPLAYS_SESSION_SAMPLE_RATE "${SENTRY_REPLAYS_SESSION_SAMPLE_RATE:-}" 0.1)
+replays_on_error_sample_rate=$(normalize_rate REPLAYS_ON_ERROR_SAMPLE_RATE "${SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE:-}" 1.0)
+
+json_string() {
+    # Escape backslash and double quote; the remaining values are settings we write.
+    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+target=/usr/share/nginx/html/sentry-config.js
+{
+    printf 'window.__RONNIA_SENTRY__ = {'
+    printf '"dsn":"%s",' "$(json_string "${SENTRY_DSN:-}")"
+    printf '"environment":"%s",' "$(json_string "${SENTRY_ENVIRONMENT:-production}")"
+    printf '"release":"%s",' "$(json_string "${SENTRY_RELEASE:-}")"
+    printf '"tracesSampleRate":%s,' "$traces_sample_rate"
+    printf '"replaysSessionSampleRate":%s,' "$replays_session_sample_rate"
+    printf '"replaysOnErrorSampleRate":%s' "$replays_on_error_sample_rate"
+    printf '};\n'
+} > "$target"
+chmod 644 "$target"

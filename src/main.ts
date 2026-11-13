@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from "./routes";
 import { api, apiErrorMessage, isUnauthorized } from "./api";
 import { useUserStore } from "./store";
+import { initSentry } from "./sentry";
 
 import './assets/main.css'
 
@@ -25,5 +26,8 @@ api.interceptors.response.use(
   }
 );
 app.use(router);
+
+// Must run after the router exists so SPA navigations are traced.
+initSentry(app, router);
 
 app.mount("#app");
