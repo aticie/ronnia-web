@@ -37,7 +37,7 @@ export const initSentry = (app: App, router: Router): boolean => {
     app,
     dsn,
     environment: config?.environment || "production",
-    release: config?.release || undefined,
+    release: config?.release ? `ronnia-web:${config.release}` : undefined,
     // v11 collects PII by opt-in; keep it minimal: no user identity, cookies,
     // query strings or bodies ever leave the browser.
     dataCollection: {
