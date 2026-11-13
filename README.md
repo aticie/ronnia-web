@@ -43,6 +43,12 @@ The browser contract is fixed and public:
 
 No client code reads cookies, stores OAuth tokens, or receives provider secrets. Do not put backend secrets in `VITE_*` variables, which are public bundle inputs.
 
+## Container logs
+
+nginx keeps two streams: access logs go to `/dev/stdout`, and the error log goes to `/dev/stderr` (the image symlinks the log files there). Because container platforms such as Railway mark anything on stderr as an error, the notice-level start-up chatter (`start worker process`, `using the "epoll" event method`, …) used to show up as a burst of false errors on every deploy.
+
+`25-error-log-level.envsh` raises the main `error_log` level from `notice` to `warn` at container start. Notices are no longer emitted at all, while real warnings and errors stay on stderr and keep their error severity. Access logging is unchanged.
+
 ## Sentry (browser errors, traces and replays)
 
 The image is built once, so browser configuration is written at container start by `20-sentry-config.envsh` into `/sentry-config.js` and read from `window.__RONNIA_SENTRY__`. Nothing is compiled into the bundle and no `VITE_*` input is used. An empty `SENTRY_DSN` disables Sentry entirely.
