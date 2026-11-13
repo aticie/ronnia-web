@@ -27,7 +27,7 @@ void loadMigrationStatus();
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center">
+  <div class="min-h-[100dvh] flex flex-col items-center">
     <TheMigrationBanner
       v-if="migrationActive"
       :cutoff-at="migrationCutoffAt"
