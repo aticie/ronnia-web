@@ -1,0 +1,17 @@
+#!/bin/sh
+# Sourced by the official nginx entrypoint before the server starts.
+#
+# nginx writes its error log -- including start-up notices such as
+# "start worker process 92" -- to /dev/stderr, which container platforms
+# (Railway included) surface as error lines, so every start looked like a burst
+# of failures. Access logs already go to stdout and are unaffected.
+#
+# Raising the level to `warn` keeps the file/stderr destination for real
+# warnings and errors (they stay distinguishable) and drops the notice-level
+# start-up chatter that caused the false alarms.
+set -eu
+
+conf=/etc/nginx/nginx.conf
+if grep -q '^error_log  */var/log/nginx/error.log' "$conf"; then
+    sed -i 's#^error_log  */var/log/nginx/error.log.*#error_log  /var/log/nginx/error.log warn;#' "$conf"
+fi

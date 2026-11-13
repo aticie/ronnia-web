@@ -14,4 +14,4 @@
 !default.conf.template
 !19-api-upstream.envsh
 !20-sentry-config.envsh
-!25-error-log-stdout.envsh
+!25-error-log-level.envsh
