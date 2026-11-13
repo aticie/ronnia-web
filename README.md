@@ -132,3 +132,5 @@ API failures remain visible through inline status/errors and the existing toaste
 - **Logout** and **Delete Account** are ordinary button text selectors. Successful requests clear state and return to `/login`. Expire a session before a settings/exclusion request to check the visible session-expired login message and lack of repeated `/user/me` calls.
 - At desktop widths above 1024px, the login page includes live-stream cards or a visible empty/error status. Error toasts use `[role="status"]`; persistent fetch/mutation errors use `[role="alert"]`.
 - With migration enabled, reload `/login` and `/settings` and locate `[data-testid="migration-banner"][role="status"]`, text **Ronnia is migrating** / **re-authorize Twitch bot access**, and the localized **Migration cutoff** when configured (or no cutoff line). With migration disabled, or with the status endpoint failing, no migration banner renders and the page still loads.
+
+<!-- ci probe: temporary branch, not for merge -->
