@@ -30,3 +30,13 @@ server {
         try_files $uri $uri/ /index.html;
     }
 }
+
+# Old bundles and bookmarks still call the retired API host. Answer them at the
+# edge of this container so they reload the current dashboard instead of writing
+# to the legacy backend, which no longer owns accounts.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name api.ronnia.me;
+    return 308 https://ronnia.me$request_uri;
+}
