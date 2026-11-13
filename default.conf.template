@@ -26,8 +26,22 @@ server {
         proxy_redirect off;
     }
 
+    # index.html names the hashed bundles, so it must never outlive a deploy in a
+    # browser's heuristic cache: revalidate it (cheap 304 via ETag) on every load.
+    location = /index.html {
+        add_header Cache-Control "no-cache, must-revalidate" always;
+    }
+
+    # Assets carry a content hash in their name, so a given URL never changes.
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        try_files $uri =404;
+    }
+
+    # Client-side routes all render index.html, so they inherit its freshness rule.
     location / {
         try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache, must-revalidate" always;
     }
 }
 
