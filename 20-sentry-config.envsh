@@ -37,7 +37,9 @@ target=/usr/share/nginx/html/sentry-config.js
     printf 'window.__RONNIA_SENTRY__ = {'
     printf '"dsn":"%s",' "$(json_string "${SENTRY_DSN:-}")"
     printf '"environment":"%s",' "$(json_string "${SENTRY_ENVIRONMENT:-production}")"
-    printf '"release":"%s",' "$(json_string "${SENTRY_RELEASE:-}")"
+    # Railway exposes the deployed commit; without it browser events cannot be
+    # matched to the release that produced them.
+    printf '"release":"%s",' "$(json_string "${SENTRY_RELEASE:-${RAILWAY_GIT_COMMIT_SHA:-}}")"
     printf '"tracesSampleRate":%s,' "$traces_sample_rate"
     printf '"replaysSessionSampleRate":%s,' "$replays_session_sample_rate"
     printf '"replaysOnErrorSampleRate":%s' "$replays_on_error_sample_rate"
