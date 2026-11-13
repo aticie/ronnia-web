@@ -1,6 +1,7 @@
 import type { App } from "vue";
 import type { Router } from "vue-router";
 import * as Sentry from "@sentry/vue";
+import { version } from "../package.json";
 
 /// Configuration is injected at container start (`/sentry-config.js`), never
 /// compiled in: the image is built once and the DSN, environment and sample
@@ -33,11 +34,12 @@ export const initSentry = (app: App, router: Router): boolean => {
   if (!dsn) {
     return false;
   }
+  const build = config?.release;
   Sentry.init({
     app,
     dsn,
     environment: config?.environment || "production",
-    release: config?.release ? `ronnia-web:${config.release}` : undefined,
+    release: `ronnia-web@${version}${build ? `+${build}` : ""}`,
     // v11 collects PII by opt-in; keep it minimal: no user identity, cookies,
     // query strings or bodies ever leave the browser.
     dataCollection: {
