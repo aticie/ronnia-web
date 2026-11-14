@@ -1,14 +1,34 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import Development from "./components/TheDevRouter.vue";
 import TheMigrationBanner from "./components/TheMigrationBanner.vue";
 import TheToaster from "./components/TheToaster.vue";
 import BaseSuspense from "./components/base/BaseSuspense.vue";
 import { fetchMigrationStatus } from "./api";
+import { useBus } from "./composables/useBus";
 
 const isDev = import.meta.env.DEV;
 const migrationActive = ref(false);
 const migrationCutoffAt = ref<string | null>(null);
+
+const route = useRoute();
+const router = useRouter();
+const bus = useBus();
+
+// Subscribe after the toaster mounts, and consume the marker so reloads stay quiet.
+onMounted(() => {
+  watch(
+    () => route.query.login_error,
+    (error) => {
+      if (error !== "1") return;
+      bus.emit({ type: "error", title: "Login failed" });
+      const { login_error, ...query } = route.query;
+      void router.replace({ path: route.path, query, hash: route.hash });
+    },
+    { immediate: true }
+  );
+});
 
 // Public rollout status is optional configuration: a missing or failing
 // endpoint must never prevent the dashboard from rendering.
