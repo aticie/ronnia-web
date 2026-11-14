@@ -30,7 +30,8 @@ export interface UserDetails {
   twitchAvatarUrl: string,
   excludedUsers: string[],
   isLive: boolean,
-  twitchBotAuthorized: boolean
+  twitchBotAuthorized: boolean,
+  twitchBotBanned: boolean
 }
 
 export interface MigrationStatus {
