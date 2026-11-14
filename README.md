@@ -38,6 +38,7 @@ The browser contract is fixed and public:
 - Login links are `/api/oauth2/osu-login` and `/api/oauth2/twitch-login`.
 - Nginx strips `/api` and forwards to the Rust API. No backend URL or secret is compiled into the JavaScript, and no frontend `.env` file is required.
 - Provider callback URLs remain the directly published Rust endpoints (for example, `http://localhost:8080/oauth2/osu-redirect` and `http://localhost:8080/oauth2/twitch-redirect`). Keep the existing provider registrations. The API redirects back to `PUBLIC_ORIGIN` after a callback.
+- Cancelled osu!/Twitch authorization redirects to `${PUBLIC_ORIGIN}/login?login_error=1`. The app shows the existing error toast with **Login failed**, then removes only `login_error` from the URL so refreshing does not repeat it. Existing authentication or partial signup remains intact.
 - Use `localhost` consistently, not a mixture of `localhost` and `127.0.0.1`: host-only HttpOnly cookies are shared across localhost ports. Local HTTP requires backend `COOKIE_SECURE=false`.
 - The backend `PUBLIC_ORIGIN` must be the dashboard origin for browser Origin/Referer checks. Logout and account deletion follow the backend's 303 response; the browser processes cleared cookies and Pinia/router are reset only on success.
 
