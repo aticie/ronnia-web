@@ -86,6 +86,21 @@ const logout = () => accountAction(userStore.logoutUser);
       </a>
     </div>
 
+    <div
+      v-else-if="userStore.user.twitchBotBanned"
+      role="alert"
+      data-testid="twitch-bot-banned"
+      class="rounded border border-amber-700/60 bg-neutral-900 p-3 text-sm"
+    >
+      <p class="font-semibold text-amber-400">Ronnia is banned from your Twitch chat</p>
+      <p class="mt-1 text-neutral-400">
+        Twitch has blocked chat access for ronniabot in
+        {{ userStore.user.twitchUsername }}'s channel. You or a channel moderator can restore it by running
+        <code class="text-neutral-200">/unban ronniabot</code>
+        in Twitch chat. Ronnia checks again automatically and clears this warning when chat access is restored.
+      </p>
+    </div>
+
     <div class="flex gap-2">
       <BaseButton @click="logout" :disabled="isFetching" class="basis-44">
         <template #icon>
