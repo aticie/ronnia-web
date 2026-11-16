@@ -31,7 +31,9 @@ export interface UserDetails {
   excludedUsers: string[],
   isLive: boolean,
   twitchBotAuthorized: boolean,
-  twitchBotBanned: boolean
+  twitchBotBanned: boolean,
+  twitchChatFollowerMode: boolean | null,
+  twitchChatFollowerModeDuration: number | null
 }
 
 export interface MigrationStatus {
