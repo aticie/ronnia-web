@@ -101,6 +101,23 @@ const logout = () => accountAction(userStore.logoutUser);
       </p>
     </div>
 
+    <div
+      v-else-if="userStore.user.twitchChatFollowerMode === true"
+      role="alert"
+      data-testid="twitch-chat-followers-only"
+      class="rounded border border-amber-700/60 bg-neutral-900 p-3 text-sm"
+    >
+      <p class="font-semibold text-amber-400">Your Twitch chat is followers-only</p>
+      <p class="mt-1 text-neutral-400">
+        Followers-only mode blocks Ronnia's chat confirmations, unless ronniabot is a VIP or moderator on your channel.
+        <template v-if="userStore.user.twitchChatFollowerModeDuration != null && userStore.user.twitchChatFollowerModeDuration > 0">
+          The minimum follow duration is {{ userStore.user.twitchChatFollowerModeDuration }}
+          {{ userStore.user.twitchChatFollowerModeDuration === 1 ? "minute" : "minutes" }}.
+        </template>
+        Give ronniabot VIP or moderator status, or disable followers-only mode in Twitch.
+      </p>
+    </div>
+
     <div class="flex gap-2">
       <BaseButton @click="logout" :disabled="isFetching" class="basis-44">
         <template #icon>
