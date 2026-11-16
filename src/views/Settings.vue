@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { Settings } from "../types";
 import { watchDebounced } from "@vueuse/core";
-import { useBus, useMinuteFormat, useCooldown } from "../composables";
+import { useBus, useMinuteFormat } from "../composables";
 import { api, apiErrorMessage } from "../api";
 
 import IconDone from "../components/icons/IconDone.vue";
@@ -15,7 +15,6 @@ import BaseButton from "../components/base/BaseButton.vue";
 import BaseRange from "../components/base/BaseRange.vue";
 
 const bus = useBus();
-const { onCooldown, resetCooldown } = useCooldown(5);
 
 const settings = ref<Settings>();
 const isFetching = ref(false);
@@ -50,17 +49,22 @@ const snapshotSettings = (): SettingsValues | undefined => {
   }
   return values;
 };
-let savedSnapshot = JSON.stringify(snapshotSettings());
+const savedSnapshot = ref(JSON.stringify(snapshotSettings()));
+const hasUnsavedChanges = computed(() => JSON.stringify(snapshotSettings()) !== savedSnapshot.value);
+const saveStatus = computed(() => {
+  if (isFetching.value) return "Saving…";
+  if (saveError.value) return "Save failed";
+  return hasUnsavedChanges.value ? "Unsaved changes" : "All changes saved";
+});
 
 const saveSettings = async () => {
   const values = snapshotSettings();
   if (!values) return;
-  if (!isFetching.value && JSON.stringify(values) === savedSnapshot && !saveError.value) return;
+  if (!isFetching.value && JSON.stringify(values) === savedSnapshot.value && !saveError.value) return;
   pendingValues = values;
   if (isFetching.value) return;
   isFetching.value = true;
   saveError.value = "";
-  resetCooldown();
 
   try {
     // Manual saves, debounced saves, and edits during a request share this
@@ -69,9 +73,9 @@ const saveSettings = async () => {
       const current = pendingValues;
       pendingValues = undefined;
       const snapshot = JSON.stringify(current);
-      if (snapshot === savedSnapshot) continue;
+      if (snapshot === savedSnapshot.value) continue;
       await api.post("/user/settings", current);
-      savedSnapshot = snapshot;
+      savedSnapshot.value = snapshot;
     }
     bus.emit({
       title: "Saved your settings!",
@@ -85,7 +89,7 @@ const saveSettings = async () => {
     saveError.value = apiErrorMessage(error);
     // A failed response can leave the server outcome uncertain; retry must
     // write the current form even when it matches the last acknowledged state.
-    savedSnapshot = "";
+    savedSnapshot.value = "";
     bus.emit({
       title: "Error while saving!",
       description: saveError.value,
@@ -165,16 +169,22 @@ watchDebounced(settings, (current, previous) => {
         <SettingExcluded v-model="excludedUsers" />
       </BaseSuspense>
 
-      <BaseButton
-        @click="saveSettings"
-        :isLoading="isFetching"
-        :disabled="onCooldown && !saveError"
-      >
-        <template #icon>
-          <IconDone />
-        </template>
-        <p>Save Changes</p>
-      </BaseButton>
+      <div class="flex flex-wrap items-center gap-3">
+        <BaseButton
+          @click="saveSettings"
+          :isLoading="isFetching"
+          :disabled="isFetching || (!hasUnsavedChanges && !saveError)"
+          aria-describedby="settings-save-status"
+        >
+          <template #icon>
+            <IconDone />
+          </template>
+          <p>Save Changes</p>
+        </BaseButton>
+        <p id="settings-save-status" role="status" class="text-sm text-neutral-300">
+          {{ saveStatus }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
