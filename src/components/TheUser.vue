@@ -109,14 +109,12 @@ const logout = () => accountAction(userStore.logoutUser);
     >
       <p class="font-semibold text-amber-400">Your Twitch chat is followers-only</p>
       <p class="mt-1 text-neutral-400">
-        Followers-only mode can block Ronnia's chat confirmations unless ronniabot meets the
-        follow requirements or is a VIP or moderator.
+        Followers-only mode blocks Ronnia's chat confirmations, unless ronniabot is a VIP or moderator on your channel.
         <template v-if="userStore.user.twitchChatFollowerModeDuration != null && userStore.user.twitchChatFollowerModeDuration > 0">
           The minimum follow duration is {{ userStore.user.twitchChatFollowerModeDuration }}
           {{ userStore.user.twitchChatFollowerModeDuration === 1 ? "minute" : "minutes" }}.
         </template>
         Give ronniabot VIP or moderator status, or disable followers-only mode in Twitch.
-        Reload this dashboard after changing your chat settings to update this warning.
       </p>
     </div>
 
