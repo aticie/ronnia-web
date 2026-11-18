@@ -5,7 +5,7 @@ RUN npm ci --ignore-scripts
 COPY . .
 RUN npm run build
 
-FROM nginx:1.28-alpine
+FROM nginx:1.31.9-alpine
 ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 COPY --chmod=755 19-api-upstream.envsh /docker-entrypoint.d/19-api-upstream.envsh
 COPY --chmod=755 20-sentry-config.envsh /docker-entrypoint.d/20-sentry-config.envsh
